@@ -23,12 +23,14 @@ exports.findAll = (req, res) => {
     fetchValidTables((err, validTables) => {
         if (err) {
             return res.status(500).send({
+                status: 500,
                 message: `Error retrieving valid table names: ${err.message}`
             });
         }
 
         if (!validTables.includes(table)) {
             return res.status(400).send({
+                status: 400,
                 message: 'Invalid table name provided.'
             });
         }
@@ -40,10 +42,14 @@ exports.findAll = (req, res) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
+                        status: 500,
                         message: `Error retrieving data for ID ${id} in table ${table}: ${error.message}`
                     });
                 }
-                res.send(results);
+                res.status(200).send({
+                    status: 200,
+                    message: results,
+                });
             });
         } else {
             query = `SELECT * FROM ??`;
@@ -51,10 +57,14 @@ exports.findAll = (req, res) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
+                        status: 500,
                         message: `Error retrieving data from table ${table}: ${error.message}`
                     });
                 }
-                res.send(results);
+                res.status(200).send({
+                    status: 200,
+                    message: results,
+                });
             });
         }
     });
@@ -70,6 +80,7 @@ exports.update = (req, res) => {
 
     if (!id || !tableName) {
         return res.status(400).send({
+            status: 400,
             message: 'Missing id or tableName for update.'
         });
     }
@@ -77,27 +88,31 @@ exports.update = (req, res) => {
     fetchValidTables((err, validTables) => {
         if (err) {
             return res.status(500).send({
+                status: 500,
                 message: `Error retrieving valid table names: ${err.message}`
             });
         }
 
         if (!validTables.includes(tableName)) {
             return res.status(400).send({
+                status: 400,
                 message: 'Invalid table name provided.'
             });
         }
-        
+
         let updateQuery = 'UPDATE ?? SET counsel = ?, prompt = ?, updatedAt = NOW() WHERE id = ?';
         connection.query(updateQuery, [tableName, counsel, prompt, id], (error, results) => {
             if (error) {
                 console.error(`Error occurred: ${error.message}`);
                 return res.status(500).send({
+                    status: 500,
                     message: `Error updating data in ${tableName}: ${error.message}`
                 });
             }
 
             if (results.affectedRows === 0) {
                 return res.status(404).send({
+                    status: 404,
                     message: `No record found with ID ${id} in ${tableName}.`
                 });
             }
@@ -108,15 +123,19 @@ exports.update = (req, res) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
+                        status: 500,
                         message: `Error fetching updated data from ${tableName} with ID ${id}: ${error.message}`
                     });
                 }
 
-                res.send({
+                res.status(200).send({
+                    status: 200,
                     message: 'Data updated successfully.',
                     data: results[0] // Assuming 'id' is unique, results[0] should be the updated record
                 });
             });
+
         });
     });
+    
 };
