@@ -1,0 +1,172 @@
+<%- include('partials/header') %>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+
+
+<div class="container">
+    <h1>Welcome to <%= appName %>!</h1>
+    <hr>
+    <p>ผูกดวง เจ้าชะตา (ดวงกำเนิด)</p>
+
+    <div class="content">
+        <form action="/birth-horoscope" method="get">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="YourName" class="col-form-label">ชื่อ</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="text" name="YourName" id="YourName" class="form-control"
+                                aria-describedby="YourNameHelpBlock" value="<%= YourName %>">
+                        </div>
+                        <div class="col-auto">
+                            <span id="YourNameHelpBlock" class="form-text">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="YourSurName" class="col-form-label">นามสกุล</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="text" name="YourSurName" id="YourSurName" class="form-control"
+                                aria-describedby="YourSurNameHelpBlock" value="<%= YourSurName %>">
+                        </div>
+                        <div class="col-auto">
+                            <span id="YourSurNameHelpBlock" class="form-text">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="birthdate" class="col-form-label">วันที่คุณเกิด</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="date" name="birthdate" id="birthdate" class="form-control"
+                                aria-describedby="birthdateHelpBlock" value="<%= birthDate %>">
+                        </div>
+                        <div class="col-auto">
+                            <span id="birthdateHelpBlock" class="form-text">
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="cboBorn_Country_Option" class="col-form-label">เกิดที่ประเทศ</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <select class="form-control" name="cboBorn_Country_Option" id="cboBorn_Country_Option">
+                                <option value="ประเทศไทย">ประเทศไทย</option>
+                                <option value="ต่างประเทศ">ต่างประเทศ</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="cboBorn_H" class="col-form-label">เวลเกิด(ชัวโมง)</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="number" name="cboBorn_H" id="cboBorn_H" class="form-control"
+                                aria-describedby="cboBorn_HHelpBlock" min="0" max="24" value="<%= cboBorn_H %>"
+                                onchange="updateTimeLocal()">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="cboBorn_M" class="col-form-label">เวลเกิด(นาที)</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <input type="number" name="cboBorn_M" id="cboBorn_M" class="form-control"
+                                aria-describedby="cboBorn_MHelpBlock" min="0" max="60" value="<%= cboBorn_M %>"
+                                onchange="updateTimeLocal()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="sProv" class="col-form-label">เกิดที่</label>
+                        </div>
+                        <div class="col-lg-6">
+                            <select id="sProv" name="sProv" class="form-control">
+                                <% provinces.forEach(function(province) { %>
+                                <option value="<%= province.p_name %>"
+                                    <%= (province.p_name == selectedProvinceId ? 'selected' : '') %>>
+                                    <%= province.p_name %>
+                                </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-2 align-items-center mb-3">
+                        <div class="col-lg-4">
+                            <label for="timeLocal" class="col-form-label">ตัดเวลาท้องถิ่น</label>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox"
+                                    <%= (CutTimeLocalYN == 1 ? 'checked' : '') %> value="1" id="flexCheckIndeterminate"
+                                    name="CutTimeLocalYN">
+                                <label class="form-check-label" for="flexCheckIndeterminate">
+                                    ตัดเวลา
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" name="timeLocal" id="timeLocal" class="form-control"
+                                aria-describedby="timeLocalHelpBlock" value="" readonly>
+                        </div>
+                        <div class="col-auto">
+                            <span id="timeLocalHelpBlock" class="form-text">
+                                ผูกดวง ตัดเวลาท้องถิ่น (หักเวลาเกิดตามสถานที่เกิด แต่ละจังหวัด
+                                ถ้าเลือกไม่ตัดเวลาท้องถิ่น หมายถึง เอาสุทธิเวลาที่เกิดนั้นไปคำนวณหาลัคนาเลย)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <button class="btn btn-success" type="submit">submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <hr>
+    <div class="content">
+        <p>วันที่คุณเกิด : <%= birthDate %></p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        updateTimeLocal();
+    });
+
+    function updateTimeLocal() {
+        var cboBorn_H = document.getElementById('cboBorn_H').value;
+        var cboBorn_M = document.getElementById('cboBorn_M').value;
+        var timeLocal = document.getElementById('timeLocal');
+        timeLocal.value = cboBorn_H + ':' + cboBorn_M;
+    }
+</script>
+<%- include('partials/footer') %>

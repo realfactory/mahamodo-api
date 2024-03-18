@@ -1,40 +1,29 @@
 require("dotenv").config();
-
+const path = require('path');
 const express = require("express");
 const cors = require("cors");
 const app = express();
-var corsOptions = {
-    origin: "http://localhost:8081"
-};
 
+app.use(express.static('public'));
 app.use(cors(corsOptions));
-
-// parse requests of content-type - application/json
 app.use(express.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
-app.use(express.urlencoded({
-    extended: true
-}));
+app.use(express.urlencoded({extended: true}));
+var corsOptions = { origin: "http://localhost:8081" };
 
 const checkApiKey = require('./app/middlewares/checkApiKey');
 const apiRoutes = require('./app/routes/api.routes');
+const Routes = require('./app/routes/routes');
 
-// simple route
-app.get("/", (req, res) => {
-    res.json({
-        message: "Welcome to mahamodo api  application."
-    });
-});
+app.set('view engine', 'ejs');
 
-// Apply the checkApiKey middleware globally to all routes under /api
+app.set('views', path.join(__dirname, 'views'));
+
+app.use('/', Routes);
+
 app.use('/api', checkApiKey);
 
 app.use('/api', apiRoutes);
 
-// require("./app/routes/turorial.routes")(app);
-
-// set port, listen for requests
 const PORT = process.env.NODE_DOCKER_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);

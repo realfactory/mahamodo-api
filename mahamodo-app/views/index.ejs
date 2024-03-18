@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+<body>
+    <h1>Welcome to <%= appName %>!</h1>
+    <p>This is a simple EJS template responding with a variable from the Express app.</p>
+
+    <!-- Birthdate form -->
+    <form action="/calculate-age" method="get">
+        <label for="birthdate">Enter your birthdate:</label>
+        <input type="date" id="birthdate" name="birthdate" required>
+        <input type="submit" value="Calculate Age">
+    </form>
+</body>
+</html>

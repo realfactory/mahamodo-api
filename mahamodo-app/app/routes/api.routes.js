@@ -1,13 +1,10 @@
 const express = require('express');
 const router = express.Router();
 
-// Import your user controller
 const dreamController = require('../controllers/dream.controller');
 const LuktamnaikalakiniinpopController = require('../controllers/luktamnaikalakiniinpop.controller');
 const payakornController = require('../controllers/payakorn.controller');
 
-
-// Define routes
 router.get('/dream/list', dreamController.findAll);
 router.post('/dream/predict', dreamController.Predict);
 
