@@ -73,11 +73,6 @@ function getCharGroupForSetname() {
     };
 }
 
-function fcDayi17ToS(varInput) {
-    const dayNames = ["", "อาทิตย์", "จันทร์", "อังคาร", "พุธ (กลางวัน)", "พฤหัสบดี", "ศุกร์", "เสาร์", "พุธ (กลางคืน)"];
-    return varInput >= 1 && varInput <= 8 ? dayNames[varInput] : "Invalid Input";
-}
-
 function fcNoEToTh(arabicNumber) {
     const thaiNumerals = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
     let arabicNumberStr = arabicNumber.toString();
@@ -91,6 +86,11 @@ function fcNoEToTh(arabicNumber) {
     }
 
     return thaiNumberStr;
+}
+
+function fcDayi17ToS(varInput) {
+    const days = ["", "อาทิตย์", "จันทร์", "อังคาร", "พุธ (กลางวัน)", "พฤหัสบดี", "ศุกร์", "เสาร์", "พุธ (กลางคืน)"];
+    return days[varInput] || "";
 }
 
 function fcMonthSFToSht(month) {
@@ -163,9 +163,8 @@ async function fcGetItemInTableDB(columnName, tableName, condition) {
 async function dbQuery(sql) {
     return new Promise((resolve, reject) => {
         const query = sql;
-        console.log(query);
+        // console.log(query);
         connection.query(query, (error, results) => {
-
             if (error) {
                 console.error(`Error occurred: ${error.message}`);
                 reject(new Error(`Error retrieving data from ${tableName}: ${error.message}`));
@@ -175,6 +174,115 @@ async function dbQuery(sql) {
         });
     });
 }
+
+function calculateLunarDay(now) {
+
+    let day = now.getDate();
+    let month = now.getMonth() + 1;
+    let year = now.getFullYear();
+    let hour = now.getHours();
+    let minute = now.getMinutes();
+
+    DateSerialYMDToday = new Date(year, month - 1, day);
+    DayMooni = DateSerialYMDToday.getDay() + 1;
+    DaySuni = DayMooni;
+    DayMooni = (DayMooni === 0) ? 7 : DayMooni;
+    if (hour * 60 + minute < 6 * 60) {
+        DayMooni -= 1;
+    }
+    if (DayMooni === 0) {
+        DayMooni = 7;
+    }
+    if (DaySuni === 3 && hour * 60 + minute >= 18 * 60) {
+        DayMooni = 8;
+    } else if (DaySuni === 4 && hour * 60 + minute < 6 * 60) {
+        DayMooni = 8;
+    }
+
+    return {
+        DayMooni: DayMooni,
+        DaySuni: DaySuni
+    };
+}
+
+async function SetUpDownMThaiMoon(now, DayMooni, DaySuni) {
+
+    let DownUps = "-";
+    let Nighti = 0;
+    let MThai = 0;
+    let YThai = 0;
+    let sqlMoon;
+    
+    // let chkSetUpDownMThaiMoon = fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
+    // chkSetUpDownMThaiMoon.then(function (resMoon) {
+    //     if (resMoon === 'ใช่') {
+    //         return resMoon;
+    //     }
+    // });
+
+
+    let chkSetUpDownMThaiMoon = fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
+    chkSetUpDownMThaiMoon.then(function (resMoon) {
+        if (resMoon === 'ใช่') {
+            let day = now.getDate().toString().padStart(2, '0');
+            let month = (now.getMonth() + 1).toString().padStart(2, '0');
+            let year = (now.getFullYear() + 543).toString();
+
+            if (DaySuni === DayMooni) {
+                sqlMoon = `SELECT * FROM calendar_moon WHERE dmy='${day}/${month}/${year}'`;
+            } else {
+
+                if (cboBorn_Country_Option) {
+                    now.setFullYear(year - 543);
+                }
+
+                now.setDate(now.getDate() - 1);
+
+                let iNumBack = now.getDate().toString().padStart(2, '0');
+                let iMonthBack = (now.getMonth() + 1).toString().padStart(2, '0');
+                let iYearBBack = (cboBorn_Country_Option ? now.getFullYear() + 543 : now.getFullYear()).toString();
+
+                sqlMoon = `SELECT * FROM calendar_moon WHERE dmy='${iNumBack}/${iMonthBack}/${iYearBBack}'`;
+
+            }
+        } else {
+
+            let day = now.getDate().toString().padStart(2, '0');
+            let month = (now.getMonth() + 1).toString().padStart(2, '0');
+            let year = (now.getFullYear() + 543).toString();
+            sqlMoon = `SELECT * FROM calendar_moon WHERE dmy='${day}/${month}/${year}'`;
+        }
+
+        if (DaySuni === 4 && DayMooni === 8) {
+            let now = new Date();
+            let day = now.getDate().toString().padStart(2, '0');
+            let month = (now.getMonth() + 1).toString().padStart(2, '0');
+            let year = (now.getFullYear() + 543).toString();
+            sqlMoon = `SELECT * FROM calendar_moon WHERE dmy='${day}/${month}/${year}'`;
+        }
+
+        let getMoonData = dbQuery(sqlMoon);
+        getMoonData.then(function (resMoon) {
+            if (resMoon && resMoon.length > 0) {
+                DownUps = resMoon[0].downup === 1 ? "แรม" : "ขึ้น";
+                Nighti = resMoon[0].night;
+                MThai = resMoon[0].mthai;
+                YThai = resMoon[0].ythai;
+                // console.log(DownUps,Nighti,MThai,YThai);
+                return {
+                    DownUps: DownUps,
+                    Nighti: Nighti,
+                    MThai: MThai,
+                    YThai: YThai,
+                };
+            } else {
+                console.error("No data returned from the query.");
+                return null;
+            }
+        });
+    });
+}
+
 
 module.exports = {
     calculateAges,
@@ -189,6 +297,8 @@ module.exports = {
     fcGetLukTimeLocalThailandThisProvValue,
     fcGetItemInTableDB,
     dbQuery,
+    calculateLunarDay,
+    SetUpDownMThaiMoon,
     YearMoonFrom,
     YearMoonTo,
     YearHoraFrom,
