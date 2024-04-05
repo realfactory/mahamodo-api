@@ -1,8 +1,9 @@
 const helpers = require('../helpers/helpers');
+const db = require('../helpers/db');
 
 // รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
 exports.putDate = async (req, res) => {
-
+    
     let provinces = await helpers.getProvince();
     let YourName = req.query.YourName;
     let YourSurName = req.query.YourSurName;
@@ -63,7 +64,7 @@ exports.putDate = async (req, res) => {
         let YThai = 0;
         let sqlMoon;
 
-        let chkSetUpDownMThaiMoon = await helpers.fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
+        let chkSetUpDownMThaiMoon = await db.fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
         if (chkSetUpDownMThaiMoon === 'ใช่') {
             let day = now.getDate().toString().padStart(2, '0');
             let month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -102,7 +103,7 @@ exports.putDate = async (req, res) => {
             sqlMoon = `SELECT * FROM calendar_moon WHERE dmy='${day}/${month}/${year}'`;
         }
 
-        const getMoonData = await helpers.dbQuery(sqlMoon);
+        const getMoonData = await db.dbQuery(sqlMoon);
         if (getMoonData && getMoonData.length > 0) {
             DownUps = getMoonData[0].downup === 1 ? "แรม" : "ขึ้น";
             Nighti = getMoonData[0].night;
@@ -112,8 +113,6 @@ exports.putDate = async (req, res) => {
         } else {
             console.error("No data returned from the query.");
         }
-
-
     }
 
 
@@ -129,75 +128,4 @@ exports.putDate = async (req, res) => {
         YourName: YourName,
         YourSurName: YourSurName,
     });
-
-
-    //luckana bk
-    // let sHs = "ไม่ทราบ";
-    // let sMs = "ไม่ทราบ";
-
-    // // เงื่อนไขเกิดที่ประเทศใด
-    // if (cboBorn_Country_Option == 'ประเทศไทย') {
-    //     if (!cboBorn_H && !cboBorn_M) {
-    //         cboBorn_H = "ไม่ทราบ";
-    //         cboBorn_M = "ไม่ทราบ";
-
-    //         if (!sProv) {
-    //             YourProvsLuk = "ไม่ทราบ";
-    //             sHs = "06";
-    //             sMs = "30";
-    //             sProv = "กรุงเทพมหานคร";
-    //         } else {
-    //             sHs = "06";
-    //             sMs = "30";
-    //             sProv = YourProvsLuk.trim();
-    //         }
-    //     } else {
-    //         sHs = cboBorn_H.trim();
-    //         sMs = cboBorn_M.trim();
-    //         if (!sProv) {
-    //             YourProvsLuk = "ไม่ระบุสถานที่เกิด";
-    //             sProv = "ไม่ระบุสถานที่เกิด";
-    //         } else {
-    //             sProv = YourProvsLuk.trim();
-    //         }
-    //     }
-
-    // } else if (cboBorn_Country_Option == 'ต่างประเทศ') {
-    //     if (!cboBorn_H && !cboBorn_M) {
-    //         cboBorn_H = "ไม่ทราบ";
-    //         cboBorn_M = "ไม่ทราบ";
-    //         sHs = "06";
-    //         sMs = "30";
-    //     } else {
-    //         sHs = cboBorn_H.trim();
-    //         sMs = cboBorn_M.trim();
-    //     }
-    // }
-
-    // if (req.query.birthdate) {
-    //     let [YearKBornLuk, month, day] = req.query.birthdate.split('-');
-    //     if ((YearKBornLuk + 543) <= 2483) {
-    //         if (month >= 1 && month <= 3) {
-    //             YearKBornLuk = (YearKBornLuk - 543) + 1
-    //         }
-    //     }
-
-    //     let MonthShortBornLuk = helpers.fcMonthSFToSht(month);
-    // }
-
-    // let sTimeLocalThisProv = await helpers.fcGetLukTimeLocalThailandThisProvValue(sProv) //' -00:24.21  รับค่าเวลาท้องถิ่นเพื่อนำไปใช้
-    // let varTLocalCut_Luk = 0; // 'ค่าที่จะนำไปตัดเวลาหาลัคนาใน CastHoroscope_AutoMinit ค่าเริ่มต้นที่ 0 ก่อน
-
-    // Case "ประเทศไทย" 
-    // let MinuteLocal, intTimeHBorn, intTimeMBorn, intTimeAllMBorn = '';
-    // if (cboBorn_Country_Option == 'ประเทศไทย') {
-    //     if (CutTimeLocalYN == 1) {
-    //         let sTLC = sTimeLocalThisProv.substring(4, 6); // Extracting '24' from '-00:24:21'
-    //         let MinuteLocal = parseInt(sTLC, 10); // Converting '24' to 24
-    //         let intTimeHBorn = parseInt(sHs, 10); // Converting hours string to number
-    //         let intTimeMBorn = parseInt(sMs, 10); // Converting minutes string to number
-    //         let intTimeAllMBorn = (intTimeHBorn * 60) + intTimeMBorn; // Converting total birth time to minutes
-    //     }
-    // }
-
 };
