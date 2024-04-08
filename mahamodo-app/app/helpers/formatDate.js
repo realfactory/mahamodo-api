@@ -76,7 +76,7 @@ async function diffYearBorn(year, month) {
 }
 
 async function fcDateGlobal(InputDate) {
-    
+
     let [yearB, monthB, dayB] = InputDate.split('-');
 
     yearB = await diffYearBorn(yearB, monthB);
@@ -88,6 +88,61 @@ async function fcDateGlobal(InputDate) {
     return NewDateUTC;
 }
 
+async function fcTime27To9(varInput) { 
+    return ((varInput - 1) % 9) + 1;
+}
+
+async function fcTimeNoiToS(varInput) {
+    const mapping = {
+        1: "ทลิทโท",
+        2: "มหัทธโน",
+        3: "โจโร",
+        4: "ภูมิปาโล",
+        5: "เทศาตรี",
+        6: "เทวี",
+        7: "เพชฌฆาต",
+        8: "ราชา",
+        9: "สมโณ"
+    };
+    
+    const noTimei1To9 = ((varInput - 1) % 9) + 1;
+    return { name: mapping[noTimei1To9], number: noTimei1To9 };
+}
+
+async function fcTimeFixedStar(varInput) {
+    const starsMapping = {
+        1: "อัศวินี",
+        2: "ภรณี",
+        3: "กฤติกา",
+        4: "โรหิณี",
+        5: "มฤคศิร",
+        6: "อารทรา",
+        7: "ปุนัพสุ",
+        8: "ปุษยะ",
+        9: "อาศเลษา",
+        10: "มาฆะ",
+        11: "บุรพผลคุนี",
+        12: "อุตรผลคุนี",
+        13: "หัฏฐะ",
+        14: "จิตรา",
+        15: "สวาตี",
+        16: "วิสาขะ",
+        17: "อนุราธ",
+        18: "เชษฐา",
+        19: "มูละ",
+        20: "บุรพสาฬหะ",
+        21: "อุตตราสาฬหะ",
+        22: "ศรวณะ",
+        23: "ธนิษฐา",
+        24: "ศตภิษัช",
+        25: "บุรพภัทรบท",
+        26: "อุตตรภัทรบท",
+        27: "เรวดี"
+    };
+
+    return starsMapping[varInput] || "";
+}
+
 module.exports = {
     fcDayi17ToS,
     fcYearOldiToS,
@@ -96,4 +151,7 @@ module.exports = {
     fcMonthSFToSht,
     fcMonthiToSF,
     fcDateGlobal,
+    fcTime27To9,
+    fcTimeNoiToS,
+    fcTimeFixedStar,
 }

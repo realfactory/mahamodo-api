@@ -108,29 +108,6 @@ function ayanamsa(t, adj) {
     return (Off - adj) / 3600; // Adjustments for Fagan-Bradley or Lahiri can be passed in 'adj'
 }
 
-// function day2000(year, month, day, hour, min, sec, greg = null) {
-//     let a, b, sum;
-
-//     if (month <= 2) {
-//         month += 12;
-//         year -= 1;
-//     }
-
-//     if (greg === 1) {
-//         a = 10000.0 * year + 100.0 * month + day;
-//     }
-
-//     if (greg === 0) {
-//         b = -2 + Math.trunc((year + 4716) / 4) - 1179;
-//     } else {
-//         b = Math.floor(year / 400) - Math.floor(year / 100) + Math.floor(year / 4);
-//     }
-
-//     a = 365.0 * year - 730548.5;
-
-//     return sum = (a + b + Math.floor(30.6001 * (month + 1)) + day) + (hour + min / 60 + sec / 3600) / 24;
-// }
-
 function day2000(year, month, day, hour, min, sec, greg = 1) {
     let a;
     let b;
