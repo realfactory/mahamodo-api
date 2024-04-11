@@ -76,7 +76,6 @@ async function calculateLunarDay(date, hour, minute, cutTimeLocalYN, sProv) {
         minute = totalMLocalMAndBornM % 60;
     }
 
-
     let dayMooni = dateFormat.getDay() + 1;
     let daySuni = dayMooni;
 
@@ -235,6 +234,357 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
     let birthDateMoonInfo = getMoonBirth.MoonInfo;
     let SurisBirth = lblDayBirth.replace("(กลางวัน)", "").replace("(กลางคืน)", "");
     let lblDaySBirthSuriyaKati = "สุริยคติ: " + SurisBirth;
+    let iStarAll = 12; //'กำหนดจำนวนสมาชิกอาเรย์
+
+    const StarStayData = require('../json/StarStay.json');
+    let resultStarStayData;
+    let Rad = [
+            [],
+            []
+        ],
+        varBornPutdate_StarStayR = [
+            [],
+            []
+        ],
+        varBornPutdate_StarO = [
+            [],
+            []
+        ],
+        varBornPutdate_StarL = [
+            [],
+            []
+        ],
+        varBornPutdate_LerkPass = [
+            [],
+            []
+        ],
+        varBornPutdate_MLerkPass = [
+            [],
+            []
+        ],
+        varBornPutdate_SecLerkPass = [
+            [],
+            []
+        ],
+        varBornPutdate_LerkNow = [
+            [],
+            []
+        ],
+        varBornPutdate_NLerkNow = [
+            [],
+            []
+        ],
+        varBornPutdate_No1To9LerkNow = [
+            [],
+            []
+        ],
+        varBornPutdate_FixedStarLerkNow = [
+            [],
+            []
+        ],
+        varBornPutdate_TriStarAsRasee = [
+            [],
+            []
+        ],
+        varBornPutdate_Nasss = [
+            [],
+            []
+        ],
+        varBornPutdate_NavangStarAsRasee = [
+            [],
+            []
+        ],
+        varBornPutdate_Tri = [
+            [],
+            []
+        ],
+        varBornPutdate_Trisss = [
+            [],
+            []
+        ],
+        varBornPutdate_TriyangHarmi = [
+            [],
+            []
+        ];
+
+    // 'เริ่มคำนวณตามสูตรคัมภีร์สุริยยาตร์ หาสมผุสของดาวทุกดวง
+    AllStar = await CastHoroscope_AllStar_Suriyata_SUM_Main(dataInput, Hour, min, CutTimeLocalYN, sProv);
+    Rad = AllStar.Rad;
+
+    // 'ให้ /1800 เป็นราศี. เศษทศนิยม *1800  แล้ว / 60 เป็นองศา. ทศนิยมที่เหลือ * 60 เป็นลิปดา.
+    let SumSompod = await CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput, Hour, min, CutTimeLocalYN, sProv);
+    Rad[11][0] = SumSompod.A1_Neptune; // Neptune's value stored at Rad[10][0]  //15604.402798323506 // 15604.402783235
+    Rad[12][0] = SumSompod.A1_Pluto; // Pluto's value stored at Rad[11][0] //12184.7757067649 //  12184.7757067649
+
+
+    async function getStarStayData(id, B1) {
+        const specificRange = StarStayData.find(range => range.id === id);
+        if (!specificRange) {
+            return null;
+        }
+        const detail = specificRange.ranges.find(rangeDetail => B1 >= rangeDetail.min && B1 <= rangeDetail.max);
+        return detail || null; // Return the found detail or null if not found
+    }
+
+    // 'ลัคนา
+
+    Rad[10][0] = Rad[1][1];
+    for (let e10 = 0; e10 <= 1; e10++) {
+        for (let ii = 0; ii <= 12; ii++) {
+            if ((ii === 11 || ii === 12) && e10 === 1) {
+                break;
+            }
+            // 'A1 = Rad(ii, 0) ระบบดวงอีแปะ A1 = Rad(ii, 1) ระบบดวง 10 ลัคนา  2 ขึ้นไปไม่มี
+            let A1 = Rad[ii][e10];
+            if(A1 == null){
+                A1 = 0;
+            } 
+
+            // 'รับค่า  ดาวนี้ (ii) อยู่ราศี....... เช่น ดาว 1 อยู่ราศี 7   varBornPutdate_StarStayR(e10, 1)=7
+            varBornPutdate_StarStayR[e10][ii] = Math.floor(A1 / 1800);
+
+            let B1 = A1 - (varBornPutdate_StarStayR[e10][ii] * 1800);
+            if (B1 === 0) B1 = 1;
+
+            varBornPutdate_StarO[e10][ii] = Math.floor(B1 / 60) //'รับค่า ดาวนี้ (ii)  อยู่องศา..... 
+            varBornPutdate_StarL[e10][ii] = Math.floor(B1 - (varBornPutdate_StarO[e10][ii]) * 60) //'รับค่า ดาวนี้ (ii)  อยู่ลิปดา..... 
+
+            // 'ฤกษ์ ที่ผ่านมาแล้ว (ได้ผ่านฤกษ์นี้แล้ว)
+            varBornPutdate_LerkPass[e10][ii] = Math.floor(A1 * 0.00125); //'ฤกษ์ที่..n...ได้ผ่านไปแล้ว
+            // 'ฤกษ์ที่..n...ได้ผ่านไปแล้ว..n..นาที
+            let minutes = Math.floor(((A1 * 0.00125) - Number(varBornPutdate_LerkPass[e10][ii])) * 60);
+            varBornPutdate_MLerkPass[e10][ii] = minutes.toString().padStart(2, '0');
+
+            let SecLerk = Math.floor(((((A1 * 0.00125) - Number(varBornPutdate_LerkPass[e10][ii])) * 60) % 1) * 60);
+            let SecLerkString = SecLerk.toFixed(2);
+            let formattedSecLerk = ("00" + parseInt(SecLerkString.split('.')[0])).slice(-2);
+            varBornPutdate_SecLerkPass[e10][ii] = formattedSecLerk;
+
+            // 'ฤกษ์ปัจจุบัน (ขณะนี้อยู่ฤกษ์ที่...)
+            let NoTimei1To9;
+            let Timei = Math.floor(A1 * 0.00125) + 1;
+            if (Timei > 27) Timei = 1;
+
+            varBornPutdate_LerkNow[e10][ii] = Timei;
+            varBornPutdate_NLerkNow[e10][ii] = await formatDate.fcTime27To9(Timei) & ". " & formatDate.fcTimeNoiToS(Timei, NoTimei1To9);
+            varBornPutdate_No1To9LerkNow[e10][ii] = await formatDate.fcTime27To9(Timei);
+            varBornPutdate_FixedStarLerkNow[e10][ii] = await formatDate.fcTimeFixedStar(Timei);
+
+            // 'แก้การ Error เมื่อดาวอยู่ราศี 12 คือ จำนวน Rad(n,n)  / 1800 ได้ 12
+            if (varBornPutdate_StarStayR[e10][ii] >= 12 || varBornPutdate_StarStayR[e10][ii] == null || varBornPutdate_StarStayR[e10][ii] == NaN) varBornPutdate_StarStayR[e10][ii] = 0;
+
+           
+            // console.log(" I " + e10 + " ii " + ii + " red  = " + varBornPutdate_StarStayR[e10][ii] );
+            // 8 3 2 4 3 3 4 9 8 6 5 8 6 11 5 4 6 5 5 6 11 6 4 0  
+            //''ขณะกำลังทำ ช่องราศีแสดงราศี ซึ่งในช่องนี้มีดาว..i (0-10)..อยู่
+            // console.log("varBornPutdate_StarStayR = " + varBornPutdate_StarStayR[e10][ii] + " B1 = " + B1 + "[" + e10 + "][" + ii + "]");
+            resultStarStayData = await getStarStayData(varBornPutdate_StarStayR[e10][ii], B1);
+            if (resultStarStayData) {
+                varBornPutdate_Nasss[e10][ii] = resultStarStayData.Nasss;
+                varBornPutdate_NavangStarAsRasee[e10][ii] = resultStarStayData.NavangStarAsRasee;
+                varBornPutdate_Tri[e10][ii] = resultStarStayData.Tri;
+                varBornPutdate_Trisss[e10][ii] = resultStarStayData.Trisss;
+                varBornPutdate_TriyangHarmi[e10][ii] = resultStarStayData.TriyangHarmi;
+
+                //'ดึง เอาตัวเลข ตั้งแต่ตัวที่ 3 ไป (เช่น  "6:11"  ก็จะได้  11 [เก็บตำแหน่งราศีของตรียางค์]
+                varBornPutdate_TriStarAsRasee[e10][ii] = parseFloat(varBornPutdate_Trisss[e10][ii].substring(2))
+            }
+
+        } //' For ii = 0 To 10 'ทำดาว 0-10
+    } //'For E10 = 0 To 1  'รอบที่ 1 (0) คำนวณ ดาว 0-10 ระบบดวงอีแปะ   รอบที่ 2 (1)  คำนวณ ดาว 0-10 ระบบดวง 10 ลัคนา
+
+    // console.log(varBornPutdate_StarStayR);
+    // console.log(varBornPutdate_TriStarAsRasee);
+    // console.log(varBornPutdate_Nasss);
+    // console.log(varBornPutdate_NavangStarAsRasee);
+    // console.log(varBornPutdate_Tri);
+    // console.log(varBornPutdate_Trisss);
+    // console.log(varBornPutdate_TriyangHarmi);
+
+    // '======= 0 พิษนาค   1 พิษครุฑ   2 พิษสุนัข =======================================================
+    let varBornPutdate_TriyangHarms = [];
+    for (let iStarii = 0; iStarii <= iStarAll; iStarii++) {
+        let found = false;
+        for (let iiPis = 0; iiPis <= 2; iiPis++) {
+            if (!varBornPutdate_TriyangHarms[iStarii]) varBornPutdate_TriyangHarms[iStarii] = [];
+            if (varBornPutdate_TriyangHarmi[0][iStarii] === iiPis + 1) {
+                varBornPutdate_TriyangHarms[0][iStarii] = await formatDate.fciToSHarm(iiPis);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            varBornPutdate_TriyangHarms[0][iStarii] = "-";
+        }
+    }
+
+    // 'ใส่ค่าลัคนาอาทิตย์ ในดวงอีแปะ
+    // 'ค่าของลัคนาในจุดนี้ ปกติคิดว่า "ไม่จำเป็นต้องใส่ก็ได้ เพราะข้างบนก็ได้วนลูปเก็บค่าไปแล้ว ดังบรรทัดที่ว่า .... Rad(10, 0) = Rad(1, 1) 'ลัคนา......"
+    // ' ดาวดวงที่ 10=ลัคนา      0,10  0=ดวงอีแปะ  10=ลัคนา      1,1 1=ดวง10ลัคน์  1=ดาวอาทิตย์ (ลัคนาอาทิตย์)
+    varBornPutdate_StarStayR[0][10] = varBornPutdate_StarStayR[1][1];
+    varBornPutdate_StarO[0][10] = varBornPutdate_StarO[1][1];
+    varBornPutdate_StarL[0][10] = varBornPutdate_StarL[1][1];
+    varBornPutdate_Tri[0][10] = varBornPutdate_Tri[1][1]; //'เช่น 6
+    varBornPutdate_TriStarAsRasee[0][10] = varBornPutdate_TriStarAsRasee[1][1]; //'เช่น 11
+    varBornPutdate_Trisss[0][10] = varBornPutdate_Trisss[1][1]; //'เช่น "6:11"
+    varBornPutdate_Nasss[0][10] = varBornPutdate_Nasss[1][1]; //'เช่น "8:7:10"
+    varBornPutdate_NavangStarAsRasee[0][10] = varBornPutdate_NavangStarAsRasee[1][1]; //'เช่น 10
+    varBornPutdate_LerkPass[0][10] = varBornPutdate_LerkPass[1][1];
+    varBornPutdate_MLerkPass[0][10] = varBornPutdate_MLerkPass[1][1];
+    varBornPutdate_SecLerkPass[0][10] = varBornPutdate_SecLerkPass[1][1];
+    varBornPutdate_LerkNow[0][10] = varBornPutdate_LerkNow[1][1];
+    varBornPutdate_No1To9LerkNow[0][10] = varBornPutdate_No1To9LerkNow[1][1];
+    varBornPutdate_FixedStarLerkNow[0][10] = varBornPutdate_FixedStarLerkNow[1][1];
+    varBornPutdate_NLerkNow[0][10] = varBornPutdate_NLerkNow[1][1];
+
+    // 'ใส่ค่าภพ ให้กับดวงราศีจักร (ดวงอีแปะ) varBornPop(0, nn)
+    let RaseeAsPopLuks = [];
+    let varBornPutdate_PopLuksRasee = [
+        [],
+        []
+    ];
+    let iCountR = varBornPutdate_StarStayR[0][10]; // Position of Rasee, assumed to be 10
+
+    for (let iPop = 0; iPop < iStarAll; iPop++) {
+        RaseeAsPopLuks[iCountR] = await formatDate.fcPopiToS(iPop);
+        varBornPutdate_PopLuksRasee[0][iCountR] = await formatDate.fcPopiToS(iPop);
+        iCountR++;
+        if (iCountR > 11) iCountR = 0;
+    }
+
+    iCountR = varBornPutdate_StarStayR[0][10]; // Reset iCountR to the position of Rasee
+
+    for (let iPop = 0; iPop < iStarAll; iPop++) {
+        RaseeAsPopLuks[iCountR] = await formatDate.fcPopiToS(iPop);
+        varBornPutdate_PopLuksRasee[1][iCountR] = await formatDate.fcPopiToS(iPop);
+        iCountR++;
+        if (iCountR > 11) iCountR = 0;
+    }
+
+    let varBornPutdate_PopLuksStar = [
+        [],
+        []
+    ];
+
+    for (let Starii = 0; Starii < iStarAll; Starii++) {
+        varBornPutdate_PopLuksStar[0][Starii] = varBornPutdate_PopLuksRasee[0][varBornPutdate_StarStayR[0][Starii]];
+    }
+
+    for (let Starii = 0; Starii < 11; Starii++) {
+        varBornPutdate_PopLuksStar[1][Starii] = varBornPutdate_PopLuksRasee[1][varBornPutdate_StarStayR[1][Starii]];
+    }
+
+    let S = "";
+    let varBornPutdate_RaSTD = [
+        [],
+        []
+    ];
+    let varBornPutdate_NaRaSTD = [
+        [],
+        []
+    ];
+
+    for (let j = 0; j <= iStarAll; j++) {
+        if (await formatDate.fcRaseeToStarKased(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", เกษตร";
+        }
+        if (await formatDate.fcRaseeToStarPra(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", ประ";
+        }
+        if (await formatDate.fcRaseeToStarMahauj(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", มหาอุจจ์";
+        }
+        if (await formatDate.fcRaseeToStarNij(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", นิจ";
+        }
+        if (await formatDate.fcRaseeToStarMahajak(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", มหาจักร";
+        }
+        if (await formatDate.fcRaseeToStarRachachock(varBornPutdate_StarStayR[0][j]) == j) {
+            S += ", ราชาโชค";
+        }
+
+        S = S.trim();
+        if (!S) {
+            S = "-";
+        } else {
+            S = S.substring(2);
+        }
+
+        varBornPutdate_RaSTD[0][j] = S;
+
+        // ''ดวงมาตรฐาน เกษตร ประ มหาอุจจ์ นิจ มหาจักร ราชาโชค ของดวงนวางค์จักร ของราศีจักร
+        S = "";
+        if (await formatDate.fcRaseeToStarKased(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", เกษตร";
+        }
+        if (await formatDate.fcRaseeToStarPra(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", ประ";
+        }
+        if (await formatDate.fcRaseeToStarMahauj(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", มหาอุจจ์";
+        }
+        if (await formatDate.fcRaseeToStarNij(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", นิจ";
+        }
+        if (await formatDate.fcRaseeToStarMahajak(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", มหาจักร";
+        }
+        if (await formatDate.fcRaseeToStarRachachock(varBornPutdate_NavangStarAsRasee[0][j]) == j) {
+            S += ", ราชาโชค";
+        }
+
+        S = S.trim();
+        if (!S) {
+            S = "-";
+        } else {
+            S = S.substring(2);
+        }
+
+        varBornPutdate_NaRaSTD[0][j] = S; //'เก็บค่าลงตัวแปร Public
+    }
+
+    //''หาตนุเศษ ในดวงราศีจักร
+    let iStarRa = varBornPutdate_StarStayR;
+    let iLukStayRasee = iStarRa[0][10]; //'1. ลัคนาอยู่ราศีที่ 0-11 
+    let iStarAsHomeLuk = await formatDate.fcRaseeToStarKased(iLukStayRasee); //'2. ดาวเจ้าเรือนของลัคนา เช่น 5
+    let iStarKasedOfLukAsRasee = iStarRa[0][iStarAsHomeLuk]; //'3. ดาวเกษตรของลัคนา อยู่ราศี... เช่น 0
+    let iStarAsHouse = await formatDate.fcRaseeToStarKased(iStarKasedOfLukAsRasee); //'รับค่าดาวเจ้าบ้าน
+    let iStarAsHouseOfLukAsRasee = iStarRa[0][iStarAsHouse]; // '4. ดาวเจ้าเรือนลัคนาอยู่ในตำแหน่งราศีที่..... คือค่าจาก iStarRa10(0, iStarAsHouse) นั่นเอง
+
+    let iStarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee)
+    let varBornPutdate_StarAsTanuSED = [];
+    varBornPutdate_StarAsTanuSED[0] = iStarAsTanuSED;
+
+    S = varBornPutdate_RaSTD[0][iStarAsTanuSED];
+    S = S.replace("-", ""); // Replace '-' with an empty string.
+    if (S === "") {
+        varBornPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ";
+    } else {
+        varBornPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ, " + S;
+    }
+
+    let varBornPutdate_PopTanusedRasee = [
+        [],
+        []
+    ];
+    let varBornPutdate_PopTanusedStar = [
+        [],
+        []
+    ];
+
+    iCountR = varBornPutdate_StarStayR[0][iStarAsTanuSED]; // Accessing the value from the array.
+    for (let iPop = 0; iPop <= 11; iPop++) {
+        varBornPutdate_PopTanusedRasee[0][iCountR] = await formatDate.fcPopiToS(iPop); // Assuming fcPopiToS(iPop) is defined and returns a string.
+        iCountR += 1;
+        if (iCountR > 11) iCountR = 0;
+    }
+    for (let Starii = 0; Starii <= iStarAll; Starii++) {
+        varBornPutdate_PopTanusedStar[0][Starii] = varBornPutdate_PopTanusedRasee[0][varBornPutdate_StarStayR[0][Starii]];
+    }
+
+    // console.log(varBornPutdate_PopTanusedRasee);
+    // console.log(varBornPutdate_PopTanusedStar);
 
     return {
         dayMooni: LunarDay.dayMooni,
@@ -245,6 +595,30 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
         birthDateMoonInfo: birthDateMoonInfo,
         SurisBirth: SurisBirth,
         lblDaySBirthSuriyaKati: lblDaySBirthSuriyaKati,
+        Rad: Rad,
+        varBornPutdate_PopTanusedRasee: varBornPutdate_PopTanusedRasee,
+        varBornPutdate_PopTanusedStar: varBornPutdate_PopTanusedStar,
+        varBornPutdate_PopLuksStar,
+        varBornPutdate_StarStayR,
+        varBornPutdate_StarO,
+        varBornPutdate_StarL,
+        varBornPutdate_LerkPass,
+        varBornPutdate_MLerkPass,
+        varBornPutdate_SecLerkPass,
+        varBornPutdate_LerkNow,
+        varBornPutdate_NLerkNow,
+        varBornPutdate_No1To9LerkNow,
+        varBornPutdate_FixedStarLerkNow,
+        varBornPutdate_TriStarAsRasee,
+        varBornPutdate_Nasss,
+        varBornPutdate_NavangStarAsRasee,
+        varBornPutdate_Tri,
+        varBornPutdate_Trisss,
+        varBornPutdate_TriyangHarmi,
+        varBornPutdate_TriyangHarms,
+        varBornPutdate_RaSTD,
+        varBornPutdate_NaRaSTD
+
     };
 
 }
@@ -260,6 +634,8 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
 
     let adjustedHour = newDate.adjustedHour;
     let adjustedMinute = newDate.adjustedMinute;
+    // ให้เป็นค่านาทีทั้งหมด เช่นเกิด 10:30 น. 10*60+30=630  เป็นค่า ช.ม.+นาที=รวมนาที  ที่จะนำไปหาเวลาหาลัคนาใน CastHoroscope_AutoMinit 
+    // let adjustedTimeTotal = (newDate.adjustedHour * 60) + newDate.adjustedMinute;
 
     let Pi = parameter.pi;
     let JS = yearTH - 1181; //' JS = จุลศักราช
@@ -713,7 +1089,7 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
     e = 3 / 7;
     AA = 0;
     const Deadly = await CastHoroscope_Star(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z = null)
-    Rad[0][0] = Deadly.AA //'สมผุสมฤตยู คือ AA
+    Rad[0][0] = Deadly.AA //'c
     Rad[0][18] = Deadly.Z //'มัธยมมฤตยู
 
     // //'************************************* 9 สมผุสราหู********************************
@@ -811,8 +1187,23 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
     // 'หาลัคนาดวงอีแปะ (ราศีจักร) โดยเฉพาะ 
     let iOptionType_Foreign_StarLuk1To3 = false;
     // CastHoroscope_AutoMinit_Rasijak
+    if (iOptionType_Foreign_StarLuk1To3) {
 
-    
+        if (cutTimeLocalYN) {
+
+        }
+    }
+
+    c = 0;
+    const Rasijak = await CastHoroscope_AutoMinit_Rasijak(Rad[1][0], c, TQ, b, TLocalCut = 0)
+    // console.log(Rasijak); b: 9707.857142857143 9707.85714285714
+    let SompudLuk = Rasijak.b;
+
+    return {
+        Rad,
+        SompudLuk,
+    }
+
 }
 
 // 'รับค่าสมผุส จร (สมผุสดาววันนี้)
@@ -821,7 +1212,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dataInput, Hour, min) {
 }
 
 // 'ในโค้ดนี้เราต้องการเฉพาะสมผุสของดาว เนปจูน พูลโต เท่านั้น  จุดประสงค์ต้องการแค่สมผุสของดาว เนปจูน พูลโต เท่านั้น
-async function CastHoroscope_SumSompodStarCalendarAstronomy_Born(dataInput, Hour, Min, cutTimeLocalYN, sProv) {
+async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput, Hour, Min, cutTimeLocalYN, sProv) {
 
     const newDate = await cutTimeLocal(dataInput, Hour, Min, cutTimeLocalYN, sProv);
     // Date-related calculations
@@ -1210,7 +1601,8 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born(dataInput, Hour
 
     return {
         A1_Neptune,
-        A1_Pluto
+        A1_Pluto,
+        Direction
     }
 }
 
@@ -1422,11 +1814,6 @@ async function CastHoroscope_Moon(Fm, Vs, Pi, AM, DefTime, HM, DM, Zm, Mum) {
     let UVm = Zm - Mum;
     let Im = Math.sin((UVm / 60) * Pi / 180);
     // Im = 0.06946629077719282 // 0.700446500083193
-
-    // If UVm > 21600 Then UVm = UVm - 21600
-    // If UVm > 5400 Then UVm = 10800 - UVm
-    // If UVm < -5400 Then UVm = 10800 - (UVm + 21600)
-    // If UVm > 5400 Then UVm = 10800 - UVm
 
     if (UVm > 21600) UVm -= 21600;
     UVm = UVm > 5400 ? 10800 - UVm : UVm;
@@ -1665,7 +2052,6 @@ async function CastHoroscope_Star(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z) {
 }
 
 async function CastHoroscope_StarM(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z) {
-
 
     Pi = parameter.pi;
     let W = 1;
@@ -1999,6 +2385,309 @@ async function CastHoroscope_AdjAuto(p, TL = null) {
     }
 }
 
+async function CastHoroscope_AutoMinit_Rasijak(A, c, TQ, b, TLocalCut) {
+    // Decompose the initial angle A into zodiac sign (P), degree (A3), and minute (A4) components
+    let A1 = Math.floor(A / 1800);
+    let A2 = A - A1 * 1800;
+    let A3 = Math.floor(A2 / 60);
+    let A4 = A2 - A3 * 60;
+    let P = Math.floor(A1);
+
+    // Ensure zodiac sign wraps around after the 12th sign
+    if (P === 12) {
+        P = 0;
+    }
+
+    // Retrieve adjustment for the zodiac sign P
+    let AdjAuto = await CastHoroscope_AdjAuto(P);
+    let TL = AdjAuto.TL;
+
+    // Calculate the time past (P1) and future (P2) relative to the sign's temporal length (TL)
+    let P1 = A2 * TL / 1800;
+    let P2 = TL - P1;
+    let Tz = TQ;
+
+    // Determine the exact position within the temporal cycle
+    if (Tz === 0) {
+        P3 = P1;
+    } else {
+        if (Tz < P2) {
+            P3 = TL - (P2 - Tz);
+        } else {
+            Tz -= P2;
+            P += 1;
+            if (P === 12) P = 0;
+
+            // Adjust the time within the new sign's temporal length
+            AdjAuto = await CastHoroscope_AdjAuto(P);
+            TL = AdjAuto.TL;
+
+            while (Tz > TL) {
+                Tz -= TL;
+                P += 1;
+                if (P === 12) P = 0;
+                AdjAuto = await CastHoroscope_AdjAuto(P);
+                TL = AdjAuto.TL;
+            }
+            P3 = Tz;
+        }
+    }
+
+    // Convert the temporal position back into an angle
+    let Pz = P3 * 1800 / TL;
+    b = P * 1800 + Pz;
+
+    return {
+        Pz,
+        b
+    };
+
+}
+
+async function fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee) {
+    let iCountFromLukToStarAsHomeLuk, iCountFromStarHomeLukToStarHouse;
+
+    if (iStarKasedOfLukAsRasee >= iLukStayRasee) {
+        iCountFromLukToStarAsHomeLuk = (iStarKasedOfLukAsRasee - iLukStayRasee) + 1;
+    } else if (iStarKasedOfLukAsRasee < iLukStayRasee) {
+        const difference = iLukStayRasee - iStarKasedOfLukAsRasee;
+        switch (difference) {
+            case 1:
+                iCountFromLukToStarAsHomeLuk = 12;
+                break;
+            case 2:
+                iCountFromLukToStarAsHomeLuk = 11;
+                break;
+            case 3:
+                iCountFromLukToStarAsHomeLuk = 10;
+                break;
+            case 4:
+                iCountFromLukToStarAsHomeLuk = 9;
+                break;
+            case 5:
+                iCountFromLukToStarAsHomeLuk = 8;
+                break;
+            case 6:
+                iCountFromLukToStarAsHomeLuk = 7;
+                break;
+            case 7:
+                iCountFromLukToStarAsHomeLuk = 6;
+                break;
+            case 8:
+                iCountFromLukToStarAsHomeLuk = 5;
+                break;
+            case 9:
+                iCountFromLukToStarAsHomeLuk = 4;
+                break;
+            case 10:
+                iCountFromLukToStarAsHomeLuk = 3;
+                break;
+            case 11:
+                iCountFromLukToStarAsHomeLuk = 2;
+                break;
+            default:
+                iCountFromLukToStarAsHomeLuk = null;
+        }
+    }
+
+    let iStarAsHouse = await formatDate.fcRaseeToStarKased(iStarKasedOfLukAsRasee); // 'รับค่าดาวเจ้าบ้าน
+
+    if (iStarAsHouseOfLukAsRasee >= iStarKasedOfLukAsRasee) {
+        iCountFromStarHomeLukToStarHouse = (iStarAsHouseOfLukAsRasee - iStarKasedOfLukAsRasee) + 1;
+    } else {
+        const difference = iStarKasedOfLukAsRasee - iStarAsHouseOfLukAsRasee;
+        switch (difference) {
+            case 1:
+                iCountFromStarHomeLukToStarHouse = 12;
+                break;
+            case 2:
+                iCountFromStarHomeLukToStarHouse = 11;
+                break;
+            case 3:
+                iCountFromStarHomeLukToStarHouse = 10;
+                break;
+            case 4:
+                iCountFromStarHomeLukToStarHouse = 9;
+                break;
+            case 5:
+                iCountFromStarHomeLukToStarHouse = 8;
+                break;
+            case 6:
+                iCountFromStarHomeLukToStarHouse = 7;
+                break;
+            case 7:
+                iCountFromStarHomeLukToStarHouse = 6;
+                break;
+            case 8:
+                iCountFromStarHomeLukToStarHouse = 5;
+                break;
+            case 9:
+                iCountFromStarHomeLukToStarHouse = 4;
+                break;
+            case 10:
+                iCountFromStarHomeLukToStarHouse = 3;
+                break;
+            case 11:
+                iCountFromStarHomeLukToStarHouse = 2;
+                break;
+            default:
+                iCountFromStarHomeLukToStarHouse = null;
+        }
+
+    }
+
+    let iStarAsTanuSED = (iCountFromLukToStarAsHomeLuk * iCountFromStarHomeLukToStarHouse) % 7;
+
+    if (iStarAsTanuSED == 0) {
+        iStarAsTanuSED = 7;
+    }
+
+    return iStarAsTanuSED;
+}
+
+async function GetValueControl_SompodStar() {
+    // Definitions for label groups
+    let lblStarStayRNo = new Array(13);
+    let lblStarStayR = new Array(13);
+    let lblStarO = new Array(13);
+    let lblStarL = new Array(13);
+    let lblPop = new Array(13);
+    let lblPopT = new Array(13);
+    let lblTri = new Array(13);
+    let lblHarm = new Array(13);
+    let lblNa = new Array(13);
+    let lblLerk = new Array(13);
+    let lblMLerk = new Array(13);
+    let lblSecLerk = new Array(13);
+    let lblFixedStar = new Array(13);
+    let lblNLerk = new Array(13);
+    let lblSTD = new Array(13);
+    let lblStdNa = new Array(13);
+
+    const labelGroups = [lblStarStayRNo, lblStarStayR, lblStarO, lblStarL, lblPop, lblPopT, lblTri, lblHarm, lblNa, lblLerk, lblMLerk, lblSecLerk, lblFixedStar, lblNLerk, lblSTD, lblStdNa];
+
+    // Assuming you have proper values in labelValues
+    const labelValues = new Array(labelGroups.length).fill(0).map(() => new Array(13).fill('DefaultValue'));
+
+    // Populate each label group
+    labelGroups.forEach((group, index) => {
+        for (let i = 0; i < group.length; i++) {
+            group[i] = labelValues[index][i];
+        }
+    });
+
+    return labelGroups;
+}
+
+
+async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
+    // const ResultData = await GetValueControl_SompodStar();
+
+    let labelsVisibility = {
+        lblStarT10: true, // corresponds to 'ลัคนา
+        lblStarT11: true, // corresponds to 'เนปจูน
+        lblStarT12: true, // corresponds to 'พูลโต
+    };
+
+    let iStarAll = 12;
+    let e10 = 0
+
+    let lblStarStayRNo = new Array(13);
+    let lblStarStayR = new Array(13);
+    let lblStarO = new Array(13);
+    let lblStarL = new Array(13);
+    let lblPop = new Array(13);
+    let lblPopT = new Array(13);
+    let lblTri = new Array(13);
+    let lblHarm = new Array(13);
+    let lblNa = new Array(13);
+    let lblLerk = new Array(13);
+    let lblMLerk = new Array(13);
+    let lblSecLerk = new Array(13);
+    let lblFixedStar = new Array(13);
+    let lblNLerk = new Array(13);
+    let lblSTD = new Array(13);
+    let lblStdNa = new Array(13);
+
+    let strSS = "";
+
+    let TitleTable = ["ลั. ลัคนา", "1. อาทิตย์", "2. จันทร์", "3. อังคาร", "4. พุธ", "5. พฤหัส", "6. ศุกร์", "7. เสาร์", "8. ราหู", "9. เกตุ", "0. มฤตยู", "น. เนปจูน", "พ. พูลโต"];
+
+    for (let i = 0; i <= iStarAll; i++) {
+
+        lblStarStayRNo[i] = SuriyatDate.varBornPutdate_StarStayR[e10][i];
+        lblStarStayR[i] = await formatDate.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[e10][i]); //' กรกฎ
+        lblStarO[i] = SuriyatDate.varBornPutdate_StarO[e10][i]; //' 6
+        lblStarL[i] = SuriyatDate.varBornPutdate_StarL[e10][i]; //' 52
+        lblPop[i] = SuriyatDate.varBornPutdate_PopLuksStar[e10][i];
+        lblPopT[i] = SuriyatDate.varBornPutdate_PopTanusedStar[e10][i]; // 'กัมมะ
+        lblTri[i] = SuriyatDate.varBornPutdate_Trisss[e10][i];
+        lblHarm[i] = SuriyatDate.varBornPutdate_TriyangHarms[e10][i].replace(/พิษ/g, "");
+        lblNa[i] = SuriyatDate.varBornPutdate_Nasss[e10][i];
+        lblLerk[i] = SuriyatDate.varBornPutdate_LerkNow[e10][i];
+        lblMLerk[i] = SuriyatDate.varBornPutdate_MLerkPass[e10][i];
+        lblSecLerk[i] = SuriyatDate.varBornPutdate_SecLerkPass[e10][i];
+        lblNLerk[i] = SuriyatDate.varBornPutdate_NLerkNow[e10][i];
+        lblFixedStar[i] = SuriyatDate.varBornPutdate_FixedStarLerkNow[e10][i];
+
+        if (SuriyatDate.varBornPutdate_RaSTD[e10][i] === "-") {
+            strSS = "";
+        } else {
+            strSS += " ";
+        }
+
+        lblSTD[i] = (strSS + SuriyatDate.varBornPutdate_RaSTD[e10][i]).trim();
+
+        strSS = "";
+        if (SuriyatDate.varBornPutdate_NaRaSTD[e10][i] === "-") {
+            strSS = "";
+        } else {
+            strSS += " ";
+        }
+
+        lblStdNa[i] = (strSS + SuriyatDate.varBornPutdate_NaRaSTD[e10][i]).trim();
+
+    }
+
+    // console.log(lblStarStayRNo);
+    // console.log(lblStarStayR);
+    // console.log(lblStarO);
+    // console.log(lblStarL);
+    // console.log(lblPop);
+    // console.log(lblPopT);
+    // console.log(lblTri);
+    // console.log(lblHarm);
+    // console.log(lblNa);
+    // console.log(lblLerk);
+    // console.log(lblMLerk);
+    // console.log(lblSecLerk);
+    // console.log(lblNLerk);
+    // console.log(lblFixedStar);
+    // console.log(lblSTD);
+    // console.log(lblStdNa);
+
+    return {
+        TitleTable,
+        lblStarStayRNo,
+        lblStarStayR,
+        lblStarO,
+        lblStarL,
+        lblPop,
+        lblPopT,
+        lblTri,
+        lblHarm,
+        lblNa,
+        lblLerk,
+        lblMLerk,
+        lblSecLerk,
+        lblNLerk,
+        lblFixedStar,
+        lblSTD,
+        lblStdNa
+    }
+
+}
+
 module.exports = {
     calculateLunarDay,
     fcGetLukTimeLocalThailandThisProvValue,
@@ -2008,5 +2697,8 @@ module.exports = {
     CastHoroscope_SumSuriyatMain_Born,
     CastHoroscope_AllStar_Suriyata_SUM_Main,
     CastHoroscope_SumSuriyatMain_Today,
-    CastHoroscope_SumSompodStarCalendarAstronomy_Born,
+    CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today,
+    fcGetTanused_CastHoroscope,
+    GetValueControl_SompodStar,
+    CastHoroscope_SompodStarOnLabel_Born_Today
 }

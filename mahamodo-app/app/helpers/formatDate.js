@@ -88,7 +88,7 @@ async function fcDateGlobal(InputDate) {
     return NewDateUTC;
 }
 
-async function fcTime27To9(varInput) { 
+async function fcTime27To9(varInput) {
     return ((varInput - 1) % 9) + 1;
 }
 
@@ -104,9 +104,12 @@ async function fcTimeNoiToS(varInput) {
         8: "ราชา",
         9: "สมโณ"
     };
-    
+
     const noTimei1To9 = ((varInput - 1) % 9) + 1;
-    return { name: mapping[noTimei1To9], number: noTimei1To9 };
+    return {
+        name: mapping[noTimei1To9],
+        number: noTimei1To9
+    };
 }
 
 async function fcTimeFixedStar(varInput) {
@@ -143,6 +146,243 @@ async function fcTimeFixedStar(varInput) {
     return starsMapping[varInput] || "";
 }
 
+async function fciToSHarm(varInput) {
+    switch (varInput) {
+        case 0:
+            return "พิษนาค";
+        case 1:
+            return "พิษครุฑ";
+        case 2:
+            return "พิษสุนัข";
+        default:
+            return "";
+    }
+}
+
+async function fcPopiToS(VarInput) {
+    const popMapping = {
+        0: "ตนุ",
+        1: "กดุมภะ",
+        2: "สหัชชะ",
+        3: "พันธุ",
+        4: "ปุตตะ",
+        5: "อริ",
+        6: "ปัตนิ",
+        7: "มรณะ",
+        8: "ศุภะ",
+        9: "กัมมะ",
+        10: "ลาภะ",
+        11: "วินาศ"
+    };
+    return popMapping[VarInput] || "";
+}
+
+async function fcRaseeToStarKased(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 3;
+        case 1:
+            return 6;
+        case 2:
+            return 4;
+        case 3:
+            return 2;
+        case 4:
+            return 1;
+        case 5:
+            return 4;
+        case 6:
+            return 6;
+        case 7:
+            return 3;
+        case 8:
+            return 5;
+        case 9:
+            return 7;
+        case 10:
+            return 8;
+        case 11:
+            return 5;
+        default:
+            return -1;
+    }
+}
+
+async function fcRaseeToStarPra(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 6;
+        case 1:
+            return 3;
+        case 2:
+            return 5;
+        case 3:
+            return 7;
+        case 4:
+            return 8;
+        case 5:
+            return 5;
+        case 6:
+            return 3;
+        case 7:
+            return 6;
+        case 8:
+            return 4;
+        case 9:
+            return 2;
+        case 10:
+            return 1;
+        case 11:
+            return 4;
+        default:
+            return -1;
+    }
+}
+
+async function fcRaseeToStarMahauj(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 1;
+        case 1:
+            return 2;
+        case 2:
+            return 99;
+        case 3:
+            return 5;
+        case 4:
+            return 99;
+        case 5:
+            return 4;
+        case 6:
+            return 7;
+        case 7:
+            return 8;
+        case 8:
+            return 99;
+        case 9:
+            return 3;
+        case 10:
+            return 99;
+        case 11:
+            return 6;
+        default:
+            return -1;
+    }
+}
+
+async function fcRaseeToStarNij(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 7;
+        case 1:
+            return 8;
+        case 2:
+            return 99;
+        case 3:
+            return 3;
+        case 4:
+            return 99;
+        case 5:
+            return 6;
+        case 6:
+            return 1;
+        case 7:
+            return 2;
+        case 8:
+            return 99;
+        case 9:
+            return 5;
+        case 10:
+            return 99;
+        case 11:
+            return 4;
+        default:
+            return -1; // Handle unexpected input
+    }
+}
+
+async function fcRaseeToStarMahajak(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 2;
+        case 1:
+            return 7;
+        case 2:
+            return 99;
+        case 3:
+            return 1;
+        case 4:
+            return 4;
+        case 5:
+            return 3;
+        case 6:
+            return 99;
+        case 7:
+            return 5;
+        case 8:
+            return 6;
+        case 9:
+            return 8;
+        case 10:
+            return 99;
+        case 11:
+            return 99;
+        default:
+            return -1; // Handle unexpected input
+    }
+}
+
+async function fcRaseeToStarRachachock(VarInput) {
+    switch (VarInput) {
+        case 0:
+            return 5;
+        case 1:
+            return 3;
+        case 2:
+            return 1;
+        case 3:
+            return 6;
+        case 4:
+            return 4;
+        case 5:
+            return 2;
+        case 6:
+            return 8;
+        case 7:
+            return 7;
+        case 8:
+            return 99;
+        case 9:
+            return 99;
+        case 10:
+            return 99;
+        case 11:
+            return 99;
+        default:
+            return -1;
+    }
+}
+
+async function fcRaseeiToS(varInput) {
+    let result = "";
+    switch (varInput) {
+        case 0: result = "เมษ"; break;
+        case 1: result = "พฤษภ"; break;
+        case 2: result = "เมถุน"; break;
+        case 3: result = "กรกฎ"; break;
+        case 4: result = "สิงห์"; break;
+        case 5: result = "กันย์"; break;
+        case 6: result = "ตุลย์"; break;
+        case 7: result = "พิจิก"; break;
+        case 8: result = "ธนู"; break;
+        case 9: result = "มังกร"; break;
+        case 10: result = "กุมภ์"; break;
+        case 11: result = "มีน"; break;
+        default: result = "Unknown"; // Optional: handle undefined or unexpected inputs.
+    }
+    return result;
+}
+
 module.exports = {
     fcDayi17ToS,
     fcYearOldiToS,
@@ -154,4 +394,13 @@ module.exports = {
     fcTime27To9,
     fcTimeNoiToS,
     fcTimeFixedStar,
+    fciToSHarm,
+    fcPopiToS,
+    fcRaseeToStarKased,
+    fcRaseeToStarPra,
+    fcRaseeToStarMahauj,
+    fcRaseeToStarNij,
+    fcRaseeToStarMahajak,
+    fcRaseeToStarRachachock,
+    fcRaseeiToS
 }

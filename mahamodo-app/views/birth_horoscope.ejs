@@ -109,8 +109,8 @@
                         <div class="col-lg-6">
                             <select id="sProv" name="sProv" class="form-control">
                                 <% provinces.forEach(function(province) { %>
-                                <option value="<%= province.p_name %>"
-                                    <%= (province.p_name == selectedProvinceId ? 'selected' : '') %>>
+                                <option value="<%= province.p_name %>" <%=(province.p_name==selectedProvinceId
+                                            ? 'selected' : '' ) %>>
                                     <%= province.p_name %>
                                 </option>
                                 <% }); %>
@@ -125,9 +125,8 @@
                         </div>
                         <div class="col-lg-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox"
-                                    <%= (CutTimeLocalYN == 1 ? 'checked' : '') %> value="1" id="flexCheckIndeterminate"
-                                    name="CutTimeLocalYN">
+                                <input class="form-check-input" type="checkbox" <%=(CutTimeLocalYN==1 ? 'checked'
+                                        : '' ) %> value="1" id="flexCheckIndeterminate" name="CutTimeLocalYN">
                                 <label class="form-check-label" for="flexCheckIndeterminate">
                                     ตัดเวลา
                                 </label>
@@ -202,16 +201,66 @@
     </div>
     <hr>
     <div class="content">
-        <p>วันที่คุณเกิด : <%= lblDaySBirthSuriyaKati %></p>
-        <p>อายุ : <%= YearAgeInfo %></p>
-        <p>สมผุสดาวกำเนิด ราศีจักร : <%= YourBirthday %></p>
-        <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %></p>
-
-        <p>สมผุสดาวจร ราศีจักร : </p>
-        <p>สมผุสดาวจร 10 ลัคนา :</p>
-
+        <p>วันที่คุณเกิด : <%= lblDaySBirthSuriyaKati %>
+        </p>
+        <p>อายุ : <%= YearAgeInfo %>
+        </p>
 
     </div>
+    <hr>
+    <p>สมผุสดาวกำเนิด ราศีจักร : <%= YourBirthday %>
+    </p>
+    <div class="context">
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th>ดาว</th>
+                    <th>สถิตย์ราศี</th>
+                    <th>อ.</th>
+                    <th>ลิป.</th>
+                    <th>ภพตนุ</th>
+                    <th>ตรี.</th>
+                    <th>พิษ</th>
+                    <th>นวางค์</th>
+                    <th>ฤกษ์</th>
+                    <th>น.</th>
+                    <th>วิ.</th>
+                    <th>นักษัต</th>
+                    <th>ชื่อฤกษ์</th>
+                    <th>มาตรฐานดาวราศีจักร</th>
+                    <th>มาตรฐานดาวนวางค์</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < 13; i++) { %>
+                    <tr>
+                        <td> <%= SompodStar.TitleTable[i] %></td>
+                        <td> <%= SompodStar.lblStarStayRNo[i] %>. <%= SompodStar.lblStarStayR[i] %></td>
+                        <td> <%= SompodStar.lblStarO[i] %></td>
+                        <td> <%= SompodStar.lblStarL[i] %></td>
+                        <td> <%= SompodStar.lblPop[i] %></td>
+                        <td> <%= SompodStar.lblTri[i] %></td>
+                        <td> <%= SompodStar.lblHarm[i] %></td>
+                        <td> <%= SompodStar.lblNa[i] %></td>
+                        <td> <%= SompodStar.lblLerk[i] %></td>
+                        <td> <%= SompodStar.lblMLerk[i] %></td>
+                        <td> <%= SompodStar.lblSecLerk[i] %></td>
+                        <td> <%= SompodStar.lblNLerk[i] %></td>
+                        <td> <%= SompodStar.lblFixedStar[i] %></td>
+                        <td> <%= SompodStar.lblSTD[i] %></td>
+                        <td> <%= SompodStar.lblStdNa[i] %></td> 
+                    </tr>
+                <% } %>
+            </tbody>
+          
+        </table>
+    </div>
+
+    <!-- <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
+    </p>
+    <div class="context">
+    </div> -->
 </div>
 
 <script>
