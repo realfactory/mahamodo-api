@@ -11,6 +11,8 @@ app.use(express.urlencoded({extended: true}));
 var corsOptions = { origin: "http://localhost:8081" };
 
 const checkApiKey = require('./app/middlewares/checkApiKey');
+const checkStaticIP = require('./app/middlewares/checkStickIP')
+
 const apiRoutes = require('./app/routes/api.routes');
 const Routes = require('./app/routes/routes');
 
@@ -19,6 +21,8 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 app.use('/', Routes);
+
+app.use('/api', checkStaticIP);
 
 app.use('/api', checkApiKey);
 

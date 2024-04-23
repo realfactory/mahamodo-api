@@ -150,14 +150,14 @@
                 <div class="col-lg-6">
                     <div class="row g-2 align-items-center mb-3">
                         <div class="col-lg-4">
-                            <label for="Lukdate" class="col-form-label">วันที่(ลัคนา)</label>
+                            <label for="Today" class="col-form-label">วันที่(ลัคนา)</label>
                         </div>
                         <div class="col-lg-6">
-                            <input type="date" name="Lukdate" id="Lukdate" class="form-control"
-                                aria-describedby="LukdateHelpBlock" value="<%= currentDate %>">
+                            <input type="date" name="Today" id="Today" class="form-control"
+                                aria-describedby="TodayHelpBlock" value="<%= currentDate %>">
                         </div>
                         <div class="col-auto">
-                            <span id="LukdateHelpBlock" class="form-text text-red">
+                            <span id="TodayHelpBlock" class="form-text text-red">
                                 <%= LukMoonInfo %>
                             </span>
                         </div>
@@ -216,8 +216,9 @@
                 <tr>
                     <th>ดาว</th>
                     <th>สถิตย์ราศี</th>
-                    <th>อ.</th>
-                    <th>ลิป.</th>
+                    <th>องศา</th>
+                    <th>ลิปดา</th>
+                    <th>ภพลัค</th>
                     <th>ภพตนุ</th>
                     <th>ตรี.</th>
                     <th>พิษ</th>
@@ -233,21 +234,22 @@
                 </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < 13; i++) { %>
+                <% for(let i = 0; i <= 12; i++) { %>
                     <tr>
                         <td> <%= SompodStar.TitleTable[i] %></td>
                         <td> <%= SompodStar.lblStarStayRNo[i] %>. <%= SompodStar.lblStarStayR[i] %></td>
                         <td> <%= SompodStar.lblStarO[i] %></td>
                         <td> <%= SompodStar.lblStarL[i] %></td>
                         <td> <%= SompodStar.lblPop[i] %></td>
+                        <td> <%= SompodStar.lblPopT[i] %></td>
                         <td> <%= SompodStar.lblTri[i] %></td>
                         <td> <%= SompodStar.lblHarm[i] %></td>
                         <td> <%= SompodStar.lblNa[i] %></td>
                         <td> <%= SompodStar.lblLerk[i] %></td>
                         <td> <%= SompodStar.lblMLerk[i] %></td>
                         <td> <%= SompodStar.lblSecLerk[i] %></td>
-                        <td> <%= SompodStar.lblNLerk[i] %></td>
                         <td> <%= SompodStar.lblFixedStar[i] %></td>
+                        <td> <%= SompodStar.lblNLerk[i] %></td>
                         <td> <%= SompodStar.lblSTD[i] %></td>
                         <td> <%= SompodStar.lblStdNa[i] %></td> 
                     </tr>
@@ -257,10 +259,55 @@
         </table>
     </div>
 
-    <!-- <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
+    <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
     </p>
     <div class="context">
-    </div> -->
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th>ดาว</th>
+                    <th>สถิตย์ราศี</th>
+                    <th>องศา</th>
+                    <th>ลิปดา</th>
+                    <th>ภพลัค</th>
+                    <th>ภพตนุ</th>
+                    <th>ตรี.</th>
+                    <th>พิษ</th>
+                    <th>นวางค์</th>
+                    <th>ฤกษ์</th>
+                    <th>น.</th>
+                    <th>วิ.</th>
+                    <th>นักษัต</th>
+                    <th>ชื่อฤกษ์</th>
+                    <th>มาตรฐานดาวราศีจักร</th>
+                    <th>มาตรฐานดาวนวางค์</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i <= 9; i++) { %>
+                    <tr>
+                        <td> <%= SompodStar10.TitleTable[i] %></td>
+                        <td> <%= SompodStar10.lblStarStayRNo[i] %>. <%= SompodStar10.lblStarStayR[i] %></td>
+                        <td> <%= SompodStar10.lblStarO[i] %></td>
+                        <td> <%= SompodStar10.lblStarL[i] %></td>
+                        <td> <%= SompodStar10.lblPop[i] %></td>
+                        <td> <%= SompodStar10.lblPopT[i] %></td>
+                        <td> <%= SompodStar10.lblTri[i] %></td>
+                        <td> <%= SompodStar10.lblHarm[i] %></td>
+                        <td> <%= SompodStar10.lblNa[i] %></td>
+                        <td> <%= SompodStar10.lblLerk[i] %></td>
+                        <td> <%= SompodStar10.lblMLerk[i] %></td>
+                        <td> <%= SompodStar10.lblSecLerk[i] %></td>
+                        <td> <%= SompodStar10.lblFixedStar[i] %></td>
+                        <td> <%= SompodStar10.lblNLerk[i] %></td>
+                        <td> <%= SompodStar10.lblSTD[i] %></td>
+                        <td> <%= SompodStar10.lblStdNa[i] %></td> 
+                    </tr>
+                <% } %>
+            </tbody>
+          
+        </table>
+    </div>
 </div>
 
 <script>

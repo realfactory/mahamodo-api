@@ -88,8 +88,12 @@ async function fcDateGlobal(InputDate) {
     return NewDateUTC;
 }
 
+// async function fcTime27To9(varInput) {
+//     return ((varInput - 1) % 9) + 1;
+// }
 async function fcTime27To9(varInput) {
-    return ((varInput - 1) % 9) + 1;
+    var result = varInput % 9;
+    return result === 0 ? 9 : result;
 }
 
 async function fcTimeNoiToS(varInput) {
