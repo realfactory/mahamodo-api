@@ -987,7 +987,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     // '*****สมผุสอาทิตย์******
     // 'สุรทินประสงค์ deF1
     // 'กัมมัชพลประสงค์  KTP
-
     let AA = 0,
         Ps = 0,
         Vs = 0,
@@ -999,12 +998,12 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
 
     // 'คำนวนหาวันที่ดาวย้ายราศี
     let TemAA = Math.floor(Sun.AA / 1800);
-    let TemTime = DefTime // 'เวลาประสงค์
-    let iMinute35Day_Star1 = 50400; // 'ตอนแรกนับ 31 วัน (44640 นาที) แต่เจอ bug จึงนับเผื่อไว้ 35 วันไปเลย (50400 นาที)  31*24*60=50400  ดาวอาทิตย์เดิน 1 เดือน/1 ราศี
+    let TemTime = DefTime; // 'เวลาประสงค์
     let MN;
     let DefMN;
     let Deff3;
 
+    let iMinute35Day_Star1 = 50400; // 'ตอนแรกนับ 31 วัน (44640 นาที) แต่เจอ bug จึงนับเผื่อไว้ 35 วันไปเลย (50400 นาที)  31*24*60=50400  ดาวอาทิตย์เดิน 1 เดือน/1 ราศี
     for (let K = 0; K <= iMinute35Day_Star1; K++) {
         DefTime = TemTime + (K / 60); // TemTime should be defined elsewhere
         DefMN = (DefTime * 60) / 1440;
@@ -1020,7 +1019,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
             break; // Exit the loop when condition is met
         }
     }
-
 
     DefTime = TemTime;
     Vs = TemVS;
@@ -1065,17 +1063,16 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
 
     // 15.87 15.88333
     // console.log(TemTime);
-
     // For K = 0 To 4320 '3 วัน (นาที)
-    for (let K = 0; K <= 4320; K++) {
-        let DefTime = TemTime + (K / 60);
-        let DefMN = (DefTime * 60) / 1440;
-        let Deff3 = Def + DefMN + DefH;
+    for (K = 0; K <= 4320; K++) {
+        DefTime = TemTime + (K / 60);
+        DefMN = (DefTime * 60) / 1440;
+        Deff3 = Def + DefMN + DefH;
         AA = 0;
         Ps = 0;
         Vs = 0;
-        let Sun = await CastHoroscope_Sun(Deff3, AA, Ps, Vs, JS);
-        let Moon = await CastHoroscope_Moon(Fm, Sun.Vs, Pi, AM, DefTime, HM, DM, Zm = null, Mum = null);
+        Sun = await CastHoroscope_Sun(Deff3, AA, Ps, Vs, JS);
+        Moon = await CastHoroscope_Moon(Fm, Sun.Vs, Pi, AM, DefTime, HM, DM, Zm = null, Mum = null);
         if (Moon.AM / 1800 === Math.floor(Moon.AM / 1800) || TemAM < Math.floor(Moon.AM / 1800) || TemAM > Math.floor(Moon.AM / 1800)) {
             MN = Moon.DefTime;
             TemAM = Math.floor(Moon.AM / 1800);
@@ -1155,7 +1152,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     Ps = TemPS;
     HM = HHM;
 
-
     Rad[2][8] = dDMYforTodayMove; //' วดป ที่ดาวย้ายมา
     Rad[2][6] = Hmove; //'ชม. ที่ดาวย้ายมา
     Rad[2][7] = Mmove; //'นาที ที่ดาวย้ายมา
@@ -1175,6 +1171,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     Rad[3][0] = Mars.AA; // 'สมผุสอังคาร คือ AA
     Z = Mars.Z
     // Rad[3][18] = Mars.Z; // 'มัธยมอังคาร
+    // console.log(Mars.AA);
 
     // 'คำนวนหาวันที่ดาวย้ายราศี
     TemAA = Mars.AA;
@@ -1183,31 +1180,22 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     TemAM = Math.floor(Mars.AA / 1800);
     let JK = 0;
     let VS = 0;
-    for (let K = 0; K <= 360; K++) {
+
+    for (K = 0; K <= 360; K++) {
+
         //'DefTime = TemTime + (K / 60)
-        let DefMN = (DefTime * 60) / 1440;
+        defMN = (DefTime * 60) / 1440;
         //'deftime = temtime
+        // console.log(Def, DefMN, DefH, K);
+
         Deff3 = Def + DefMN + DefH + K;
         //'ddMK = Int(deff3)
-        AA = 0;
-        Ps = 0;
-        VS = 0;
+
+        AA = 0, Ps = 0, VS = 0;
         Sun = await CastHoroscope_Sun(Deff3, AA, Ps, VS, JS)
-        A0 = 1;
-        A1 = 2;
-        A2 = 16;
-        A3 = 505;
-        b = 5420;
-        c = 127;
-        d = 45;
-        e = 4 / 15;
-        AA = 0;
-        Vs = Sun.Vs;
-
-        let Star = await CastHoroscope_Star(Sun.Ps, A0, A1, A2, A3, b, c, d, e, Sun.Vs, AA, Z);
-
+        A0 = 1, A1 = 2, A2 = 16, A3 = 505, b = 5420, c = 127, d = 45, e = 4 / 15, AA = 0, Vs = Sun.Vs;
+        Star = await CastHoroscope_Star(Sun.Ps, A0, A1, A2, A3, b, c, d, e, Sun.Vs, AA, Z);
         Z = Star.Z;
-
         if (Star.AA / 1800 === Math.floor(Star.AA / 1800) || TemAM < Math.floor(Star.AA / 1800) || TemAM > Math.floor(Star.AA / 1800)) {
             MN = DefTime;
             mnk = K;
@@ -1260,6 +1248,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
             Deff2 = DefV + DefH + 0.25;
 
             K = 360;
+
             for (JK = 0; JK <= 1440; JK++) {
                 let DefTime = TemTime + (JK / 60);
                 let DefMN = (DefTime * 60) / 1440;
@@ -1270,45 +1259,37 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
                 Star = await CastHoroscope_Star(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z = null);
                 if (Star.AA / 1800 === Math.floor(Star.AA / 1800) || TemAM < Math.floor(Star.AA / 1800)) {
                     MN = DefTime;
-                    TemAM = Math.floor(StarM.AA / 1800);
+                    TemAM = Math.floor(Star.AA / 1800);
                     JK = 1440;
                 }
             }
         }
     }
+ 
+    console.log(defMN);
+    // comment defMN ยังผิดอยู่นะ
 
+    // DefTime = TemTime;
+    // Hmove = Math.floor(MN) // 'ชัวโมงที่ดาวย้ายราศี
+    // Mmove = Math.floor((MN - Math.floor(MN)) * 60) // 'นาที่ที่ดาวย้ายราศี
+    // let MNKMove = mnk - 1;
 
-    DefTime = TemTime;
-    Hmove = Math.floor(MN) // 'ชัวโมงที่ดาวย้ายราศี
-    Mmove = Math.floor((MN - Math.floor(MN)) * 60) // 'นาที่ที่ดาวย้ายราศี
-    let MNKMove = mnk - 1;
+    // //'คืนค่าเดิม
+    // Vs = TemVS;
+    // Ps = TemPS;
+    // HM = HHM;
+    // let MNO = 0;
+    // JS = TemJs;
+    // AA = TemAA;
+    // DefH = TemDefh;
 
-    //เด๋วมาทำต่อ 
-    
-    // MsgBox(mnk) 40 
-    // MsgBox(DefTime) 0.15
-    // MsgBox(Hmove) 22
-    // MsgBox(Mmove) 8 
-    // MsgBox(MNKMove) 39
+    // console.log(DefMN);
 
-    console.log(DefTime, Hmove, Mmove, MNKMove);
-
-    //'คืนค่าเดิม
-    Vs = TemVS;
-    Ps = TemPS;
-    HM = HHM;
-    let MNO = 0;
-    JS = TemJs;
-    AA = TemAA;
-    DefH = TemDefh;
-
-    //1 2  16 505 5420 127 45 0.26666             19755 15.3  5 22.829027777777778 0.90625              4/22/2024   15.3 0  
-    //1 2  16 505 5420 127 45 0.26666666666666666 19755 15.22 5 22.829305555555553 0.9062500000000036   ""          15.22 0
+    // 1 2 16 505 5420 127 45 0.26666666666666666 19835 12.05   7 1.693194444444444  0.9062500000000036 2024-04-24T00:00:00.000Z 12.05 0
+    // 1 2 15 505 5420 127 45 0.26666666666666667 19836 12.5833 7 0.922916666666667  0.906250000000004  2024-04-24               12.583 0
     // console.log(A0, A1, A2, A3, b, c, d, e, AA, DefTime, Def, DefMN, DefH, dateInput, TemTime, MNO) 
     // let TimeStarMove = await CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTime, Def, DefMN, DefH, dateInput, TemTime, MNO, JS, adjustedHour, adjustedMinute);
-
     // console.log(TimeStarMove);
-
 }
 
 async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, birthMinute, cutTimeLocalYN, sProv) {
