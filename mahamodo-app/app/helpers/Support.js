@@ -181,6 +181,65 @@ async function fcPopiToS(VarInput) {
     return popMapping[VarInput] || "";
 }
 
+async function fcStariToS(VarInput) {
+    const popMapping = {
+        0: "มฤตยู",
+        1: "อาทิตย์",
+        2: "จันทร์",
+        3: "อังคาร",
+        4: "พุธ",
+        5: "พฤหัส",
+        6: "ศุกร์",
+        7: "เสาร์",
+        8: "ราหู",
+        9: "เกตุ",
+    };
+    return popMapping[VarInput] || "";
+}
+
+async function fcPopSToi(VarInput) {
+    const popMapping = {
+        "ตนุ": 0,
+        "กดุมภะ": 1,
+        "สหัชชะ": 2,
+        "พันธุ": 3,
+        "ปุตตะ": 4,
+        "อริ": 5,
+        "ปัตนิ": 6,
+        "มรณะ": 7,
+        "ศุภะ": 8,
+        "กัมมะ": 9,
+        "ลาภะ": 10,
+        "วินาศ": 11
+    };
+    return popMapping[VarInput] || "";
+}
+
+async function fcTimeSToi(VarInput) {
+    switch (VarInput) {
+        case "ทลิทโท":
+            return 1;
+        case "มหัทธโน":
+            return 2;
+        case "โจโร":
+            return 3;
+        case "ภูมิปาโล":
+            return 4;
+        case "เทศาตรี":
+            return 5;
+        case "เทวี":
+            return 6;
+        case "เพชฌฆาต":
+            return 7;
+        case "ราชา":
+            return 8;
+        case "สมโณ":
+            return 9;
+        default:
+            return 0;
+    }
+}
+
 async function fcRaseeToStarKased(VarInput) {
     switch (VarInput) {
         case 0:
@@ -370,19 +429,44 @@ async function fcRaseeToStarRachachock(VarInput) {
 async function fcRaseeiToS(varInput) {
     let result = "";
     switch (varInput) {
-        case 0: result = "เมษ"; break;
-        case 1: result = "พฤษภ"; break;
-        case 2: result = "เมถุน"; break;
-        case 3: result = "กรกฎ"; break;
-        case 4: result = "สิงห์"; break;
-        case 5: result = "กันย์"; break;
-        case 6: result = "ตุลย์"; break;
-        case 7: result = "พิจิก"; break;
-        case 8: result = "ธนู"; break;
-        case 9: result = "มังกร"; break;
-        case 10: result = "กุมภ์"; break;
-        case 11: result = "มีน"; break;
-        default: result = "Unknown"; // Optional: handle undefined or unexpected inputs.
+        case 0:
+            result = "เมษ";
+            break;
+        case 1:
+            result = "พฤษภ";
+            break;
+        case 2:
+            result = "เมถุน";
+            break;
+        case 3:
+            result = "กรกฎ";
+            break;
+        case 4:
+            result = "สิงห์";
+            break;
+        case 5:
+            result = "กันย์";
+            break;
+        case 6:
+            result = "ตุลย์";
+            break;
+        case 7:
+            result = "พิจิก";
+            break;
+        case 8:
+            result = "ธนู";
+            break;
+        case 9:
+            result = "มังกร";
+            break;
+        case 10:
+            result = "กุมภ์";
+            break;
+        case 11:
+            result = "มีน";
+            break;
+        default:
+            result = "Unknown"; // Optional: handle undefined or unexpected inputs.
     }
     return result;
 }
@@ -406,5 +490,8 @@ module.exports = {
     fcRaseeToStarNij,
     fcRaseeToStarMahajak,
     fcRaseeToStarRachachock,
-    fcRaseeiToS
+    fcRaseeiToS,
+    fcStariToS,
+    fcPopSToi,
+    fcTimeSToi
 }

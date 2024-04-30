@@ -1,325 +1,591 @@
 <%- include('partials/header') %>
-<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
 
-<div class="container">
-    <h1>Welcome to <%= appName %>!</h1>
-    <hr>
-    <p>ผูกดวง เจ้าชะตา (ดวงกำเนิด)</p>
+    <div class="container">
+        <h1>Welcome to <%= appName %>!</h1>
+        <hr>
+        <p>ผูกดวง เจ้าชะตา (ดวงกำเนิด)</p>
 
-    <div class="content">
-        <form action="/birth-horoscope" method="get">
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="YourName" class="col-form-label">ชื่อ</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="text" name="YourName" id="YourName" class="form-control"
-                                aria-describedby="YourNameHelpBlock" value="<%= YourName %>">
-                        </div>
-                        <div class="col-auto">
-                            <span id="YourNameHelpBlock" class="form-text">
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="YourSurName" class="col-form-label">นามสกุล</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="text" name="YourSurName" id="YourSurName" class="form-control"
-                                aria-describedby="YourSurNameHelpBlock" value="<%= YourSurName %>">
-                        </div>
-                        <div class="col-auto">
-                            <span id="YourSurNameHelpBlock" class="form-text">
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="birthdate" class="col-form-label">วันที่เกิด (วันจร)</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="date" name="birthdate" id="birthdate" class="form-control"
-                                aria-describedby="birthdateHelpBlock" value="<%= birthDate %>">
-                        </div>
-                        <div class="col-auto">
-                            <span id="birthdateHelpBlock" class="form-text text-red">
-                                <%= birthDateMoonInfo %>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="cboBorn_Country_Option" class="col-form-label">เกิดที่ประเทศ</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <select class="form-control" name="cboBorn_Country_Option" id="cboBorn_Country_Option">
-                                <option value="ประเทศไทย">ประเทศไทย</option>
-                                <option value="ต่างประเทศ">ต่างประเทศ</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="cboBorn_H" class="col-form-label">เวลเกิด(ชัวโมง)</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="number" name="cboBorn_H" id="cboBorn_H" class="form-control"
-                                aria-describedby="cboBorn_HHelpBlock" min="0" max="24" value="<%= cboBorn_H %>"
-                                onchange="updateTimeLocal()">
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="cboBorn_M" class="col-form-label">เวลเกิด(นาที)</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="number" name="cboBorn_M" id="cboBorn_M" class="form-control"
-                                aria-describedby="cboBorn_MHelpBlock" min="0" max="60" value="<%= cboBorn_M %>"
-                                onchange="updateTimeLocal()">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="sProv" class="col-form-label">เกิดที่</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <select id="sProv" name="sProv" class="form-control">
-                                <% provinces.forEach(function(province) { %>
-                                <option value="<%= province.p_name %>" <%=(province.p_name==selectedProvinceId
-                                            ? 'selected' : '' ) %>>
-                                    <%= province.p_name %>
-                                </option>
-                                <% }); %>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="timeLocal" class="col-form-label">ตัดเวลาท้องถิ่น</label>
-                        </div>
-                        <div class="col-lg-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" <%=(CutTimeLocalYN==1 ? 'checked'
-                                        : '' ) %> value="1" id="flexCheckIndeterminate" name="CutTimeLocalYN">
-                                <label class="form-check-label" for="flexCheckIndeterminate">
-                                    ตัดเวลา
-                                </label>
+        <div class="content">
+            <form action="/birth-horoscope" method="get">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="YourName" class="col-form-label">ชื่อ</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" name="YourName" id="YourName" class="form-control"
+                                    aria-describedby="YourNameHelpBlock" value="<%= YourName %>">
+                            </div>
+                            <div class="col-auto">
+                                <span id="YourNameHelpBlock" class="form-text">
+                                </span>
                             </div>
                         </div>
-                        <div class="col-lg-4">
-                            <input type="text" name="timeLocal" id="timeLocal" class="form-control"
-                                aria-describedby="timeLocalHelpBlock" value="" readonly>
-                        </div>
-                        <div class="col-auto">
-                            <span id="timeLocalHelpBlock" class="form-text">
-                                ผูกดวง ตัดเวลาท้องถิ่น (หักเวลาเกิดตามสถานที่เกิด แต่ละจังหวัด
-                                ถ้าเลือกไม่ตัดเวลาท้องถิ่น หมายถึง เอาสุทธิเวลาที่เกิดนั้นไปคำนวณหาลัคนาเลย)
-                            </span>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="YourSurName" class="col-form-label">นามสกุล</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" name="YourSurName" id="YourSurName" class="form-control"
+                                    aria-describedby="YourSurNameHelpBlock" value="<%= YourSurName %>">
+                            </div>
+                            <div class="col-auto">
+                                <span id="YourSurNameHelpBlock" class="form-text">
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="Today" class="col-form-label">วันที่(ลัคนา)</label>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="birthdate" class="col-form-label">วันที่เกิด</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="date" name="birthdate" id="birthdate" class="form-control"
+                                    aria-describedby="birthdateHelpBlock" value="<%= birthDate %>">
+                            </div>
+                            <div class="col-auto">
+                                <span id="birthdateHelpBlock" class="form-text text-red">
+                                    <%= birthDateMoonInfo %>
+                                </span>
+                            </div>
                         </div>
-                        <div class="col-lg-6">
-                            <input type="date" name="Today" id="Today" class="form-control"
-                                aria-describedby="TodayHelpBlock" value="<%= currentDate %>">
-                        </div>
-                        <div class="col-auto">
-                            <span id="TodayHelpBlock" class="form-text text-red">
-                                <%= LukMoonInfo %>
-                            </span>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="cboBorn_Country_Option" class="col-form-label">เกิดที่ประเทศ</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select class="form-control" name="cboBorn_Country_Option" id="cboBorn_Country_Option">
+                                    <option value="ประเทศไทย">ประเทศไทย</option>
+                                    <option value="ต่างประเทศ">ต่างประเทศ</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="LukH" class="col-form-label">ชัวโมง</label>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="cboBorn_H" class="col-form-label">เวลเกิด(ชัวโมง)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="number" name="cboBorn_H" id="cboBorn_H" class="form-control"
+                                    aria-describedby="cboBorn_HHelpBlock" min="0" max="24" value="<%= cboBorn_H %>"
+                                    onchange="updateTimeLocal()">
+                            </div>
                         </div>
-                        <div class="col-lg-6">
-                            <input type="number" name="LukH" id="LukH" class="form-control"
-                                aria-describedby="LukHHelpBlock" min="0" max="24" value="<%= currentHour %>"
-                                onchange="">
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="cboBorn_M" class="col-form-label">เวลเกิด(นาที)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="number" name="cboBorn_M" id="cboBorn_M" class="form-control"
+                                    aria-describedby="cboBorn_MHelpBlock" min="0" max="60" value="<%= cboBorn_M %>"
+                                    onchange="updateTimeLocal()">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="row g-2 align-items-center mb-3">
-                        <div class="col-lg-4">
-                            <label for="LukM" class="col-form-label">นาที</label>
-                        </div>
-                        <div class="col-lg-6">
-                            <input type="number" name="LukM" id="LukM" class="form-control"
-                                aria-describedby="LukMHelpBlock" min="0" max="60" value="<%= currentMinute %>"
-                                onchange="">
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-lg-12">
-                    <button class="btn btn-success" type="submit">submit</button>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="sProv" class="col-form-label">เกิดที่</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select id="sProv" name="sProv" class="form-control">
+                                    <% provinces.forEach(function(province) { %>
+                                        <option value="<%= province.p_name %>" <%=(province.p_name==selectedProvinceId
+                                            ? 'selected' : '' ) %>>
+                                            <%= province.p_name %>
+                                        </option>
+                                        <% }); %>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="timeLocal" class="col-form-label">ตัดเวลาท้องถิ่น</label>
+                            </div>
+                            <div class="col-lg-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" <%=(CutTimeLocalYN==1 ? 'checked'
+                                        : '' ) %> value="1" id="flexCheckIndeterminate" name="CutTimeLocalYN">
+                                    <label class="form-check-label" for="flexCheckIndeterminate">
+                                        ตัดเวลา
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="text" name="timeLocal" id="timeLocal" class="form-control"
+                                    aria-describedby="timeLocalHelpBlock" value="" readonly>
+                            </div>
+                            <div class="col-auto">
+                                <span id="timeLocalHelpBlock" class="form-text">
+                                    ผูกดวง ตัดเวลาท้องถิ่น (หักเวลาเกิดตามสถานที่เกิด แต่ละจังหวัด
+                                    ถ้าเลือกไม่ตัดเวลาท้องถิ่น หมายถึง เอาสุทธิเวลาที่เกิดนั้นไปคำนวณหาลัคนาเลย)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </form>
-    </div>
-    <hr>
-    <div class="content">
-        <p>วันที่คุณเกิด : <%= lblDaySBirthSuriyaKati %>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="Today" class="col-form-label">วันที่ปัจจุบัน(วันจร)</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="date" name="Today" id="Today" class="form-control"
+                                    aria-describedby="TodayHelpBlock" value="<%= currentDate %>">
+                            </div>
+                            <div class="col-auto">
+                                <span id="TodayHelpBlock" class="form-text text-red">
+                                    <%= LukMoonInfo %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="LukH" class="col-form-label">ชัวโมง</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="number" name="LukH" id="LukH" class="form-control"
+                                    aria-describedby="LukHHelpBlock" min="0" max="24" value="<%= currentHour %>"
+                                    onchange="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-2 align-items-center mb-3">
+                            <div class="col-lg-4">
+                                <label for="LukM" class="col-form-label">นาที</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="number" name="LukM" id="LukM" class="form-control"
+                                    aria-describedby="LukMHelpBlock" min="0" max="60" value="<%= currentMinute %>"
+                                    onchange="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <button class="btn btn-success" type="submit">submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <hr>
+        <div class="content">
+            <p>วันที่คุณเกิด : <%= lblDaySBirthSuriyaKati %>
+            </p>
+            <p>อายุ : <%= YearAgeInfo %>
+            </p>
+
+        </div>
+        <hr>
+        <p>สมผุสดาวกำเนิด ราศีจักร : <%= YourBirthday %>
         </p>
-        <p>อายุ : <%= YearAgeInfo %>
+        <div class="context">
+            <table class="table w-100">
+                <thead>
+                    <tr>
+                        <th>ดาว</th>
+                        <th>สถิตย์ราศี</th>
+                        <th>องศา</th>
+                        <th>ลิปดา</th>
+                        <th>ภพลัค</th>
+                        <th>ภพตนุ</th>
+                        <th>ตรี.</th>
+                        <th>พิษ</th>
+                        <th>นวางค์</th>
+                        <th>ฤกษ์</th>
+                        <th>น.</th>
+                        <th>วิ.</th>
+                        <th>นักษัต</th>
+                        <th>ชื่อฤกษ์</th>
+                        <th>มาตรฐานดาวราศีจักร</th>
+                        <th>มาตรฐานดาวนวางค์</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let i=0; i <=12; i++) { %>
+                        <tr>
+                            <td>
+                                <%= SompodStar.TitleTable[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblStarStayRNo[i] %>. <%= SompodStar.lblStarStayR[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblStarO[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblStarL[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblPop[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblPopT[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblTri[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblHarm[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblNa[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblMLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblSecLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblFixedStar[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblNLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblSTD[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar.lblStdNa[i] %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+
+            </table>
+        </div>
+
+        <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
+        </p>
+        <div class="context">
+            <table class="table w-100">
+                <thead>
+                    <tr>
+                        <th>ดาว</th>
+                        <th>สถิตย์ราศี</th>
+                        <th>องศา</th>
+                        <th>ลิปดา</th>
+                        <th>ภพลัค</th>
+                        <th>ภพตนุ</th>
+                        <th>ตรี.</th>
+                        <th>พิษ</th>
+                        <th>นวางค์</th>
+                        <th>ฤกษ์</th>
+                        <th>น.</th>
+                        <th>วิ.</th>
+                        <th>นักษัต</th>
+                        <th>ชื่อฤกษ์</th>
+                        <th>มาตรฐานดาวราศีจักร</th>
+                        <th>มาตรฐานดาวนวางค์</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let i=0; i <=9; i++) { %>
+                        <tr>
+                            <td>
+                                <%= SompodStar10.TitleTable[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblStarStayRNo[i] %>. <%= SompodStar10.lblStarStayR[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblStarO[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblStarL[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblPop[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblPopT[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblTri[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblHarm[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblNa[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblMLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblSecLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblFixedStar[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblNLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblSTD[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStar10.lblStdNa[i] %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <p>สมผุสดาวจร ราศีจักร : <%= yourCurrentDate %>
         </p>
 
-    </div>
-    <hr>
-    <p>สมผุสดาวกำเนิด ราศีจักร : <%= YourBirthday %>
-    </p>
-    <div class="context">
-        <table class="table w-100">
-            <thead>
-                <tr>
-                    <th>ดาว</th>
-                    <th>สถิตย์ราศี</th>
-                    <th>องศา</th>
-                    <th>ลิปดา</th>
-                    <th>ภพลัค</th>
-                    <th>ภพตนุ</th>
-                    <th>ตรี.</th>
-                    <th>พิษ</th>
-                    <th>นวางค์</th>
-                    <th>ฤกษ์</th>
-                    <th>น.</th>
-                    <th>วิ.</th>
-                    <th>นักษัต</th>
-                    <th>ชื่อฤกษ์</th>
-                    <th>มาตรฐานดาวราศีจักร</th>
-                    <th>มาตรฐานดาวนวางค์</th>
-
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i = 0; i <= 12; i++) { %>
+        <div class="context">
+            <table class="table w-100">
+                <thead>
                     <tr>
-                        <td> <%= SompodStar.TitleTable[i] %></td>
-                        <td> <%= SompodStar.lblStarStayRNo[i] %>. <%= SompodStar.lblStarStayR[i] %></td>
-                        <td> <%= SompodStar.lblStarO[i] %></td>
-                        <td> <%= SompodStar.lblStarL[i] %></td>
-                        <td> <%= SompodStar.lblPop[i] %></td>
-                        <td> <%= SompodStar.lblPopT[i] %></td>
-                        <td> <%= SompodStar.lblTri[i] %></td>
-                        <td> <%= SompodStar.lblHarm[i] %></td>
-                        <td> <%= SompodStar.lblNa[i] %></td>
-                        <td> <%= SompodStar.lblLerk[i] %></td>
-                        <td> <%= SompodStar.lblMLerk[i] %></td>
-                        <td> <%= SompodStar.lblSecLerk[i] %></td>
-                        <td> <%= SompodStar.lblFixedStar[i] %></td>
-                        <td> <%= SompodStar.lblNLerk[i] %></td>
-                        <td> <%= SompodStar.lblSTD[i] %></td>
-                        <td> <%= SompodStar.lblStdNa[i] %></td> 
-                    </tr>
-                <% } %>
-            </tbody>
-          
-        </table>
-    </div>
+                        <th>ดาว</th>
+                        <th>สถิตย์ราศี</th>
+                        <th>องศา</th>
+                        <th>ลิปดา</th>
+                        <th>ภพลัค</th>
+                        <th>ภพตนุ</th>
+                        <th>ตรี.</th>
+                        <th>พิษ</th>
+                        <th>นวางค์</th>
+                        <th>ฤกษ์</th>
+                        <th>น.</th>
+                        <th>วิ.</th>
+                        <th>นักษัต</th>
+                        <th>ชื่อฤกษ์</th>
+                        <th>มาตรฐานดาวราศีจักร</th>
+                        <th>มาตรฐานดาวนวางค์</th>
 
-    <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
-    </p>
-    <div class="context">
-        <table class="table w-100">
-            <thead>
-                <tr>
-                    <th>ดาว</th>
-                    <th>สถิตย์ราศี</th>
-                    <th>องศา</th>
-                    <th>ลิปดา</th>
-                    <th>ภพลัค</th>
-                    <th>ภพตนุ</th>
-                    <th>ตรี.</th>
-                    <th>พิษ</th>
-                    <th>นวางค์</th>
-                    <th>ฤกษ์</th>
-                    <th>น.</th>
-                    <th>วิ.</th>
-                    <th>นักษัต</th>
-                    <th>ชื่อฤกษ์</th>
-                    <th>มาตรฐานดาวราศีจักร</th>
-                    <th>มาตรฐานดาวนวางค์</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for(let i = 0; i <= 9; i++) { %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(let i=0; i <=12; i++) { %>
+                        <tr>
+                            <td>
+                                <%= SompodStarToday.TitleTable[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblStarStayRNo[i] %>. <%= SompodStarToday.lblStarStayR[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblStarO[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblStarL[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblPop[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblPopT[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblTri[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblHarm[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblNa[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblMLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblSecLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblFixedStar[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblNLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblSTD[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday.lblStdNa[i] %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+
+        <p>สมผุสดาวจร ราศีจักร 10 ลัคนา: <%= yourCurrentDate %>
+        </p>
+        <div class="context">
+            <table class="table w-100">
+                <thead>
                     <tr>
-                        <td> <%= SompodStar10.TitleTable[i] %></td>
-                        <td> <%= SompodStar10.lblStarStayRNo[i] %>. <%= SompodStar10.lblStarStayR[i] %></td>
-                        <td> <%= SompodStar10.lblStarO[i] %></td>
-                        <td> <%= SompodStar10.lblStarL[i] %></td>
-                        <td> <%= SompodStar10.lblPop[i] %></td>
-                        <td> <%= SompodStar10.lblPopT[i] %></td>
-                        <td> <%= SompodStar10.lblTri[i] %></td>
-                        <td> <%= SompodStar10.lblHarm[i] %></td>
-                        <td> <%= SompodStar10.lblNa[i] %></td>
-                        <td> <%= SompodStar10.lblLerk[i] %></td>
-                        <td> <%= SompodStar10.lblMLerk[i] %></td>
-                        <td> <%= SompodStar10.lblSecLerk[i] %></td>
-                        <td> <%= SompodStar10.lblFixedStar[i] %></td>
-                        <td> <%= SompodStar10.lblNLerk[i] %></td>
-                        <td> <%= SompodStar10.lblSTD[i] %></td>
-                        <td> <%= SompodStar10.lblStdNa[i] %></td> 
+                        <th>ดาว</th>
+                        <th>สถิตย์ราศี</th>
+                        <th>องศา</th>
+                        <th>ลิปดา</th>
+                        <th>ภพลัค</th>
+                        <th>ภพตนุ</th>
+                        <th>ตรี.</th>
+                        <th>พิษ</th>
+                        <th>นวางค์</th>
+                        <th>ฤกษ์</th>
+                        <th>น.</th>
+                        <th>วิ.</th>
+                        <th>นักษัต</th>
+                        <th>ชื่อฤกษ์</th>
+                        <th>มาตรฐานดาวราศีจักร</th>
+                        <th>มาตรฐานดาวนวางค์</th>
                     </tr>
+                </thead>
+                <tbody>
+                    <% for(let i=0; i <=9; i++) { %>
+                        <tr>
+                            <td>
+                                <%= SompodStarToday10.TitleTable[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblStarStayRNo[i] %>. <%= SompodStarToday10.lblStarStayR[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblStarO[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblStarL[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblPop[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblPopT[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblTri[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblHarm[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblNa[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblMLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblSecLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblFixedStar[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblNLerk[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblSTD[i] %>
+                            </td>
+                            <td>
+                                <%= SompodStarToday10.lblStdNa[i] %>
+                            </td>
+                        </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+        <h4><b>ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)</b></h4>
+        <p>ดาวกำเนิดอยู่ในภพต่างๆ และอักขระประจำดาว (ทักษา)</p>
+        <div class="context">
+            <% for(let i=0; i <=varBornLuk_PopsChars[0].length; i++) { %>
+                <p class="mb-0">
+                    <%= varBornLuk_PopsChars[0][i] %>
+                </p>
                 <% } %>
-            </tbody>
-          
-        </table>
+        </div>
+
+        <h4><b>ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด</b></h4>
+        <div class="context">
+            <% for(let i=0; i <=varBornLuk_OwnerHousePopSS[0].length; i++) { %>
+                <p class="mb-0">
+                    <%= varBornLuk_OwnerHousePopSS[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <hr>
+        <h4><b>คำทำนายลัคนาสถิตราศี</b></h4>
+        <div class="context">
+            <p> <b>
+                    <%= Query_StarStayR10[0].LukLiveRasees +" "+ Query_StarStayR10[0].Rasees  + " (" +
+                        Query_StarStayR10[0].Raseei + ")" %>
+                </b>
+
+            </p>
+            <p>
+                <%= Query_StarStayR10[0].PayakornText %>
+            </p>
+
+            <p> <b>สีและอัญมณีที่ถูกโฉลกประจำราศี</b></p>
+            <p>
+                <%= Query_StarStayR10[0].PayakornColorGem %>
+            </p>
+              
+        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        updateTimeLocal();
-    });
+    <div class="my-5"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            updateTimeLocal();
+        });
 
-    function updateTimeLocal() {
-        var cboBorn_H = document.getElementById('cboBorn_H').value;
-        var cboBorn_M = document.getElementById('cboBorn_M').value;
-        var timeLocal = document.getElementById('timeLocal');
-        timeLocal.value = cboBorn_H + ':' + cboBorn_M;
-    }
-</script>
-<%- include('partials/footer') %>
+        function updateTimeLocal() {
+            var cboBorn_H = document.getElementById('cboBorn_H').value;
+            var cboBorn_M = document.getElementById('cboBorn_M').value;
+            var timeLocal = document.getElementById('timeLocal');
+            timeLocal.value = cboBorn_H + ':' + cboBorn_M;
+        }
+    </script>
+    <%- include('partials/footer') %>
