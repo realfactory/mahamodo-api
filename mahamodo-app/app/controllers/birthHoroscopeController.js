@@ -1,4 +1,3 @@
-const helpers = require('../helpers/helpers');
 const db = require('../helpers/db');
 const main = require('../helpers/main');
 const Support = require('../helpers/Support');
@@ -43,9 +42,7 @@ exports.putDate = async (req, res) => {
         SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
         SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
     }
-
-    // dayMooni: SuriyatDate.dayMooni,
-    // daySuni: SuriyatDate.daySuni,
+   
     // ' รับค่าสมผุส จร (สมผุสดาววันนี้)
     if (Today) {
         NewTodayDate = await Support.fcDateGlobal(Today);
@@ -54,7 +51,9 @@ exports.putDate = async (req, res) => {
         SompodStarToday10 = await rdiOptionSompodBorn_Ra_CheckedChanged(4, TodaySuriyatDate);
     }
 
-    let Pakakorn = await main.PakakornSompod(SuriyatDate);
+    // console.log(SuriyatDate);
+
+    let Pakakorn = await main.PakakornSompod(SuriyatDate ,TodaySuriyatDate);
 
     async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
         let SompodStarOnLabel;
@@ -62,14 +61,13 @@ exports.putDate = async (req, res) => {
         return SompodStarOnLabel;
     }
 
-    console.log(Pakakorn.Query_StarStayR);
-
     res.render('birth_horoscope', {
         appName: 'API Services.',
         currentDate: currentDate,
         currentHour: currentHour,
         currentMinute: currentMinute,
         yourCurrentDate: yourCurrentDate,
+
         birthDate: birthDate,
         provinces: provinces,
         selectedProvinceId: sProv,
@@ -79,20 +77,60 @@ exports.putDate = async (req, res) => {
         cboBorn_Country_Option: cboBorn_Country_Option,
         YourName: YourName,
         YourSurName: YourSurName,
+
         lblDaySBirthSuriyaKati: SuriyatDate.lblDaySBirthSuriyaKati,
         YourBirthday: SuriyatDate.YourBirthday,
         YourBirthdayDateUse: SuriyatDate.YourBirthdayDateUse,
         YearAgeInfo: SuriyatDate.YearAgeInfo,
         birthDateMoonInfo: SuriyatDate.birthDateMoonInfo,
         LukMoonInfo: SuriyatDate.LukMoonInfo,
+
         SompodStar: SompodStar,
         SompodStar10: SompodStar10,
         SompodStarToday: SompodStarToday,
         SompodStarToday10: SompodStarToday10,
-        varBornLuk_PopsChars : Pakakorn.varBornLuk_PopsChars,
-        varBornLuk_OwnerHousePopSS : Pakakorn.varBornLuk_OwnerHousePopSS,
-        varBornLuk_KasediInPopistr : Pakakorn.varBornLuk_KasediInPopistr,
-        Query_StarStayR10 : Pakakorn.Query_StarStayR10,
 
+        varBornLuk_PopsChars: Pakakorn.varBornLuk_PopsChars,
+        varBornLuk_OwnerHousePopSS: Pakakorn.varBornLuk_OwnerHousePopSS,
+        varBornLuk_KasediInPopistr: Pakakorn.varBornLuk_KasediInPopistr,
+        Query_StarStayR10: Pakakorn.Query_StarStayR10,
+        StarStay_GumLuk: Pakakorn.StarStay_GumLuk,
+        StarStay_Patani: Pakakorn.StarStay_Patani,
+
+        StarAsTanuSED_Title: Pakakorn.StarAsTanuSED_Title,
+        StarAsTanuSED_Sub: Pakakorn.StarAsTanuSED_Sub,
+        StarAsTanuSED_Desc: Pakakorn.StarAsTanuSED_Desc,
+
+        Star_Same_Title: Pakakorn.Star_Same_Title,
+        Star_Same_Sub: Pakakorn.Star_Same_Sub,
+        Star_Same_Desc: Pakakorn.Star_Same_Desc,
+
+        Standard_Stars_DuangRasee_Title: Pakakorn.Standard_Stars_DuangRasee_Title,
+        Standard_Stars_DuangRasee_Sub: Pakakorn.Standard_Stars_DuangRasee_Sub,
+        Standard_Stars_DuangRasee_Desc: Pakakorn.Standard_Stars_DuangRasee_Desc,
+
+        Standard_Stars_DuangNavang_Sub: Pakakorn.Standard_Stars_DuangNavang_Sub,
+        Standard_Stars_DuangNavang_Title: Pakakorn.Standard_Stars_DuangNavang_Title,
+        Standard_Stars_DuangNavang_Desc: Pakakorn.Standard_Stars_DuangNavang_Desc,
+
+        Star_Kalakini_Title: Pakakorn.Star_Kalakini_Title,
+        Star_Kalakini_Sub: Pakakorn.Star_Kalakini_Sub,
+        Star_Kalakini_Desc: Pakakorn.Star_Kalakini_Desc,
+
+        Star_Born_TamPop_Title: Pakakorn.Star_Born_TamPop_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
+        Star_Born_TamPop_Sub: Pakakorn.Star_Born_TamPop_Sub,
+        Star_Born_TamPop_Desc: Pakakorn.Star_Born_TamPop_Desc,
+
+        House_Star_Pops_Title: Pakakorn.House_Star_Pops_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
+        House_Star_Pops_Sub: Pakakorn.House_Star_Pops_Sub,
+        House_Star_Pops_Desc: Pakakorn.House_Star_Pops_Desc,
+
+        Wandering_Star_Now_Title: Pakakorn.Wandering_Star_Now_Title, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
+        Wandering_Star_Now_Sub: Pakakorn.Wandering_Star_Now_Sub,
+        StarAsInRaseeiAsStar_Sub: Pakakorn.StarAsInRaseeiAsStar_Sub,
+        StarAsInRaseeiAsStar_Desc: Pakakorn.StarAsInRaseeiAsStar_Desc,
+        StarAsInRaseeiAsStar_Move: Pakakorn.StarAsInRaseeiAsStar_Move,
+        StarAsInRaseeiAsStar_Percent: Pakakorn.StarAsInRaseeiAsStar_Percent,
+        
     });
 };

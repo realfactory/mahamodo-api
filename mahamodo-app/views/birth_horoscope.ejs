@@ -1,6 +1,10 @@
 <%- include('partials/header') %>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
-
+<style>
+    .text-green{
+        color: green;
+    }
+</style>
     <div class="container">
         <h1>Welcome to <%= appName %>!</h1>
         <hr>
@@ -561,7 +565,6 @@
                     <%= Query_StarStayR10[0].LukLiveRasees +" "+ Query_StarStayR10[0].Rasees  + " (" +
                         Query_StarStayR10[0].Raseei + ")" %>
                 </b>
-
             </p>
             <p>
                 <%= Query_StarStayR10[0].PayakornText %>
@@ -571,7 +574,140 @@
             <p>
                 <%= Query_StarStayR10[0].PayakornColorGem %>
             </p>
-              
+        </div>
+
+        <h4><b>คำทำนายดาวกุมลัคนา</b></h4>
+
+        <div class="context">
+            <% for(let i=0; i <=StarStay_GumLuk.length; i++) { %>
+                <p class="">
+                    <%= StarStay_GumLuk[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>คำทำนายดาวเล็งลัคนา</b></h4>
+        <div class="context">
+            <% for(let i=0; i <=StarStay_Patani.length; i++) { %>
+                <p class="">
+                    <%= StarStay_Patani[i] %>
+                </p>
+                <% } %>
+        </div>
+        <h4><b>
+                <%= StarAsTanuSED_Title %>
+            </b>
+        </h4>
+        <h5><b>
+                <%= StarAsTanuSED_Sub %>
+            </b>
+        </h5>
+        <div class="context">
+            <p>
+                <%= StarAsTanuSED_Desc %>
+            </p>
+        </div>
+
+        <h4><b>
+                <%= Star_Same_Title %>
+            </b></h4>
+        <div class="context">
+            <% for(let i=0; i <=Star_Same_Desc.length; i++) { %>
+                <!-- <h5> <%= Star_Same_Sub[i] %></h5> -->
+                <p class="">
+                    <%= Star_Same_Desc[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>
+                <%= Standard_Stars_DuangRasee_Title %>
+            </b></h4>
+        <div class="context">
+            <% for(let i=0; i <=Standard_Stars_DuangRasee_Desc.length; i++) { %>
+                <h5>
+                    <%= Standard_Stars_DuangRasee_Sub[i] %>
+                </h5>
+                <p class="">
+                    <%= Standard_Stars_DuangRasee_Desc[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>
+                <%= Standard_Stars_DuangNavang_Title %>
+            </b></h4>
+        <div class="context">
+            <% for(let i=0; i <=Standard_Stars_DuangNavang_Desc.length; i++) { %>
+                <h5>
+                    <%= Standard_Stars_DuangNavang_Sub[i] %>
+                </h5>
+                <p class="">
+                    <%= Standard_Stars_DuangNavang_Desc[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>
+                <%= Star_Kalakini_Title %>
+            </b></h4>
+        <div class="context">
+            <h5>
+                <%= Star_Kalakini_Sub %>
+            </h5>
+            <p class="">
+                <%= Star_Kalakini_Desc %>
+            </p>
+        </div>
+
+        <h4><b>
+                <%= Star_Born_TamPop_Title %>
+            </b></h4>
+        <div class="context">
+            <% for(let i=0; i <=Star_Born_TamPop_Desc.length; i++) { %>
+                <h5>
+                    <%= Star_Born_TamPop_Sub[i] %>
+                </h5>
+                <p class="">
+                    <%= Star_Born_TamPop_Desc[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>
+                <%= House_Star_Pops_Title %>
+            </b></h4>
+        <div class="context">
+            <% for(let i=0; i <=House_Star_Pops_Desc.length; i++) { %>
+                <h5>
+                    <%= House_Star_Pops_Sub[i] %>
+                </h5>
+                <p class="">
+                    <%= House_Star_Pops_Desc[i] %>
+                </p>
+                <% } %>
+        </div>
+
+        <h4><b>
+                <%= Wandering_Star_Now_Title %>
+            </b></h4>
+
+        <div class="context">
+            <h5>
+                <%= Wandering_Star_Now_Sub %>
+            </h5>
+            <h5>
+                <%= StarAsInRaseeiAsStar_Sub %>
+            </h5>
+            <% for(let i=0; i <=StarAsInRaseeiAsStar_Desc.length; i++) { %>
+                <p class="">
+                    <%= StarAsInRaseeiAsStar_Move[i] %>
+                </p>
+                <p class="">
+                    <%= StarAsInRaseeiAsStar_Desc[i] %>  <span class="text-green"> <%= StarAsInRaseeiAsStar_Percent[i] %>  </span>
+                </p>
+                
+                <% } %>
         </div>
     </div>
 

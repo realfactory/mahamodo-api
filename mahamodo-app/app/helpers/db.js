@@ -1,9 +1,20 @@
 const connection = require('../config/db.mysql.js');
 
+async function db_Query(sql, params) {
+    return new Promise((resolve, reject) => {
+        connection.query(sql, params, (error, results, fields) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
+
 async function dbQuery(sql) {
     return new Promise((resolve, reject) => {
         const query = sql;
-        // console.log(query);
         connection.query(query, (error, results) => {
             if (error) {
                 console.error(`Error occurred: ${error.message}`);
@@ -45,6 +56,7 @@ async function fcGetItemInTableDB(columnName, tableName, condition) {
 }
 
 module.exports = {
+    db_Query,
     dbQuery,
     getProvince,
     fcGetItemInTableDB

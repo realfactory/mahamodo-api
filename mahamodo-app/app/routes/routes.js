@@ -12,7 +12,6 @@ router.get("/age", (req, res) => {
 
 router.get('/calculate-age', ageController.calculateAge);
 
-
 // router.get("/birth-horoscope", (req, res) => {
 //     res.render('birth_horoscope', {
 //         appName: 'Mahamodo Put Date'
