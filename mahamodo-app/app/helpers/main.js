@@ -344,6 +344,7 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
 
     // 'ลัคนา
     Rad[10][0] = Rad[1][1];
+    // console.log('ลัคนา = ' + Rad[10][0]);
     for (let e10 = 0; e10 <= 1; e10++) {
         for (let ii = 0; ii <= 12; ii++) {
             if ((ii === 11 || ii === 12) && e10 === 1) {
@@ -352,30 +353,6 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
             // 'A1 = Rad(ii, 0) ระบบดวงอีแปะ A1 = Rad(ii, 1) ระบบดวง 10 ลัคนา  2 ขึ้นไปไม่มี
             let A1 = Rad[ii][e10];
             // console.log(ii , e10 , A1);
-            // 0 0 15126 15126
-            // 1 0 17317 17333   
-            // 2 0 8789  8804    
-            // 3 0 2332  2338   
-            // 4 0 16571 16598   
-            // 5 0 6351  6348
-            // 6 0 18457 18475   
-            // 7 0 16292  16293
-            // 8 0 16384  16383
-            // 9 0 16974  16974
-            // 10 0 40.20000000000011   49.799999
-            // 11 0 15648.691866324705  15647.82 
-            // 12 0 12345.673853714667  12344.80708 
-            // 0 1 19896                19896
-            // 1 1 40.20000000000011    49.799999
-            // 2 1 11454.857142857143   11467.71428
-            // 3 1 6995.6               7000.4
-            // 4 1 21192.6              21208.8
-            // 5 1 9486.42857142857     9484.285
-            // 6 1 815.6                830
-            // 7 1 21025.2              21025.8
-            // 8 1 14083                14083.5
-            // 9 1 13788                13788
-            // 10 1 undefined
 
             if (A1 == null) {
                 A1 = 0;
@@ -387,34 +364,7 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
 
             let B1 = A1 - (varBornPutdate_StarStayR[e10][ii] * 1800);
             if (B1 === 0) B1 = 1;
-
             //console.log(e10,ii,B1);
-            // 0 0 726  726
-            // 0 1 1117 1133
-            // 0 2 1589 1604
-            // 0 3 532  538
-            // 0 4 371  398
-            // 0 5 951  948
-            // 0 6 457  475
-            // 0 7 92   93 
-            // 0 8 184  183
-            // 0 9 774  774 
-            // 0 10 40.20000000000011   49.79
-            // 0 11 1248.6918663247052  1247.825
-            // 0 12 1545.6738537146666  1544.8070    
-            // 1 0 96                   96
-            // 1 1 40.20000000000011    49.7
-            // 1 2 654.8571428571431    667.714
-            // 1 3 1595.6000000000004   1600.4    
-            // 1 4 1392.5999999999985   1408.8    
-            // 1 5 486.42857142857065   484.285
-            // 1 6 815.6                830 
-            // 1 7 1225.2000000000007   1225.8
-            // 1 8 1483                 1483.5
-            // 1 9 1188                 1188
-            // 1 10 1                   1
-
-
             varBornPutdate_StarO[e10][ii] = Math.floor(B1 / 60) // 'รับค่า ดาวนี้ (ii)  อยู่องศา..... 
             varBornPutdate_StarL[e10][ii] = Math.floor(B1 - (varBornPutdate_StarO[e10][ii]) * 60) // 'รับค่า ดาวนี้ (ii)  อยู่ลิปดา..... 
 
@@ -2345,8 +2295,6 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
         length: 13
     }, () => new Array(21));
 
-    console.log(Sun.AA);
-
     Rad[1][0] = Sun.AA; // 'สมผุสอาทิตย์ คือ AA   สามารถเอาไปหาค่า ราศี องศา ลิปดา ได้เลย เช่น Ra = AA / 1800 หาสมผุสดาวนี้ว่าอยู่ราศีใด aRa คือ ราศี 1 ราศีมี 1800 ลิปดา
     Rad[1][16] = Sun.S1; // 'ผลอาทิตย์
     Rad[1][17] = Sun.Vs; // 'มัธยมรวิ
@@ -3463,10 +3411,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         for (let index = 0; index < QueryDuangNavang.length; index++) {
             const row = QueryDuangNavang[index];
             const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
-
             const queryParams = [row.index, row.entry];
-            console.log(sqlQuery, queryParams);
-
             const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
             if (tamnaiResults && tamnaiResults.length > 0) {
                 const title = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_NavangStarAsRasee[0][tamnaiResults[0].Stari])} ดวงนวางค์จักร]`;
@@ -3626,8 +3571,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                     }
                 } else if (varTodayLuk_StarLipdaAll[0][index2] > varBornLuk_StarLipdaAll[0][index1]) {
                     LipdaLongBornToday = varTodayLuk_StarLipdaAll[0][index2] - varBornLuk_StarLipdaAll[0][index1];
-                    console.log("2" + varBornLuk_StarLipdaAll[0][index2] + ' ' + varTodayLuk_StarLipdaAll[0][index1]);
-
                     aOng = Math.floor(LipdaLongBornToday / 60) // 'องศา
                     aLib = Math.floor(LipdaLongBornToday - (aOng * 60)) //'ลิปดา
                     if (aOng == 0 && aLib > 0) {
