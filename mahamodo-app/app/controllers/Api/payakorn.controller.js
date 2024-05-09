@@ -1,7 +1,6 @@
 // Assuming db.mysql.js exports a db or pool
-const dbConfig = require('../../config/db.config.js');
-const db = require('../../config/db.mysql.js');
-const fc_db = require('../../helpers/db.js');
+const connection = require('../../config/db.mysql.js');
+const db = require('../../helpers/db.js');
 const Validation = require('../../helpers/validation.js');
 const main = require('../../helpers/main.js');
 const Support = require('../../helpers/Support');
@@ -9,7 +8,7 @@ const moment = require('moment');
 
 // Function to retrieve table names from the database
 function fetchValidTables(callback) {
-    db.query("SHOW TABLES", (error, results) => {
+    connection.query("SHOW TABLES", (error, results) => {
         if (error) {
             console.error(`Error fetching table names: ${error.message}`);
             callback(error, null);
@@ -44,7 +43,7 @@ const findDataInTable = (req, res) => {
         let query = '';
         if (id) {
             query = `SELECT * FROM ?? WHERE id = ?`;
-            db.query(query, [table, id], (error, results) => {
+            connection.query(query, [table, id], (error, results) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
@@ -59,7 +58,7 @@ const findDataInTable = (req, res) => {
             });
         } else {
             query = `SELECT * FROM ??`;
-            db.query(query, [table], (error, results) => {
+            connection.query(query, [table], (error, results) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
@@ -107,9 +106,9 @@ const updateDataInTable = async (req, res) => {
         }
 
         // Ensure necessary columns exist before updating
-        fc_db.CreateColumnInTable(tableName).then(() => {
+        db.CreateColumnInTable(tableName).then(() => {
             let updateQuery = 'UPDATE ?? SET counsel = ?, prompt = ?, updatedAt = NOW() WHERE id = ?';
-            db.query(updateQuery, [tableName, counsel, prompt, id], (error, results) => {
+            connection.query(updateQuery, [tableName, counsel, prompt, id], (error, results) => {
                 if (error) {
                     console.error(`Error occurred: ${error.message}`);
                     return res.status(500).send({
@@ -127,7 +126,7 @@ const updateDataInTable = async (req, res) => {
 
                 // Fetch and return the updated data
                 let selectQuery = 'SELECT * FROM ?? WHERE id = ?';
-                db.query(selectQuery, [tableName, id], (error, results) => {
+                connection.query(selectQuery, [tableName, id], (error, results) => {
                     if (error) {
                         console.error(`Error occurred: ${error.message}`);
                         return res.status(500).send({
@@ -165,7 +164,7 @@ const DreamPredict = async (req, res) => {
     } = req.body;
 
     try {
-        const results = await fc_db.dbQuery(`SELECT * FROM dream WHERE sdream like '%${dream}%'`);
+        const results = await db.dbQuery(`SELECT * FROM dream WHERE sdream like '%${dream}%'`);
 
         if (results.length > 0) {
             return res.status(200).send({
