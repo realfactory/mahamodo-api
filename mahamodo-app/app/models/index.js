@@ -30,6 +30,5 @@ db.sequelize = sequelize;
 
 // Assuming your model is correctly defined and exported in 'dream.model.js'
 db.dreams = require("./dream.model.js")(sequelize, Sequelize);
-db.luktamnaikalakiniinpops = require("./luktamnaikalakiniinpop.model.js")(sequelize, Sequelize);
 
 module.exports = db;

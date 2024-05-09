@@ -1,17 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const payakornController = require('../controllers/Api/payakorn.controller.js');
 
-const dreamController = require('../controllers/dream.controller');
-const LuktamnaikalakiniinpopController = require('../controllers/luktamnaikalakiniinpop.controller');
-const payakornController = require('../controllers/payakorn.controller');
+// Import validations
+const ValidationSomPutDateApi = require('../controllers/Api/validations/sompudLukValidation');
+const ValidationDreamPredictApi = require('../controllers/Api/validations/dreamPredictValidation');
 
-router.get('/dream/list', dreamController.findAll);
-router.post('/dream/predict', dreamController.Predict);
-
-router.get('/luktamnaikalakiniinpop/list', LuktamnaikalakiniinpopController.findAll);
-router.post('/luktamnaikalakiniinpop/update', LuktamnaikalakiniinpopController.update);
-
-router.get('/payakorn/:table?/:id?', payakornController.findAll);
-router.post('/payakorn', payakornController.update);
+router.get('/payakorn/:table?/:id?', payakornController.findDataInTable);
+router.post('/payakorn', payakornController.updateDataInTable);
+router.post('/payakorn/dream/predict/', ValidationDreamPredictApi, payakornController.DreamPredict);
+router.post('/payakorn/sompudluk', ValidationSomPutDateApi, payakornController.SompudLuk);
 
 module.exports = router;

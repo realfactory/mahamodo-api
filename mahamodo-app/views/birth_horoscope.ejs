@@ -1,10 +1,10 @@
 <%- include('partials/header') %>
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> -->
-<style>
-    .text-green{
-        color: green;
-    }
-</style>
+    <style>
+        .text-green {
+            color: green;
+        }
+    </style>
     <div class="container">
         <h1>Welcome to <%= appName %>!</h1>
         <hr>
@@ -559,20 +559,24 @@
         </div>
 
         <hr>
-        <h4><b>คำทำนายลัคนาสถิตราศี</b></h4>
+        <h4><b>
+                <%= AscendantPrediction_Title %>
+            </b></h4>
         <div class="context">
             <p> <b>
-                    <%= Query_StarStayR10[0].LukLiveRasees +" "+ Query_StarStayR10[0].Rasees  + " (" +
-                        Query_StarStayR10[0].Raseei + ")" %>
+                    <%= AscendantPrediction_Sub %>
                 </b>
             </p>
             <p>
-                <%= Query_StarStayR10[0].PayakornText %>
+                <%= AscendantPrediction_Desc %>
+
             </p>
 
-            <p> <b>สีและอัญมณีที่ถูกโฉลกประจำราศี</b></p>
+            <p> <b>
+                    <%= AscendantPredictionGem_Title %>
+                </b></p>
             <p>
-                <%= Query_StarStayR10[0].PayakornColorGem %>
+                <%= AscendantPredictionGem_Desc %>
             </p>
         </div>
 
@@ -704,9 +708,11 @@
                     <%= StarAsInRaseeiAsStar_Move[i] %>
                 </p>
                 <p class="">
-                    <%= StarAsInRaseeiAsStar_Desc[i] %>  <span class="text-green"> <%= StarAsInRaseeiAsStar_Percent[i] %>  </span>
+                    <%= StarAsInRaseeiAsStar_Desc[i] %> <span class="text-green">
+                            <%= StarAsInRaseeiAsStar_Percent[i] %>
+                        </span>
                 </p>
-                
+
                 <% } %>
         </div>
     </div>

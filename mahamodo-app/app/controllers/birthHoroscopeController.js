@@ -34,7 +34,7 @@ exports.putDate = async (req, res) => {
     let currentHour = LukH.padStart(2, '0');
     let currentMinute = LukM.padStart(2, '0');
     let yourCurrentDate = 'วันที่ ' + currentDate + ' เวลา ' + currentHour + ':' + currentMinute + ' น.';
-
+    
     // ' รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
     if (birthDate) {
         NewBirthDate = await Support.fcDateGlobal(birthDate);
@@ -42,7 +42,7 @@ exports.putDate = async (req, res) => {
         SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
         SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
     }
-   
+
     // ' รับค่าสมผุส จร (สมผุสดาววันนี้)
     if (Today) {
         NewTodayDate = await Support.fcDateGlobal(Today);
@@ -53,7 +53,7 @@ exports.putDate = async (req, res) => {
 
     // console.log(SuriyatDate);
 
-    let Pakakorn = await main.PakakornSompod(SuriyatDate ,TodaySuriyatDate);
+    let Pakakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
 
     async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
         let SompodStarOnLabel;
@@ -93,7 +93,15 @@ exports.putDate = async (req, res) => {
         varBornLuk_PopsChars: Pakakorn.varBornLuk_PopsChars,
         varBornLuk_OwnerHousePopSS: Pakakorn.varBornLuk_OwnerHousePopSS,
         varBornLuk_KasediInPopistr: Pakakorn.varBornLuk_KasediInPopistr,
+        
         Query_StarStayR10: Pakakorn.Query_StarStayR10,
+
+        AscendantPrediction_Title : Pakakorn.AscendantPrediction_Title,
+        AscendantPrediction_Sub: Pakakorn.AscendantPrediction_Sub,
+        AscendantPrediction_Desc: Pakakorn.AscendantPrediction_Desc,
+        AscendantPredictionGem_Title: Pakakorn.AscendantPredictionGem_Title,
+        AscendantPredictionGem_Desc: Pakakorn.AscendantPredictionGem_Desc,
+        
         StarStay_GumLuk: Pakakorn.StarStay_GumLuk,
         StarStay_Patani: Pakakorn.StarStay_Patani,
 
@@ -131,12 +139,6 @@ exports.putDate = async (req, res) => {
         StarAsInRaseeiAsStar_Desc: Pakakorn.StarAsInRaseeiAsStar_Desc,
         StarAsInRaseeiAsStar_Move: Pakakorn.StarAsInRaseeiAsStar_Move,
         StarAsInRaseeiAsStar_Percent: Pakakorn.StarAsInRaseeiAsStar_Percent,
-        
+
     });
-};
-
-exports.SomPutDate =async (req ,res) =>{
-
-    // return
-    // {}
 };

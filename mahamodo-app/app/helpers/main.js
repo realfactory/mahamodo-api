@@ -1,6 +1,6 @@
 const connection = require('../config/db.mysql.js');
 const calendar = require('./calendarAstronomy.js');
-const db = require('./db.js');
+const fc_db = require('./db.js');
 const Support = require('./Support.js');
 const parameter = require('./parameter.js');
 const helpers = require('./helpers.js');
@@ -129,7 +129,7 @@ async function SetUpDownMThaiMoon(date, DayMooni, DaySuni) {
         let MoonInfo;
         let cboBorn_Country_Option = true;
         try {
-            let chkSetUpDownMThaiMoon = await db.fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
+            let chkSetUpDownMThaiMoon = await fc_db.fcGetItemInTableDB("chkSetUpDownMThaiMoon", "settingoption", "id=1");
             if (chkSetUpDownMThaiMoon === 'ใช่') {
                 let day = date.getDate().toString().padStart(2, '0');
                 let month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -167,7 +167,7 @@ async function SetUpDownMThaiMoon(date, DayMooni, DaySuni) {
             }
 
             if (sqlMoon) {
-                let resMoon = await db.dbQuery(sqlMoon);
+                let resMoon = await fc_db.dbQuery(sqlMoon);
                 if (resMoon && resMoon.length > 0) {
                     let DownUps = resMoon[0].downup === 1 ? "แรม" : "ขึ้น";
                     let Nighti = resMoon[0].night;
@@ -3099,31 +3099,53 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         //  ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
     }
 
+    // คำทำนายลัคนาสถิตราศี
+
+    // ลัคนาสถิตราศีกันย์ กันย์ (5)
+
+    // ลัคนาสถิตราศีกันย์ พยากรณ์ตามลักษณะราศีเจ้าชะตามักเป็นคนมีรูปร่างอรชอ้อนแอ้น มีผิวขาวปนเหลือง สงบเสงี่ยมเจียมตัว<br>รักสวยรักงาม ชอบความสะอาด พิถีพิถันในการแต่งตัว ชอบความเป็นระเบียบเรียบร้อย พูดจาไพเราะ มักมีตำหนิเป็นไฝปานที่แขน<br>มือ หรือไหล่แห่งใดแห่งหนึ่ง งานที่เหมาะสำหรับคุณควรเป็นงานนักประพันธ์ นักเขียน และเป็นหัวหน้าในหน่วยงานอื่นๆ โรคที่มักเกิดขึ้น<br>ถ้ามีคือโรคโลหิตจาง หลอดลมเอกเสบ หืด หอบ<br>
+
+    // สีและอัญมณีที่ถูกโฉลกประจำราศี
+
+    // สีและอัญมณีที่ถูกโฉลก เสริมดวงชะตาและทำให้เกิดโชคลาภ คือสีเขียว อัญมณีคือมรกต,หยก,เขียวส่อง สีและอัญมณีที่ห้ามใช้<br>คือสีม่วงคราม,แสดและส้ม อัญมณีคือโกเมน,พลอยสีส้ม, พลอยสีม่วงคราม<br>
+
     // varBornLuk_StarStayR == SuriyatDate.varBornPutdate_StarStayR[0][10] คำทำนายลัคนาสถิตราศี
     let Sql_StarStayR = "SELECT * FROM luktamnailukliverasee WHERE  Raseei= " + SuriyatDate.varBornPutdate_StarStayR[0][10];
-    let Query_StarStayR10 = await db.dbQuery(Sql_StarStayR);
-
-    // 'เริ่ม กุมลัคน์ 17408 
+    let Query_StarStayR10 = await fc_db.dbQuery(Sql_StarStayR);
+    let AscendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
+    let AscendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
+    let AscendantPrediction_Sub = "",
+        AscendantPrediction_Desc = "",
+        AscendantPredictionGem_Desc = "";
+    // Prediction of ascendant and zodiac sign
+    if (Query_StarStayR10.length === 1) {
+        AscendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
+        AscendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+        AscendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
+    }
+    // 'เริ่ม คำทำนายกุมลัคน์ 17408 
     let iRasee = SuriyatDate.varBornPutdate_StarStayR[0][10];
     let StarStay_GumLuk = [];
     for (let iStar = 0; iStar <= 9; iStar++) {
         if (iRasee == SuriyatDate.varBornPutdate_StarStayR[0][iStar]) {
             const sqlQuery = "SELECT * FROM luktamnaiholdluk WHERE Stari= " + iStar;
-            const queryResult = await db.dbQuery(sqlQuery);
+            const queryResult = await fc_db.dbQuery(sqlQuery);
             if (queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                 StarStay_GumLuk[iStar] = "ดาว " + await Support.fcStariToS(iStar) + " กุมลัคน์ (" + queryResult[0].Stari + ")ลั " + description;
             }
+        } else {
+            StarStay_GumLuk[0] = " ไม่มีคำทำนายนี้ ";
         }
     }
-    // 'จบ กุมลัคน์
+    // 'จบ คำทำนายกุมลัคน์
 
     // 'เริ่ม เล็งลัคนา // varBornLuk_PopLuksStar == varBornPutdate_PopLuksStar
     let StarStay_Patani = [];
     for (let Starii = 0; Starii <= iStarAll; Starii++) {
         if (SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] == "ปัตนิ") {
             const sqlQuery = "SELECT * FROM luktamnaioppositeluk WHERE Stari= " + Starii;
-            const queryResult = await db.dbQuery(sqlQuery);
+            const queryResult = await fc_db.dbQuery(sqlQuery);
             if (queryResult && queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                 StarStay_Patani[Starii] = "ดาว " + await Support.fcStariToS(Starii) + " เล็งลัคนา (" + queryResult[0].Stari + ") <--> ลั)" + description;
@@ -3334,7 +3356,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     let rSTD = SuriyatDate.varBornPutdate_RaSTD[0];
 
     // ไม่รู้มีไว้ทำไม
-    // let Result_LukSompodStarBorn = await db.dbQuery("SELECT * FROM luksompodstarborn WHERE rSTD<>'-' ORDER BY Stari ASC");
+    // let Result_LukSompodStarBorn = await fc_db.dbQuery("SELECT * FROM luksompodstarborn WHERE rSTD<>'-' ORDER BY Stari ASC");
     // if (Result_LukSompodStarBorn && Result_LukSompodStarBorn.length > 0) {
     //     Result_LukSompodStarBorn.forEach(async (row) => {
     //     });
@@ -3363,7 +3385,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                 for (let i = 0; i < parts.length; i++) {
                     const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
                     const queryParams = [row.index, parts[i]];
-                    const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+                    const tamnaiResults = await fc_db.db_Query(sqlQuery, queryParams);
                     if (tamnaiResults && tamnaiResults.length > 0) {
                         const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
                         const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
@@ -3374,7 +3396,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             } else {
                 const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
                 const queryParams = [row.index, row.entry];
-                const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+                const tamnaiResults = await fc_db.db_Query(sqlQuery, queryParams);
                 if (tamnaiResults && tamnaiResults.length > 0) {
 
                     const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
@@ -3412,7 +3434,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             const row = QueryDuangNavang[index];
             const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
             const queryParams = [row.index, row.entry];
-            const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+            const tamnaiResults = await fc_db.db_Query(sqlQuery, queryParams);
             if (tamnaiResults && tamnaiResults.length > 0) {
                 const title = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_NavangStarAsRasee[0][tamnaiResults[0].Stari])} ดวงนวางค์จักร]`;
                 const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
@@ -3452,12 +3474,12 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     StarAsKalakini = starAsKalakiniMap[DayBornMooniX] || null; // Default to null if no match
 
     if (StarAsKalakini != null) {
-        let Find_Pop = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${StarAsKalakini}'`); // 'เปิดดาวนี้ เพื่อหาภพ
+        let Find_Pop = await fc_db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${StarAsKalakini}'`); // 'เปิดดาวนี้ เพื่อหาภพ
         if (Find_Pop && Find_Pop.length == 1) {
             PopsKalakini = Find_Pop[0].rPopLuks;
         }
 
-        let Open_Pop = await db.dbQuery(`SELECT * FROM luktamnaikalakiniinpop WHERE KalakiniLivePops='${PopsKalakini}'`); // 'เปิดภพ
+        let Open_Pop = await fc_db.dbQuery(`SELECT * FROM luktamnaikalakiniinpop WHERE KalakiniLivePops='${PopsKalakini}'`); // 'เปิดภพ
         if (Open_Pop && Open_Pop.length == 1) {
             Star_Kalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
             Star_Kalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
@@ -3471,13 +3493,13 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     let Star_Born_TamPop_Sub = [];
     let Star_Born_TamPop_Desc = [];
     for (let j = 1; j <= 8; j++) {
-        const tamnaiResults = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
+        const tamnaiResults = await fc_db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
         if (tamnaiResults && tamnaiResults.length == 1) {
             const rPopLuks = SuriyatDate.varBornPutdate_PopLuksStar[0][j]
             const Popi = await Support.fcPopSToi(rPopLuks);
             const rLiveRasees = await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][j])
             const Rasees = " (" + await Support.fcStariToS(j) + "เป็น" + rPopLuks + ")   (ราศี" + rLiveRasees + ")"
-            const LukTamnaiPopResults = await db.dbQuery(`SELECT * FROM luktamnaipop WHERE StariLiveinPopi='${j}-${Popi}' `);
+            const LukTamnaiPopResults = await fc_db.dbQuery(`SELECT * FROM luktamnaipop WHERE StariLiveinPopi='${j}-${Popi}' `);
             if (LukTamnaiPopResults && LukTamnaiPopResults.length == 1) {
                 const Sub = LukTamnaiPopResults[0].StarLiveinPops + " " + Rasees;
                 const Description = LukTamnaiPopResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
@@ -3508,7 +3530,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     House_Star_Pops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
 
     for (let iPop = 0; iPop <= 11; iPop++) {
-        const LukTamnaiKasedInPopResults = await db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
+        const LukTamnaiKasedInPopResults = await fc_db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
         if (LukTamnaiKasedInPopResults && LukTamnaiKasedInPopResults.length == 1) {
             const Description = LukTamnaiKasedInPopResults[0].PayakonText.replace(/<br>/g, "").replace(/<b>/g, "");
             House_Star_Pops_Desc.push(`${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`);
@@ -3559,7 +3581,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
 
                 if (varTodayLuk_StarLipdaAll[0][index2] < varBornLuk_StarLipdaAll[0][index1]) { //'ถ้าดาวจรยังไม่ถึงดาวกำเนิด
                     LipdaLongBornToday = varBornLuk_StarLipdaAll[0][index1] - varTodayLuk_StarLipdaAll[0][index2];
-                    console.log("1" + LipdaLongBornToday);
                     aOng = Math.floor(LipdaLongBornToday / 60) // 'องศา
                     aLib = Math.floor(LipdaLongBornToday - (aOng * 60)) //'ลิปดา
                     if (aOng == 0 && aLib > 0) {
@@ -3599,7 +3620,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
 
                     // คำพยากรณ์
                     let StarTodayToStarBorns = "";
-                    const LukTamnaiStarTodayToStarBornResults = await db.dbQuery(`SELECT * FROM luktamnaistartodaytostarborn WHERE StarTodayi='${index2}' AND StarBorni='${index1}'`);
+                    const LukTamnaiStarTodayToStarBornResults = await fc_db.dbQuery(`SELECT * FROM luktamnaistartodaytostarborn WHERE StarTodayi='${index2}' AND StarBorni='${index1}'`);
                     if (LukTamnaiStarTodayToStarBornResults.length > 0) {
                         let sTextPayakornToday = "คำพยากรณ์ " + LukTamnaiStarTodayToStarBornResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                         StarTodayToStarBorns = LukTamnaiStarTodayToStarBornResults[0].StarTodayToStarBorns;
@@ -3623,6 +3644,11 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         strBornStarAsHouseInPop,
         varBornLuk_OwnerHousePopSS, //ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
         varBornLuk_KasediInPopistr,
+        AscendantPrediction_Title, // คำทำนายลัคนาสถิตราศี
+        AscendantPredictionGem_Title, // สีและอัญมณีที่ถูกโฉลกประจำราศี
+        AscendantPrediction_Sub,
+        AscendantPrediction_Desc,
+        AscendantPredictionGem_Desc,
         Query_StarStayR10, // คำทำนายลัคนาสถิตราศี
         StarStay_GumLuk, // กุมลัคน์
         StarStay_Patani, // เล็งลัคนา
@@ -3696,7 +3722,7 @@ async function getPercent_PakakornStarTodayKumBorn(nBornLipda, nTodayLipda) {
 async function getStarSamePayakornDescription(raseeIndex, star1, star2) {
     const sqlQuery = "SELECT MateShort, PayakornText FROM luktamnaistarmateborn_original WHERE Stari1 = ? AND Stari2 = ?";
     const queryParams = [star1, star2];
-    const queryResult = await db.db_Query(sqlQuery, queryParams);
+    const queryResult = await fc_db.db_Query(sqlQuery, queryParams);
     if (queryResult && queryResult.length > 0) {
         const zodiac = await Support.fcRaseeiToS(raseeIndex);
         return `ดาว ${star1} กับ ดาว ${star2} อยู่ร่วมราศีเดียวกัน [อยู่ราศี ${zodiac}]. เป็นดาว ${queryResult[0].MateShort} ทำนายว่า ${queryResult[0].PayakornText}`;
@@ -3736,7 +3762,7 @@ async function analyzeStarConjunctions(SuriyatDate) {
     async function getStarDescription(raseeIndex, star1, star2) {
         const sqlQuery = "SELECT MateShort, PayakornText FROM luktamnaistarmateborn_original WHERE Stari1 = ? AND Stari2 = ?";
         const queryParams = [star1, star2];
-        const queryResult = await db.db_Query(sqlQuery, queryParams);
+        const queryResult = await fc_db.db_Query(sqlQuery, queryParams);
         if (queryResult && queryResult.length > 0) {
             const zodiac = await Support.fcRaseeiToS(raseeIndex);
             return `Star ${star1} and Star ${star2} are in the same zodiac sign [${zodiac}]. Relationship: ${queryResult[0].MateShort}, Prediction: ${queryResult[0].PayakornText}`;
