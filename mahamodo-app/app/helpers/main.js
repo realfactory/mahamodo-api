@@ -5,11 +5,8 @@ const Support = require('./Support.js');
 const parameter = require('./parameter.js');
 const helpers = require('./helpers.js');
 
-async function cutTimeLocal(date, hour, minute, cutTimeLocalYN, sProv) {
-    let adjustedHour, adjustedMinute, timeLocalResponse, timeLocal, minuteLocal;
-    let province = sProv ? sProv : 'กรุงเทพมหานคร';
+async function cutTimeLocal(date, hour, minute, cutTimeLocalYN = false, sProv) {
 
-    // If cutTimeLocal is not needed, return the original hour and minute.
     if (!cutTimeLocalYN) {
         return {
             date,
@@ -18,14 +15,20 @@ async function cutTimeLocal(date, hour, minute, cutTimeLocalYN, sProv) {
         }
     }
 
-    // Retrieve the local time difference for the specified province.
-    timeLocal = await fcGetLukTimeLocalThailandThisProvValue(sProv);
-    minuteLocal = parseInt(timeLocal[0].ProvTime.substring(4, 6), 10);
+    let adjustedHour, adjustedMinute, province;
 
     // Calculate the total minutes by converting the hours to minutes and adding the minutes, then adjust by the local offset.
     if (cutTimeLocalYN) {
-        timeLocalResponse = await fcGetLukTimeLocalThailandThisProvValue(province);
-        minuteLocal = parseInt(timeLocalResponse[0].ProvTime.substring(4, 6));
+        // check province in Database
+        let queryResult = await db.dbQuery(`SELECT * FROM luktimelocal_thailand WHERE ProvName='${sProv}'`);
+        if (queryResult.length == 1) {
+            province = queryResult[0].ProvName;
+        } else {
+            province = 'กรุงเทพมหานคร';
+        }
+
+        const timeLocalResponse = await fcGetLukTimeLocalThailandThisProvValue(province);
+        let minuteLocal = parseInt(timeLocalResponse[0].ProvTime.substring(4, 6));
         let totalMinutes = parseInt(hour) * 60 + parseInt(minute) - minuteLocal;
         adjustedHour = Math.floor(totalMinutes / 60);
         adjustedMinute = totalMinutes % 60;
@@ -38,10 +41,6 @@ async function cutTimeLocal(date, hour, minute, cutTimeLocalYN, sProv) {
             date.setDate(date.getDate() - 1);
             adjustedHour += 24;
         }
-
-    } else {
-        adjustedHour = parseInt(birthHour, 10);
-        adjustedMinute = parseInt(birthMinute, 10);
     }
 
     return {
@@ -52,7 +51,7 @@ async function cutTimeLocal(date, hour, minute, cutTimeLocalYN, sProv) {
 
 }
 
-async function calculateLunarDay(date, hour, minute, cutTimeLocalYN, sProv) {
+async function calculateLunarDay(date, hour, minute, cutTimeLocalYN = false, sProv) {
 
     let intTimeAllMBorn, minuteLocal, totalMLocalMAndBornM, timeLocal;
     let day = date.getDate();
@@ -60,16 +59,19 @@ async function calculateLunarDay(date, hour, minute, cutTimeLocalYN, sProv) {
     let year = date.getFullYear();
     let yearTh = date.getFullYear() + 543;
 
-    // 'พิเศษ 'ตั้งแต่ พ.ศ.2483 ลงไป ถ้าเป็นเดือน 1,2,3 (ม.ค., ก.พ., มี.ค.) ให้ + พ.ศ. เพิ่ม 1
-    // if (yearTh <= 2483 && (month === 1 || month === 2 || month === 3)) {
-    //     year += 1;
-    // }
-
     let dateFormat = new Date(year, month - 1, day); // Setup initial date format.
 
     if (cutTimeLocalYN) {
 
-        timeLocal = await fcGetLukTimeLocalThailandThisProvValue(sProv);
+        // check province in Database
+        let queryResult = await db.dbQuery(`SELECT * FROM luktimelocal_thailand WHERE ProvName='${sProv}'`);
+        if (queryResult.length == 1) {
+            province = queryResult[0].ProvName;
+        } else {
+            province = 'กรุงเทพมหานคร';
+        }
+
+        timeLocal = await fcGetLukTimeLocalThailandThisProvValue(province);
         minuteLocal = parseInt(timeLocal[0].ProvTime.substring(4, 6), 10);
         intTimeAllMBorn = (hour * 60) + minute;
         totalMLocalMAndBornM = intTimeAllMBorn - minuteLocal;
@@ -97,6 +99,7 @@ async function calculateLunarDay(date, hour, minute, cutTimeLocalYN, sProv) {
     if (hour * 60 + minute < 6 * 60) {
         dayMooni = (dayMooni - 1) || 7;
     }
+
     if ((daySuni === 3 && hour * 60 + minute >= 18 * 60) || (daySuni === 4 && hour * 60 + minute < 6 * 60)) {
         dayMooni = 8;
     }

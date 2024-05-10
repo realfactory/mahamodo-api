@@ -67,6 +67,7 @@ function fcMonthiToSF(month) {
     return month >= 1 && month <= 12 ? shortMonth[month - 1] : '';
 }
 
+ // 'พิเศษ 'ตั้งแต่ พ.ศ.2483 ลงไป ถ้าเป็นเดือน 1,2,3 (ม.ค., ก.พ., มี.ค.) ให้ + พ.ศ. เพิ่ม 1
 async function diffYearBorn(year, month) {
     let yearTh = parseInt(year) + 543;
     if (yearTh <= 2483 && month >= 1 && month <= 3) {
@@ -81,8 +82,6 @@ async function fcDateGlobal(InputDate) {
 
     yearB = await diffYearBorn(yearB, monthB);
 
-    // let updatedDate = new Date(yearB, monthB - 1, dayB);
-
     let NewDateUTC = new Date(Date.UTC(yearB, monthB - 1, dayB));
 
     return NewDateUTC;
@@ -91,6 +90,7 @@ async function fcDateGlobal(InputDate) {
 // async function fcTime27To9(varInput) {
 //     return ((varInput - 1) % 9) + 1;
 // }
+
 async function fcTime27To9(varInput) {
     var result = varInput % 9;
     return result === 0 ? 9 : result;

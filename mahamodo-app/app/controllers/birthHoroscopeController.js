@@ -51,8 +51,6 @@ exports.putDate = async (req, res) => {
         SompodStarToday10 = await rdiOptionSompodBorn_Ra_CheckedChanged(4, TodaySuriyatDate);
     }
 
-    // console.log(SuriyatDate);
-
     let Pakakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
 
     async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
