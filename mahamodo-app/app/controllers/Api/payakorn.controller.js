@@ -4,6 +4,7 @@ const db = require('../../helpers/db.js');
 const Validation = require('../../helpers/validation.js');
 const main = require('../../helpers/main.js');
 const Support = require('../../helpers/Support');
+const graph_main = require('../../helpers/number_graph_mail.js');
 const moment = require('moment');
 
 // Function to retrieve table names from the database
@@ -279,12 +280,12 @@ const SompudLuk = async (req, res, next) => {
         varBornLuk_OwnerHousePopSS: Pakakorn.varBornLuk_OwnerHousePopSS,
         varBornLuk_KasediInPopistr: Pakakorn.varBornLuk_KasediInPopistr,
 
-        AscendantPrediction_Title : Pakakorn.AscendantPrediction_Title,
+        AscendantPrediction_Title: Pakakorn.AscendantPrediction_Title,
         AscendantPrediction_Sub: Pakakorn.AscendantPrediction_Sub,
         AscendantPrediction_Desc: Pakakorn.AscendantPrediction_Desc,
         AscendantPredictionGem_Title: Pakakorn.AscendantPredictionGem_Title,
         AscendantPredictionGem_Desc: Pakakorn.AscendantPredictionGem_Desc,
-        
+
         StarStay_GumLuk: Pakakorn.StarStay_GumLuk,
         StarStay_Patani: Pakakorn.StarStay_Patani,
 
@@ -326,7 +327,25 @@ const SompudLuk = async (req, res, next) => {
 
 };
 
+const graphlife = async (req, res) => {
+
+    const {
+        birth_day,
+        birth_hour,
+        birth_minute,
+    } = req.body;
+
+
+    // const graph_main =  await frmTamnai_Number_Graph_Main(birth_day);
+
+    return res.status(200).send({
+        status: 200,
+        message: "",
+    });
+}
+
 exports.findDataInTable = findDataInTable;
 exports.updateDataInTable = updateDataInTable;
 exports.DreamPredict = DreamPredict;
 exports.SompudLuk = SompudLuk;
+exports.graphlife = graphlife;

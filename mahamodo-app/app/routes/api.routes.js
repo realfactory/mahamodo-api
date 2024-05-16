@@ -11,4 +11,6 @@ router.post('/payakorn', payakornController.updateDataInTable);
 router.post('/payakorn/dream/predict/', ValidationDreamPredictApi, payakornController.DreamPredict);
 router.post('/payakorn/sompudluk', ValidationSomPutDateApi, payakornController.SompudLuk);
 
+router.post('/payakorn/graphlife', payakornController.graphlife);
+
 module.exports = router;

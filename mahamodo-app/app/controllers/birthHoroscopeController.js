@@ -33,8 +33,8 @@ exports.putDate = async (req, res) => {
 
     let currentHour = LukH.padStart(2, '0');
     let currentMinute = LukM.padStart(2, '0');
-    let yourCurrentDate = 'วันที่ ' + currentDate + ' เวลา ' + currentHour + ':' + currentMinute + ' น.';
-    
+    let yourCurrentDate = 'วันที่ ' + now + ' เวลา ' + currentHour + ':' + currentMinute + ' น.';
+
     // ' รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
     if (birthDate) {
         NewBirthDate = await Support.fcDateGlobal(birthDate);
@@ -77,6 +77,7 @@ exports.putDate = async (req, res) => {
         YourSurName: YourSurName,
 
         lblDaySBirthSuriyaKati: SuriyatDate.lblDaySBirthSuriyaKati,
+
         YourBirthday: SuriyatDate.YourBirthday,
         YourBirthdayDateUse: SuriyatDate.YourBirthdayDateUse,
         YearAgeInfo: SuriyatDate.YearAgeInfo,
@@ -91,15 +92,15 @@ exports.putDate = async (req, res) => {
         varBornLuk_PopsChars: Pakakorn.varBornLuk_PopsChars,
         varBornLuk_OwnerHousePopSS: Pakakorn.varBornLuk_OwnerHousePopSS,
         varBornLuk_KasediInPopistr: Pakakorn.varBornLuk_KasediInPopistr,
-        
+
         Query_StarStayR10: Pakakorn.Query_StarStayR10,
 
-        AscendantPrediction_Title : Pakakorn.AscendantPrediction_Title,
+        AscendantPrediction_Title: Pakakorn.AscendantPrediction_Title,
         AscendantPrediction_Sub: Pakakorn.AscendantPrediction_Sub,
         AscendantPrediction_Desc: Pakakorn.AscendantPrediction_Desc,
         AscendantPredictionGem_Title: Pakakorn.AscendantPredictionGem_Title,
         AscendantPredictionGem_Desc: Pakakorn.AscendantPredictionGem_Desc,
-        
+
         StarStay_GumLuk: Pakakorn.StarStay_GumLuk,
         StarStay_Patani: Pakakorn.StarStay_Patani,
 
@@ -140,3 +141,11 @@ exports.putDate = async (req, res) => {
 
     });
 };
+
+exports.putDateForm = async (req, res) => {
+    let provinces = await db.getProvince();
+    res.render('birth_horoscope_form', {
+        appName: 'API Services.',
+        provinces: provinces,
+    });
+}
