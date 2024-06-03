@@ -11,7 +11,7 @@
         <p>ผูกดวง เจ้าชะตา (ดวงกำเนิด)</p>
 
         <div class="content">
-            <form action="/birth-horoscope" method="get">
+            <form action="/birth-horoscope/post" method="get">
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="row g-2 align-items-center mb-3">
@@ -250,7 +250,7 @@
                                 <%= SompodStar.lblStarO[i] %>
                             </td>
                             <td>
-                                <%= SompodStar.lblStarL[i] %>
+                                <%= SompodStar.lblStarL[i] %> . <%= SompodStar.lblSpeedCharBorn[i] %>
                             </td>
                             <td>
                                 <%= SompodStar.lblPop[i] %>
@@ -294,7 +294,6 @@
 
             </table>
         </div>
-
         <p>สมผุสดาวกำเนิด 10 ลัคนา : <%= YourBirthday %>
         </p>
         <div class="context">
@@ -375,10 +374,8 @@
                 </tbody>
             </table>
         </div>
-
         <p>สมผุสดาวจร ราศีจักร : <%= yourCurrentDate %>
         </p>
-
         <div class="context">
             <table class="table w-100">
                 <thead>
@@ -458,7 +455,6 @@
                 </tbody>
             </table>
         </div>
-
         <p>สมผุสดาวจร ราศีจักร 10 ลัคนา: <%= yourCurrentDate %>
         </p>
         <div class="context">
@@ -548,7 +544,6 @@
                 </p>
                 <% } %>
         </div>
-
         <h4><b>ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด</b></h4>
         <div class="context">
             <% for(let i=0; i <=varBornLuk_OwnerHousePopSS[0].length; i++) { %>
@@ -557,7 +552,6 @@
                 </p>
                 <% } %>
         </div>
-
         <hr>
         <h4><b>
                 <%= AscendantPrediction_Title %>
@@ -579,9 +573,7 @@
                 <%= AscendantPredictionGem_Desc %>
             </p>
         </div>
-
         <h4><b>คำทำนายดาวกุมลัคนา</b></h4>
-
         <div class="context">
             <% for(let i=0; i <=StarStay_GumLuk.length; i++) { %>
                 <p class="">
@@ -589,7 +581,6 @@
                 </p>
                 <% } %>
         </div>
-
         <h4><b>คำทำนายดาวเล็งลัคนา</b></h4>
         <div class="context">
             <% for(let i=0; i <=StarStay_Patani.length; i++) { %>
@@ -611,7 +602,6 @@
                 <%= StarAsTanuSED_Desc %>
             </p>
         </div>
-
         <h4><b>
                 <%= Star_Same_Title %>
             </b></h4>

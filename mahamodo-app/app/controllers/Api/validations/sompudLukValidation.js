@@ -2,7 +2,7 @@ const { body } = require('express-validator');
 const moment = require('moment');
 
 const ValidationSomPutDateApi = [
-    body('birth_day').notEmpty().withMessage('Please input birthday')
+    body('date_of_birth').notEmpty().withMessage('Please input birthday')
     .custom(value => {
         const formattedDate = moment(value, 'YYYY-MM-DD', true);
         if (!formattedDate.isValid()) {
@@ -10,16 +10,6 @@ const ValidationSomPutDateApi = [
         }
         return true;
     }),
-    body('birth_hour').notEmpty().withMessage('Please input birth hour')
-    .isInt({
-        min: 0,
-        max: 23
-    }).withMessage('Birth hour must be between 0 and 23'),
-    body('birth_minute').notEmpty().withMessage('Please input birth minute')
-    .isInt({
-        min: 0,
-        max: 59
-    }).withMessage('Birth minute must be between 0 and 59'),
     body('province').notEmpty().withMessage('Please input province language thailand.'),
     body('current_date').custom((value, { req }) => {
         if (value === undefined || value.trim() === '') {

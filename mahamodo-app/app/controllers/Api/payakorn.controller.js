@@ -4,7 +4,8 @@ const db = require('../../helpers/db.js');
 const Validation = require('../../helpers/validation.js');
 const main = require('../../helpers/main.js');
 const Support = require('../../helpers/Support');
-const graph_main = require('../../helpers/number_graph_mail.js');
+const GraphMain = require('../../helpers/number_graph_main.js');
+
 const moment = require('moment');
 
 // Function to retrieve table names from the database
@@ -191,16 +192,29 @@ const DreamPredict = async (req, res) => {
 };
 
 const SompudLuk = async (req, res, next) => {
+
     // Assume Validation.validation sends a response if there are errors and halts if not
     const validationResult = Validation.validation(req, res);
     if (validationResult) {
         return; // Stop further execution if the response was already sent
     }
 
+    /* ############## format date Input ###################### 
+        
+        "date_of_birth": "1993-01-10",
+        "time_of_birth": "10:30",
+        "province" : "กระบี่",
+        "unknow_time_of_birth" : 1
+        "new_payakorn_status" : 1 or 0;
+
+        ############## format date Input ###################### 
+    */
+
     const {
-        birth_day,
-        birth_hour,
-        birth_minute,
+        new_payakorn_status,
+        lukborn,
+        date_of_birth,
+        time_of_birth,
         province,
         current_date,
         current_hour,
@@ -220,31 +234,28 @@ const SompudLuk = async (req, res, next) => {
         province = "Not provided";
     }
 
-    const finalHour = birth_hour || 6;
-    const finalMinute = birth_minute || 30;
+    const [finalHour, finalMinute] = time_of_birth.split(':');
 
     const finalCurrentDate = current_date || moment().format('YYYY-MM-DD');
     const finalCurrentHour = current_hour || moment().format('HH');
     const finalCurrentMinute = current_minute || moment().format('mm');
 
-    let now = new Date(finalCurrentDate);
-    // let currentDate = now.toISOString().split('T')[0];
-    // let currentDate = new Intl.DateTimeFormat('en-CA', { // 'en-CA' uses YYYY-MM-DD format by default
-    //     year: 'numeric',
-    //     month: '2-digit',
-    //     day: '2-digit',
-    //     timeZone: 'Asia/Bangkok'
-    // }).format(now);
-
     let SuriyatDate, TodaySuriyatDate, SompodStar, SompodStar10, SompodStarToday, SompodStarToday10;
 
     // ' รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
-    if (birth_day) {
-        const NewBirthDate = await Support.fcDateGlobal(birth_day);
+    if (new_payakorn_status) {
+        console.log("new Payakorn Born");
+        const NewBirthDate = await Support.fcDateGlobal(date_of_birth);
         SuriyatDate = await main.CastHoroscope_SumSuriyatMain_Born(NewBirthDate, finalHour, finalMinute, CutTimeLocalYN, province);
         SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
         SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
-
+    } else {
+        console.log("Old Payakorn Born");
+        // const jsonObject = JSON.parse(lukborn);
+        // const cleanedString = jsonObject.replace(/\\/g, '');
+        SuriyatDate = JSON.parse(lukborn);
+        SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
+        SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
     }
 
     // ' รับค่าสมผุส จร (สมผุสดาววันนี้)
@@ -255,7 +266,14 @@ const SompudLuk = async (req, res, next) => {
         SompodStarToday10 = await rdiOptionSompodBorn_Ra_CheckedChanged(4, TodaySuriyatDate);
     }
 
-    let Pakakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
+    let Payakorn, PayakornBorn, PayakornToday;
+    //  Payakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
+    if (new_payakorn_status) {
+        PayakornBorn = await main.PayakornBorn(SuriyatDate);
+    } else {
+        PayakornBorn = [];
+    }
+    PayakornToday = await main.PayakornToday(SuriyatDate, TodaySuriyatDate);
 
     async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
         let SompodStarOnLabel;
@@ -263,66 +281,41 @@ const SompudLuk = async (req, res, next) => {
         return SompodStarOnLabel;
     }
 
+    const astrologyInfo = {
+        YearAgeInfo: SuriyatDate.YearAgeInfo,
+        YourBirthday: SuriyatDate.YourBirthday,
+        YourBirthdayDateUse: SuriyatDate.YourBirthdayDateUse,
+        birthDateMoonInfo: SuriyatDate.birthDateMoonInfo,
+        SurisBirth: SuriyatDate.SurisBirth,
+        lblDaySBirthSuriyaKati: SuriyatDate.lblDaySBirthSuriyaKati,
+        LukBornRasees: PayakornBorn.LukBornRasees,
+        // dayMooni : SuriyatDate.dayMooni,
+        // daySuni : SuriyatDate.daySuni,
+    }
+
+    const res_lukborn = {
+        astrologyInfo: astrologyInfo,
+        SuriyatDate: SuriyatDate,
+        PayakornBorn: PayakornBorn,
+    };
+
+    const res_today = {
+        PayakornToday: PayakornToday
+    }
+
+    const StartforThaiHoroscopeChart = {
+        SompodStarBorn: SompodStar,
+        SompodStarToday: SompodStarToday,
+    }
+
     return res.status(200).send({
         status: 200,
-        message: "",
-        finalCurrentDate,
-        finalCurrentHour,
-        finalCurrentMinute,
-        MappingProvince: MappingProvince,
-
-        Somphusadao_birth: SompodStar,
-        Somphusadao_birth_10: SompodStar10,
-        Somphusadao_Today: SompodStarToday,
-        Somphusadao_Today_10: SompodStarToday10,
-        varBornLuk_PopsChars: Pakakorn.varBornLuk_PopsChars,
-
-        varBornLuk_OwnerHousePopSS: Pakakorn.varBornLuk_OwnerHousePopSS,
-        varBornLuk_KasediInPopistr: Pakakorn.varBornLuk_KasediInPopistr,
-
-        AscendantPrediction_Title: Pakakorn.AscendantPrediction_Title,
-        AscendantPrediction_Sub: Pakakorn.AscendantPrediction_Sub,
-        AscendantPrediction_Desc: Pakakorn.AscendantPrediction_Desc,
-        AscendantPredictionGem_Title: Pakakorn.AscendantPredictionGem_Title,
-        AscendantPredictionGem_Desc: Pakakorn.AscendantPredictionGem_Desc,
-
-        StarStay_GumLuk: Pakakorn.StarStay_GumLuk,
-        StarStay_Patani: Pakakorn.StarStay_Patani,
-
-        StarAsTanuSED_Title: Pakakorn.StarAsTanuSED_Title,
-        StarAsTanuSED_Sub: Pakakorn.StarAsTanuSED_Sub,
-        StarAsTanuSED_Desc: Pakakorn.StarAsTanuSED_Desc,
-
-        Star_Same_Title: Pakakorn.Star_Same_Title,
-        Star_Same_Sub: Pakakorn.Star_Same_Sub,
-        Star_Same_Desc: Pakakorn.Star_Same_Desc,
-
-        Standard_Stars_DuangRasee_Title: Pakakorn.Standard_Stars_DuangRasee_Title,
-        Standard_Stars_DuangRasee_Sub: Pakakorn.Standard_Stars_DuangRasee_Sub,
-        Standard_Stars_DuangRasee_Desc: Pakakorn.Standard_Stars_DuangRasee_Desc,
-
-        Standard_Stars_DuangNavang_Sub: Pakakorn.Standard_Stars_DuangNavang_Sub,
-        Standard_Stars_DuangNavang_Title: Pakakorn.Standard_Stars_DuangNavang_Title,
-        Standard_Stars_DuangNavang_Desc: Pakakorn.Standard_Stars_DuangNavang_Desc,
-
-        Star_Kalakini_Title: Pakakorn.Star_Kalakini_Title,
-        Star_Kalakini_Sub: Pakakorn.Star_Kalakini_Sub,
-        Star_Kalakini_Desc: Pakakorn.Star_Kalakini_Desc,
-
-        Star_Born_TamPop_Title: Pakakorn.Star_Born_TamPop_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
-        Star_Born_TamPop_Sub: Pakakorn.Star_Born_TamPop_Sub,
-        Star_Born_TamPop_Desc: Pakakorn.Star_Born_TamPop_Desc,
-
-        House_Star_Pops_Title: Pakakorn.House_Star_Pops_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
-        House_Star_Pops_Sub: Pakakorn.House_Star_Pops_Sub,
-        House_Star_Pops_Desc: Pakakorn.House_Star_Pops_Desc,
-
-        Wandering_Star_Now_Title: Pakakorn.Wandering_Star_Now_Title, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
-        Wandering_Star_Now_Sub: Pakakorn.Wandering_Star_Now_Sub,
-        StarAsInRaseeiAsStar_Sub: Pakakorn.StarAsInRaseeiAsStar_Sub,
-        StarAsInRaseeiAsStar_Desc: Pakakorn.StarAsInRaseeiAsStar_Desc,
-        StarAsInRaseeiAsStar_Move: Pakakorn.StarAsInRaseeiAsStar_Move,
-        StarAsInRaseeiAsStar_Percent: Pakakorn.StarAsInRaseeiAsStar_Percent,
+        message: "success",
+        data: {
+            lukborn: res_lukborn,
+            luktoday: res_today,
+            StartforThaiHoroscopeChart: StartforThaiHoroscopeChart,
+        }
     });
 
 };
@@ -333,15 +326,18 @@ const graphlife = async (req, res) => {
         birth_day,
         birth_hour,
         birth_minute,
+        province,
     } = req.body;
 
-
-    // const graph_main =  await frmTamnai_Number_Graph_Main(birth_day);
+    let CutTimeLocalYN = 1;
+    let sProv = province;
+    const Number_Graph_Main = GraphMain.frmTamnai_Number_Graph_Main(birth_day, birth_hour, birth_minute, CutTimeLocalYN, sProv);
 
     return res.status(200).send({
         status: 200,
         message: "",
     });
+
 }
 
 exports.findDataInTable = findDataInTable;

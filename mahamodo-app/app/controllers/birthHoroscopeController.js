@@ -34,7 +34,7 @@ exports.putDate = async (req, res) => {
     let currentHour = LukH.padStart(2, '0');
     let currentMinute = LukM.padStart(2, '0');
     let yourCurrentDate = 'วันที่ ' + now + ' เวลา ' + currentHour + ':' + currentMinute + ' น.';
-
+    
     // ' รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
     if (birthDate) {
         NewBirthDate = await Support.fcDateGlobal(birthDate);
@@ -52,13 +52,13 @@ exports.putDate = async (req, res) => {
     }
 
     let Pakakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
-
+   
     async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
         let SompodStarOnLabel;
         SompodStarOnLabel = await main.CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate);
         return SompodStarOnLabel;
     }
-
+   
     res.render('birth_horoscope', {
         appName: 'API Services.',
         currentDate: currentDate,

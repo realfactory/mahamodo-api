@@ -9,9 +9,9 @@ async function cutTimeLocal(date, hour, minute, cutTimeLocalYN = false, sProv) {
 
     if (!cutTimeLocalYN) {
         return {
-            date,
-            hour,
-            minute
+            date: date,
+            adjustedHour: hour,
+            adjustedMinute: minute
         }
     }
 
@@ -240,6 +240,111 @@ async function adjustBirthTime(birthDate, birthHour, birthMinute, cutTimeLocalYN
 
 }
 
+async function CastHoroscope_SpeedAndDirect_AllStar(RadSpeed) {
+    // รับค่าสมผุสเมื่อวาน 
+    // เอาค่าสมผุส Rad(iStar, 0) ที่ได้มา (จากคำบรรทัดบน) ใส่ในตัวแปร RadSpeed(iStar, 1, 0)
+    // ' 1 = พักร (ถอยหลัง) 2 = มนท์ (ช้าหรือหยุดนิ่ง) 3 = ปกติ 4 = เสริด (เดินหน้าหรือเร็ว)
+
+    let TemToday, TemYesterday, TemDif1;
+    for (let iStar = 0; iStar <= 9; iStar++) {
+        TemToday = RadSpeed[iStar][0][0]; // 'สมผุสปัจจุบัน
+        TemYesterday = RadSpeed[iStar][1][0]; //'สมผุสเมื่อวาน
+        RadSpeed[iStar][4][0] = 3; //'ค่า พักร มนท์ เสริด เริ่มต้นที่ ปกติ
+
+        TemDif1 = (TemToday - TemYesterday);
+
+        if (TemDif1 < 0) {
+            RadSpeed[iStar][4][0] = 1; // Retrograde
+        }
+        if (TemDif1 < -20000) {
+            TemDif1 += 21600;
+        }
+
+        if (iStar === 2) {
+            let aRaYes, BB1Yes, aOngYes, aLibYes;
+            let aRaToday, BB1Today, aOngToday, aLibToday;
+
+            aRaYes = Math.floor(TemYesterday / 1800); // Determine the zodiac sign yesterday
+            aRaToday = Math.floor(TemToday / 1800); // Determine the zodiac sign today
+
+            if (aRaYes === 11 && aRaToday === 0) {
+                // If yesterday the star was in sign 11 and today it's in sign 0, set status to normal instead of retrograde
+                RadSpeed[iStar][4][0] = 3;
+            }
+        }
+
+        switch (iStar) {
+            case 0:
+                if (TemDif1 < 0) RadSpeed[iStar][4][0] = 1; // Retrograde
+                if (TemDif1 === 0) RadSpeed[iStar][4][0] = 2; // Slow or stationary
+                if (TemDif1 === 1) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 > 1) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) === 1) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) > 1) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+
+            case 3: // ดาว 1 และ 2 ไม่มี
+                if (TemDif1 >= 1 && TemDif1 <= 26) RadSpeed[iStar][4][0] = 2; // Slow
+                if (TemDif1 >= 27 && TemDif1 <= 39) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 >= 40 && TemDif1 <= 56) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) >= 1 && Math.abs(TemDif1 - 21600) <= 26) RadSpeed[iStar][4][0] = 2; // Slow
+                    if (Math.abs(TemDif1 - 21600) >= 27 && Math.abs(TemDif1 - 21600) <= 39) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) >= 40 && Math.abs(TemDif1 - 21600) <= 56) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+
+            case 4:
+                if (TemDif1 >= 1 && TemDif1 <= 34) RadSpeed[iStar][4][0] = 2; // Slow
+                if (TemDif1 >= 35 && TemDif1 <= 97) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 >= 98 && TemDif1 <= 117) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) >= 1 && Math.abs(TemDif1 - 21600) <= 34) RadSpeed[iStar][4][0] = 2; // Slow
+                    if (Math.abs(TemDif1 - 21600) >= 35 && Math.abs(TemDif1 - 21600) <= 97) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) >= 98 && Math.abs(TemDif1 - 21600) <= 117) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+
+            case 5:
+                if (TemDif1 >= 1 && TemDif1 <= 4) RadSpeed[iStar][4][0] = 2; // Slow
+                if (TemDif1 >= 5 && TemDif1 <= 8) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 >= 9 && TemDif1 <= 17) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) >= 1 && Math.abs(TemDif1 - 21600) <= 4) RadSpeed[iStar][4][0] = 2; // Slow
+                    if (Math.abs(TemDif1 - 21600) >= 5 && Math.abs(TemDif1 - 21600) <= 8) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) >= 9 && Math.abs(TemDif1 - 21600) <= 17) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+
+            case 6:
+                if (TemDif1 >= 1 && TemDif1 <= 24) RadSpeed[iStar][4][0] = 2; // Slow
+                if (TemDif1 >= 25 && TemDif1 <= 72) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 >= 73 && TemDif1 <= 84) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) >= 1 && Math.abs(TemDif1 - 21600) <= 24) RadSpeed[iStar][4][0] = 2; // Slow
+                    if (Math.abs(TemDif1 - 21600) >= 25 && Math.abs(TemDif1 - 21600) <= 72) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) >= 73 && Math.abs(TemDif1 - 21600) <= 84) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+
+            case 7:
+                if (TemDif1 === 1) RadSpeed[iStar][4][0] = 2; // Slow
+                if (TemDif1 >= 2 && TemDif1 <= 5) RadSpeed[iStar][4][0] = 3; // Normal
+                if (TemDif1 >= 6 && TemDif1 <= 10) RadSpeed[iStar][4][0] = 4; // Fast
+                if (TemDif1 > 20000) {
+                    if (Math.abs(TemDif1 - 21600) === 1) RadSpeed[iStar][4][0] = 2; // Slow
+                    if (Math.abs(TemDif1 - 21600) >= 2 && Math.abs(TemDif1 - 21600) <= 5) RadSpeed[iStar][4][0] = 3; // Normal
+                    if (Math.abs(TemDif1 - 21600) >= 6 && Math.abs(TemDif1 - 21600) <= 10) RadSpeed[iStar][4][0] = 4; // Fast
+                }
+                break;
+        }
+    }
+
+    return RadSpeed;
+}
+
 // 'รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
 async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLocalYN, sProv) {
 
@@ -327,14 +432,61 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
             []
         ];
 
+    const RadSpeed = Array.from({
+        length: 10
+    }, () => Array.from({
+        length: 5
+    }, () => Array(2).fill(0)));
+
     // 'เริ่มคำนวณตามสูตรคัมภีร์สุริยยาตร์ หาสมผุสของดาวทุกดวง
-    AllStar = await CastHoroscope_AllStar_Suriyata_SUM_Main(dataInput, Hour, min, CutTimeLocalYN, sProv);
+    const AllStar = await CastHoroscope_AllStar_Suriyata_SUM_Main(dataInput, Hour, min, CutTimeLocalYN, sProv);
     Rad = AllStar.Rad;
+
+    // สำหรับ หาค่า speed star born
+    const AllStarBorn = await CastHoroscope_AllStar_Suriyata_SUM_Main(dataInput, Hour, min, CutTimeLocalYN, sProv);
+    const RadAllStarBorn = AllStarBorn.Rad;
+
+    //' รับค่าสมผุสปัจจุบัน เอาค่าสมผุส Rad(iStar, 0-1) ที่ได้มา (จากคำบรรทัดบน) ใส่ในตัวแปร RadSpeed(iStar, 0, iE10)
+    for (let iStar = 0; iStar <= 9; iStar++) {
+        RadSpeed[iStar][0][0] = RadAllStarBorn[iStar][0]; // Assign yesterday's position
+    }
+
+    // หาตำแหน่ง (สมผุส) ดาวของเมื่อวานนี้
+    // คำนวณตามสูตรคัมภีร์สุริยยาตร์ หาสมผุสของดาวทุกดวง "เมื่อวาน" เพื่อเก็บเอาค่า "สมผุส" ไปหา พักร มนท์ เสริด 
+    const TodayDate = dataInput;
+    const oneDayInMillis = 24 * 60 * 60 * 1000;
+    const YesterdayBorn = new Date(TodayDate.getTime() - oneDayInMillis);
+    const AllStartYesterday = await CastHoroscope_AllStar_Suriyata_SUM_Main(YesterdayBorn, Hour, min, CutTimeLocalYN, sProv);
+    const YesterdayRed = AllStartYesterday.Rad;
+
+    //' รับค่าสมผุสปัจจุบัน เอาค่าสมผุส Rad(iStar, 0-1) ที่ได้มา (จากคำบรรทัดบน) ใส่ในตัวแปร RadSpeed(iStar, 0, iE10)
+    for (let iStar = 0; iStar <= 9; iStar++) {
+        RadSpeed[iStar][1][0] = YesterdayRed[iStar][0]; // Assign yesterday's position
+    }
 
     // 'ให้ /1800 เป็นราศี. เศษทศนิยม *1800  แล้ว / 60 เป็นองศา. ทศนิยมที่เหลือ * 60 เป็นลิปดา.
     let SumSompod = await CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput, Hour, min, CutTimeLocalYN, sProv);
     Rad[11][0] = SumSompod.A1_Neptune; // Neptune's value stored at Rad[10][0]  //15604.402798323506 // 15604.402783235
     Rad[12][0] = SumSompod.A1_Pluto; // Pluto's value stored at Rad[11][0] //12184.7757067649 //  12184.7757067649
+
+    const starSpeeds = await CastHoroscope_SpeedAndDirect_AllStar(RadSpeed);
+
+    let SpeedChar_Born = [];
+    for (let iStar = 0; iStar <= 12; iStar++) {
+        let speedSource = (iStar === 11 || iStar === 12) ? SumSompod.RadSpeed : starSpeeds;
+        let speedValue = speedSource[iStar] && speedSource[iStar][4] ? speedSource[iStar][4][0] : undefined;
+        if (speedValue !== undefined) {
+            if (iStar === 8 || iStar === 9) {
+                SpeedChar_Born[iStar] = "";
+            } else {
+                SpeedChar_Born[iStar] = await Support.SpeedChar_Born(speedValue);
+            }
+            // console.log(SpeedChar_Born);
+        } else {
+            SpeedChar_Born[iStar] = "";
+            // console.error(`Speed value not found for iStar ${iStar}`);
+        }
+    }
 
     async function getStarStayData(id, B1) {
         const specificRange = StarStayData.find(range => range.id === id);
@@ -711,6 +863,7 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
         SurisBirth: SurisBirth,
         lblDaySBirthSuriyaKati: lblDaySBirthSuriyaKati,
         Rad: Rad,
+        SpeedChar_Born,
         varBornPutdate_PopTanusedRasee,
         varBornPutdate_PopTanusedStar,
         varBornPutdate_PopLuksStar,
@@ -900,7 +1053,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
         }
 
         JSBornShow = JS;
-        Def = Math.floor((birthDate - DateSerialYMDdNewYear) / (1000 * 60 * 60 * 24));
+        Def = Math.floor((dateInput - DateSerialYMDdNewYear) / (1000 * 60 * 60 * 24));
     }
 
     // '****************คำนวณอธิวาร*************
@@ -1050,10 +1203,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
         HM = 0,
         DM = 0;
     Vs = TemVS;
-
-    // 739398 420 3.141592654 0 15.65 0 0
-    // 739398 420 3.141592654 0 15.65 0 0
-    // console.log(Fm, Vs, Pi, AM, DefTime, HM, DM);
     let Moon = await CastHoroscope_Moon(Fm, Vs, Pi, AM, DefTime, HM, DM, Zm = null, Mum = null);
     Rad[2][0] = Moon.AM; // 'สมผุสจันทร์ คือ AM
     // Rad[2][18] = Moon.Zm; // 'มัธยมจันทร์
@@ -1067,7 +1216,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     let StarWillMoveM = [];
 
     // 15.87 15.88333
-    // console.log(TemTime);
     // For K = 0 To 4320 '3 วัน (นาที)
     for (K = 0; K <= 4320; K++) {
         DefTime = TemTime + (K / 60);
@@ -1132,7 +1280,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
         varTodayPutdate_StarMoveGoH[NowActionStari] = HStarMove.toString().padStart(2, '0'); // 'ดาว...NowActionStari.... จะย้ายออกจากราศีนี้ไปสู่ราศีต่อไป ชม.....ss.....
         varTodayPutdate_StarMoveGoM[NowActionStari] = StarWillMoveM[NowActionStari].toString().padStart(2, '0'); // 'ดาว...NowActionStari.... จะย้ายออกจากราศีนี้ไปสู่ราศีต่อไป นาที.....ss.....
     }
-
     // console.log(varTodayPutdate_StarMoveGoDay ,varTodayPutdate_StarMoveGoMonth , varTodayPutdate_StarMoveGoYearB , varTodayPutdate_StarMoveGoH , varTodayPutdate_StarMoveGoM);
 
     // '========================จบคำนวณหาดาวจันทร์ย้ายราศี (ดาวจันทร์ยก)============================================
@@ -1299,13 +1446,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     JS = TemJs;
     AA = TemAA;
     DefH = TemDefh;
-    // 1 2 16 505 5420 127 45 0.26666666666666666 19897 21.3 8 1.8875  0.9062500000000036 2024-04-25T00:00:00.000Z 21.3 0
-    // 1 2 16 505 5420 127 45 0.26666666666666666 19897 21.3 8 0.92291 0.906250000000004  2024-04-25               21.3 0  
-    // console.log(A0, A1, A2, A3, b, c, d, e, AA, DefTime, Def, DefMN, DefH, dateInput, TemTime, MNO)
     const TimeStarMoveMars = await CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTime, Def, DefMN, DefH, dateInput, TemTime, MNO, JS, adjustedHour, adjustedMinute);
-    // 2024-06-02 22 8
-    // 2024-06-02 22 8
-    // console.log(TimeStarMoveMars.dDMYforTodayMove, TimeStarMoveMars.Hmove ,TimeStarMoveMars.Mmove);
     Rad[3][8] = TimeStarMoveMars.dDMYforTodayMove; //' วดป ที่ดาวย้ายมา
     Rad[3][6] = TimeStarMoveMars.Hmove; //'ชม. ที่ดาวย้ายมา
     Rad[3][7] = TimeStarMoveMars.Mmove; //'นาที ที่ดาวย้ายมา
@@ -1351,9 +1492,7 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     TemJs = JS;
     TemAA = AA;
     TemDefh = DefH;
-    // 1 12 1 1032 14297 172 92 0.4285714285714285  1757 16.33              10 0.8201             0.90625            4/27/2024  16.55              0 1386 16 33
-    // 1 12 1 1032 14297 172 92 0.42857142857142855 1757 16.616666666666667 10 0.9229166666666667 0.9062500000000036 2024-04-27 16.616666666666667 0 1386 16 37
-    const TimeStarMoveJupiter = await CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, Jupiter.AA, DefTime, Def, DefMN, DefH, dateInput, TemTime, MNO, JS, adjustedHour, adjustedMinute);
+    const TimeStarMoveJupiter = await CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, Jupiter.AA, DefTime, Def, TimeStarMoveMercury.DefMN, DefH, dateInput, TemTime, MNO, JS, adjustedHour, adjustedMinute);
     JS = TemJs;
     AA = TemAA;
     DefH = TemDefh;
@@ -1362,11 +1501,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     Rad[5][8] = TimeStarMoveJupiter.dDMYforTodayMove; // ' วดป ที่ดาวย้ายมา
     Rad[5][6] = TimeStarMoveJupiter.Hmove; // 'ชม. ที่ดาวย้ายมา
     Rad[5][7] = TimeStarMoveJupiter.Mmove; // 'นาที ที่ดาวย้ายมา
-
-    // 2024-05-05 17 46
-    // 2024-4-39  36 45
-    // console.log(Rad[5][8], Rad[5][6], Rad[5][7]);
-
     //' จบสมผุสดาวพฤหัส   จบสมผุสดาวพฤหัส  จบสมผุสดาวพฤหัส  จบสมผุสดาวพฤหัส  จบสมผุสดาวพฤหัส  จบสมผุสดาวพฤหัส  จบสมผุสดาวพฤหัส
 
     // ' เริ่มสมผุสดาวศุกร์   เริ่มสมผุสดาวศุกร์  เริ่มสมผุสดาวศุกร์  เริ่มสมผุสดาวศุกร์  เริ่มสมผุสดาวศุกร์  เริ่มสมผุสดาวศุกร์  เริ่มสมผุสดาวศุกร์
@@ -1429,10 +1563,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     Rad[0][8] = TimeStarMove72Deadly.dDMYforTodayMove; //'วันที่ดาวย้าย
     Rad[0][6] = TimeStarMove72Deadly.Hmove; //'ชม ที่ดาวย้าย
     Rad[0][7] = TimeStarMove72Deadly.Mmove; //'นาที ที่ดาวย้าย
-    // 2029-07-18 18 18
-    // 2029-07-18 18 18
-    // console.log(TimeStarMove72Deadly.dDMYforTodayMove, TimeStarMove72Deadly.Hmove, TimeStarMove72Deadly.Mmove);
-
     // ' จบสมผุสมฤตยู   จบสมผุสมฤตยู  จบสมผุสมฤตยู  จบสมผุสมฤตยู  จบสมผุสมฤตยู  จบสมผุสมฤตยู  จบสมผุสมฤตยู
 
     //'*************************************สมผุสราหู********************************
@@ -2095,10 +2225,7 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
 
     // 'หาวาลาเถลิกศก
     let VT = JS * 0.25875 - Math.floor(JS / 4 + 0.5) + Math.floor(JS / 100 + 0.38) - Math.floor(JS / 400 + 0.595) - 5.53375;
-    // console.log("VT" + VT);
-    // 16.554999999999946   16.29652
-    // 'เวลาเถลิกศก เลขจำนวนเต็มเป็นวัน ทศนิยมเป็นเวลา
-    // 'dd = DateDiff("d", DateValue(vt), #6/24/2475#)
+    // 'เวลาเถลิกศก เลขจำนวนเต็มเป็นวัน ทศนิยมเป็นเวลาdd = DateDiff("d", DateValue(vt), #6/24/2475#)
     let BeginNewYearNum = Math.floor(VT);
     let vtm = VT - BeginNewYearNum; // 'เถลิงศก วันที่
     let vtM1 = vtm;
@@ -2162,11 +2289,8 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
         X7 = V;
 
         VT = JS * 0.25875 - Math.floor(JS / 4 + 0.5) + Math.floor(JS / 100 + 0.38) - Math.floor(JS / 400 + 0.595) - 5.53375;
-        // 16.296249999999983
-        // 16.29625
+
         BeginNewYearNum = Math.floor(VT);
-        // BeginNewYearNum = 16
-        // VT = 16.29625
         vtm = VT - BeginNewYearNum;
         vtM1 = vtm;
 
@@ -2242,9 +2366,6 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
         TQ = T1 - (6 * 60);
     }
 
-    // 291 0.42083333333333334 0.4450000000000536
-    // 291 0.42083333333333333 0.7307500000000017
-    // console.log(Def , DefM , DefH);
     let Deff1 = Def + DefM + DefH;
 
     let Deff2 = DefV + DefH + 0.25;
@@ -2289,8 +2410,8 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
         Vs = 0;
 
     // console.log(Deff1, JS);
-    // 291.8658333333334 1352
-    // 292.12458         1352
+    // 113.86583333333338 1353 113.8825
+    // 112.86583333333338 1353 112.8825
 
     const Sun = await CastHoroscope_Sun(Deff1, AA, Ps, Vs, JS);
 
@@ -2552,7 +2673,6 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
 
 // 'ในโค้ดนี้เราต้องการเฉพาะสมผุสของดาว เนปจูน พูลโต เท่านั้น  จุดประสงค์ต้องการแค่สมผุสของดาว เนปจูน พูลโต เท่านั้น
 async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput, Hour, Min, cutTimeLocalYN, sProv) {
-
     let newDate;
     let day, month, year, hour, min;
     // Date-related calculations
@@ -2616,7 +2736,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
         North_South: parameter.North_South
     };
 
-
     let ThaiRa = calculateThaiDataPoint(SuriyaData, 4);
     let ThaiAscendant = calculateThaiDataPoint(SuriyaData, 1);
     let ThaiMidHeaven = calculateThaiDataPoint(SuriyaData, 2);
@@ -2670,8 +2789,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     }, () => new Array(6));
 
     //จันทร์
-    // 56.45683954985647 22.413852410687827 108.99933094769413 107.51546495063738 82.88759007247029 4973.255404348218
-    // 56.456            22.4138            108.9993           107.51             82.887            4973.2554043   
     MoonR[1][1] = calendar.moon(todayValue, 1);
     MoonR[1][2] = calendar.moon(todayValue, 2);
     MoonR[1][3] = calendar.moon(todayValue, 3);
@@ -2883,74 +3000,160 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     let ElicTomorrow = [];
     let Direction = [];
     let Speed = [];
-    let RadSpeed = Array(13).fill().map(() => Array(5).fill(0));
+    const RadSpeed = Array.from({
+        length: 13
+    }, () => Array.from({
+        length: 5
+    }, () => Array(2).fill(0)));
 
-    // Assuming you have variables like SunR, MoonR, Mars, Mercury, Jupiter, Venus, Saturn, Uranus, Neptune, and Pluto defined with their respective data.
-    const calculateElicValues = (bodyToday, bodyYesterday, bodyTomorrow, index) => {
-
-        if (Math.abs(bodyToday[4] - bodyYesterday[4]) > 180) {
-            ElicYesterday[index] = 360 - Math.abs(bodyToday[4] - bodyYesterday[4]);
+    // Function to calculate ElicYesterday and ElicTomorrow
+    function calculateElic(solarSystem, index) {
+        if (Math.abs(solarSystem[1][4] - solarSystem[2][4]) > 180) {
+            ElicYesterday[index] = 360 - Math.abs(solarSystem[1][4] - solarSystem[2][4]);
         } else {
-            ElicYesterday[index] = Math.abs(bodyToday[4] - bodyYesterday[4]);
+            ElicYesterday[index] = Math.abs(solarSystem[1][4] - solarSystem[2][4]);
         }
 
-        if (Math.abs(bodyToday[4] - bodyTomorrow[4]) > 180) {
-            ElicTomorrow[index] = 360 - Math.abs(bodyToday[4] - bodyTomorrow[4]);
+        if (Math.abs(solarSystem[1][4] - solarSystem[3][4]) > 180) {
+            ElicTomorrow[index] = 360 - Math.abs(solarSystem[1][4] - solarSystem[3][4]);
         } else {
-            ElicTomorrow[index] = Math.abs(bodyToday[4] - bodyTomorrow[4]);
+            ElicTomorrow[index] = Math.abs(solarSystem[1][4] - solarSystem[3][4]);
         }
-
-        // Direction logic
-        if (Math.abs(bodyToday[4] - bodyYesterday[4]) <= 180) {
-            Direction[index] = bodyToday[4] < bodyYesterday[4] ? "พักร" : "";
-        } else {
-            Direction[index] = "";
-        }
-    };
-
-
-    calculateElicValues(SunR[1], SunR[2], SunR[3], 1); //อาทิตย์
-    calculateElicValues(MoonR[1], MoonR[2], MoonR[3], 2); // จัทร์
-    calculateElicValues(Mars[1], Mars[2], Mars[3], 3); //อังคาร
-
-    // Speed and RadSpeed calculations
-    for (let i = 1; i <= 13; i++) {
-        if (i === 8) continue; // Skip to match your case
-
-        Speed[i] = ElicTomorrow[i] > ElicYesterday[i] ? "เสริด" :
-            (ElicTomorrow[i] < ElicYesterday[i] ? "" : "มนท์");
-
-        RadSpeed[i - (i > 8 ? 3 : 0)][4][0] = Speed[i] === "เสริด" ? 4 :
-            (Speed[i] === "มนท์" ? 2 : RadSpeed[i - (i > 8 ? 3 : 0)][4][0]);
     }
+
+    // Function to calculate Direction and RadSpeed
+    function calculateDirectionAndSpeed(solarSystem, index) {
+        if (Math.abs(solarSystem[1][4] - solarSystem[2][4]) > 180) {
+            Direction[index] = "";
+        } else {
+            if (solarSystem[1][4] < solarSystem[2][4]) {
+                Direction[index] = "พักร";
+            } else {
+                Direction[index] = "";
+            }
+        }
+    }
+
+    // Calculate for each planet
+    calculateElic(SunR, 1);
+    calculateDirectionAndSpeed(SunR, 1);
+
+    calculateElic(MoonR, 2);
+    calculateDirectionAndSpeed(MoonR, 2);
+
+    calculateElic(Mars, 3);
+    calculateDirectionAndSpeed(Mars, 3);
+
+    calculateElic(Mercury, 4);
+    calculateDirectionAndSpeed(Mercury, 4);
+
+    calculateElic(Jupiter, 5);
+    calculateDirectionAndSpeed(Jupiter, 5);
+
+    calculateElic(Venus, 6);
+    calculateDirectionAndSpeed(Venus, 6);
+
+    calculateElic(Saturn, 7);
+    calculateDirectionAndSpeed(Saturn, 7);
+
+    calculateElic(Uranus, 11);
+    calculateDirectionAndSpeed(Uranus, 11);
+
+
+    // Calculate ElicYesterday and ElicTomorrow for Neptune
+    if (Math.abs(Neptune[1][4] - Neptune[2][4]) > 180) {
+        ElicYesterday[12] = 360 - Math.abs(Neptune[1][4] - Neptune[2][4]);
+    } else {
+        ElicYesterday[12] = Math.abs(Neptune[1][4] - Neptune[2][4]);
+    }
+
+    if (Math.abs(Neptune[1][4] - Neptune[3][4]) > 180) {
+        ElicTomorrow[12] = 360 - Math.abs(Neptune[1][4] - Neptune[3][4]);
+    } else {
+        ElicTomorrow[12] = Math.abs(Neptune[1][4] - Neptune[3][4]);
+    }
+
+    // Determine the direction and RadSpeed for Neptune
+    if (Math.abs(Neptune[1][4] - Neptune[2][4]) > 180) {
+        Direction[1] = "";
+        RadSpeed[11][4][0] = 3; // Normal
+    } else {
+        if (Neptune[1][4] < Neptune[2][4]) {
+            Direction[1] = "พักร"; // Retrograde
+            RadSpeed[11][4][0] = 1; // Retrograde
+        } else {
+            Direction[1] = "";
+            RadSpeed[11][4][0] = 3; // Normal
+        }
+    }
+
+    // Calculate ElicYesterday and ElicTomorrow for Pluto
+    if (Math.abs(Pluto[1][4] - Pluto[2][4]) > 180) {
+        ElicYesterday[13] = 360 - Math.abs(Pluto[1][4] - Pluto[2][4]);
+    } else {
+        ElicYesterday[13] = Math.abs(Pluto[1][4] - Pluto[2][4]);
+    }
+
+    if (Math.abs(Pluto[1][4] - Pluto[3][4]) > 180) {
+        ElicTomorrow[13] = 360 - Math.abs(Pluto[1][4] - Pluto[3][4]);
+    } else {
+        ElicTomorrow[13] = Math.abs(Pluto[1][4] - Pluto[3][4]);
+    }
+
+    // Determine the direction and RadSpeed for Pluto
+    if (Math.abs(Pluto[1][4] - Pluto[2][4]) > 180) {
+        Direction[1] = "";
+        RadSpeed[12][4][0] = 3; // Normal
+    } else {
+        if (Pluto[1][4] < Pluto[2][4]) {
+            Direction[1] = "พักร"; // Retrograde
+            RadSpeed[12][4][0] = 1; // Retrograde
+        } else {
+            Direction[1] = "";
+            RadSpeed[12][4][0] = 3; // Normal
+        }
+    }
+
+    // Calculate Speed for planets 1 to 13 (excluding 8, treating 11 as Neptune and 12 as Pluto)
+    for (let i = 1; i <= 13; i++) {
+        if (i === 8) i = 11;
+        if (ElicTomorrow[i] > ElicYesterday[i]) {
+            Speed[i] = "เสริด";
+        } else if (ElicTomorrow[i] < ElicYesterday[i]) {
+            Speed[i] = "";
+        } else {
+            Speed[i] = "มนท์";
+        }
+    }
+
+    // Update RadSpeed based on Speed for Neptune and Pluto
+    if (Speed[12] === "เสริด") {
+        RadSpeed[11][4][0] = 4; // Fast
+    } else if (Speed[12] === "มนท์") {
+        RadSpeed[11][4][0] = 2; // Slow or stationary
+    }
+
+    if (Speed[13] === "เสริด") {
+        RadSpeed[12][4][0] = 4; // Fast
+    } else if (Speed[13] === "มนท์") {
+        RadSpeed[12][4][0] = 2; // Slow or stationary
+    }
+
+    // console.log("ElicYesterday:", ElicYesterday);
+    // console.log("ElicTomorrow:", ElicTomorrow);
+    // console.log("Direction:", Direction);
+    // console.log("Speed:", Speed);
+    // console.log("RadSpeed:", RadSpeed);
 
     // Usage example for Neptune and Pluto, adapt as necessary
     let A1_Neptune = Neptune[1][0]; // 15604.402798323506   // 15604.4027983235
     let A1_Pluto = Pluto[1][0]; // 12184.7757067649     // 12184.7757067649
 
-    // console.log(A1_Neptune);
-    // console.log(A1_Pluto);
-    // console.log(ElicYesterday);
-    // console.log(ElicTomorrow);
-    // console.log(Direction);
-    // console.log(Speed);
-    // console.log(`Latitude: ${Latitude_Degree}° ${Latitude_Degree}'`);
-    // console.log(`Longitude: ${Longitude_Degree}° ${Longitude_Degree}'`);
-    // console.log(`RealtimeZone: ${RealtimeZone}`);
-    // console.log(`ThaiRa: ${ThaiRa}`);
-    // console.log(`ThaiAscendant: ${ThaiAscendant}`);
-    // console.log(`ThaiMidHeaven: ${ThaiMidHeaven}`);
-    // console.log(`ThaiObliquti: ${ThaiObliquti}`);
-    // console.log(`ThaiT: ${ThaiT}`);
-    // console.log(`ThaiJulian: ${ThaiJulian}`);
-    // console.log(`ProfesAya: ${ProfesAya}`);
-    // console.log(`DegreeAya: ${DegreeAya}`);
-    // console.log(`Thaidgr: ${Thaidgr}`);
-
     return {
         A1_Neptune,
         A1_Pluto,
-        Direction
+        Direction,
+        RadSpeed: RadSpeed
     }
 }
 
@@ -3190,7 +3393,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             }
                         }
                         //'For iStarLoopMate2 = 2 To 9 ' วนดาวเทียบ (ดาวตัวที่ 2)
-
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
                             const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
@@ -3198,7 +3400,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             Star_Same_Sub.push(Title);
                             Star_Same_Desc.push(description);
                         }
-
                         break;
                     case 2:
                         for (let iStarLoopMate2 = 3; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
@@ -3210,7 +3411,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                                 Star_Same_Desc.push(description);
                             }
                         }
-
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
                             const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
@@ -3229,7 +3429,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                                 Star_Same_Desc.push(description);
                             }
                         }
-
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
                             const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
@@ -3248,7 +3447,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                                 Star_Same_Desc.push(description);
                             }
                         }
-
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
                             const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
@@ -3267,7 +3465,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                                 Star_Same_Desc.push(description);
                             }
                         }
-
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
                             const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
@@ -3311,7 +3508,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             Star_Same_Desc.push(description);
                         }
                         break;
-
                     case 8:
                         iStarMate2 = 9;
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
@@ -3328,7 +3524,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             Star_Same_Desc.push(description);
                         }
                         break;
-
                     case 9:
                         iStarMate2 = 0; //'ดาวที่นำมาเทียบ
                         if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
@@ -3338,7 +3533,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             Star_Same_Desc.push(description);
                         }
                         break;
-
                     default:
                         break;
                 }
@@ -3563,80 +3757,124 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         []
     ];
 
+    const columnIindex = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+    let dayNameLuk = {
+        10: "ลั. ลัคนา",
+        1: "1. อาทิตย์",
+        2: "2. จันทร์",
+        3: "3. อังคาร",
+        4: "4. พุธ",
+        5: "5. พฤหัส",
+        6: "6. ศุกร์",
+        7: "7. เสาร์",
+        8: "8. ราหู",
+        9: "9. เกตุ",
+        0: "0. มฤตยู",
+    };
+
+
+    // let matchingPredictionsGroup = Array(11).fill(null).map(() => []);
+    let StarAsInRaseeiAsStarGroup = columnIindex.map(index => ({
+        StarBornIndex: index,
+        StarBornText: dayNameLuk[index],
+        Predictions: []
+    }));
+
+    // let matchingPredictionsGroup = [];
+    // for (let i = 0; i <= 10; i++) {
+    //     matchingPredictionsGroup.push({
+    //         StarBornIndex: columnIindex[i],
+    //         StarBornText: dayNameLuk[columnIindex[i]],
+    //         Predictions: []
+    //     });
+    // }
+
     for (let index1 = 0; index1 <= 10; index1++) {
         for (let index2 = 0; index2 <= 10; index2++) {
-            if (array1[index1] === array2[index2]) { // Check for value match
-                // const Raseei_1 = await Support.fcRaseeiToS(array1[index1]);
-                // const Raseei_2 = await Support.fcRaseeiToS(array2[index2]);
+            if (array1[index1] === array2[index2]) {
                 const lblStarO_1 = SuriyatDate.varBornPutdate_StarO[0][index1];
                 const lblStarL_1 = SuriyatDate.varBornPutdate_StarL[0][index1];
                 const lblStarO_2 = TodaySuriyatDate.varTodayPutdate_StarO[0][index2];
                 const lblStarL_2 = TodaySuriyatDate.varTodayPutdate_StarL[0][index2];
-                varBornLuk_StarLipdaAll[0][index1] = lblStarO_1 * 60 + lblStarL_1; //'รับค่าลิปดาทั้งหมดของดาวกำเนิด (แปลงค่าเป็นลิปดา)
-                varTodayLuk_StarLipdaAll[0][index2] = lblStarO_2 * 60 + lblStarL_2; //'รับค่าลิปดาทั้งหมดของดาวจร (แปลงค่าเป็นลิปดา)
 
-                // console.log(index1,index2, varBornLuk_StarLipdaAll[0][index1], varTodayLuk_StarLipdaAll[0][index2]);
-                // console.log(`ดาวเกิด ${index1}.${await Support.fcStariToS(index1)} ราศี ${Raseei_1} (อ.${lblStarO_1} - ล.${lblStarL_1}) ตรงกับดาวจร ${index2}.${await Support.fcStariToS(index2)} ราศี ${Raseei_2} (อ.${lblStarO_2} - ล.${lblStarL_2})`);
-                let LipdaLongBornToday, aOng, aLib;
-                aOng = 0;
-                aLib = 0;
-                LipdaLongBornToday = 0;
+                varBornLuk_StarLipdaAll[0][index1] = lblStarO_1 * 60 + lblStarL_1; // Convert birth star's angle to minutes
+                varTodayLuk_StarLipdaAll[0][index2] = lblStarO_2 * 60 + lblStarL_2; // Convert today's star's angle to minutes
 
-                if (varTodayLuk_StarLipdaAll[0][index2] < varBornLuk_StarLipdaAll[0][index1]) { //'ถ้าดาวจรยังไม่ถึงดาวกำเนิด
+                let LipdaLongBornToday = 0;
+                let aOng = 0,
+                    aLib = 0,
+                    StringLongBornToday = "";
+
+                if (varTodayLuk_StarLipdaAll[0][index2] < varBornLuk_StarLipdaAll[0][index1]) {
                     LipdaLongBornToday = varBornLuk_StarLipdaAll[0][index1] - varTodayLuk_StarLipdaAll[0][index2];
-                    aOng = Math.floor(LipdaLongBornToday / 60) // 'องศา
-                    aLib = Math.floor(LipdaLongBornToday - (aOng * 60)) //'ลิปดา
-                    if (aOng == 0 && aLib > 0) {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aLib} ลิปดา (ยังไม่ถึง)`);
-                    } else if (aLib == 0 && aOng > 0) {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aOng} องศา (ยังไม่ถึง)`);
+                    aOng = Math.floor(LipdaLongBornToday / 60); // Degrees
+                    aLib = LipdaLongBornToday % 60; // Minutes
+
+                    if (aOng === 0 && aLib > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aLib} ลิปดา (ยังไม่ถึง)`;
+                    } else if (aLib === 0 && aOng > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng} องศา (ยังไม่ถึง)`;
                     } else {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aOng}.${aLib} องศา (ยังไม่ถึง)`);
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng}.${aLib} องศา (ยังไม่ถึง)`;
                     }
                 } else if (varTodayLuk_StarLipdaAll[0][index2] > varBornLuk_StarLipdaAll[0][index1]) {
                     LipdaLongBornToday = varTodayLuk_StarLipdaAll[0][index2] - varBornLuk_StarLipdaAll[0][index1];
-                    aOng = Math.floor(LipdaLongBornToday / 60) // 'องศา
-                    aLib = Math.floor(LipdaLongBornToday - (aOng * 60)) //'ลิปดา
-                    if (aOng == 0 && aLib > 0) {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aLib} ลิปดา (ผ่านหรือเลยมาแล้ว)`);
-                    } else if (aLib == 0 && aOng > 0) {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aOng} องศา (ผ่านหรือเลยมาแล้ว)`);
-                    } else {
-                        StringLongBornToday = (`* ห่างกันในระยะ ${aOng}.${aLib} องศา (ผ่านหรือเลยมาแล้ว)`);
-                    }
-                } else if (varTodayLuk_StarLipdaAll[0][index2] == varBornLuk_StarLipdaAll[0][index1]) {
+                    aOng = Math.floor(LipdaLongBornToday / 60); // Degrees
+                    aLib = LipdaLongBornToday % 60; // Minutes
 
-                    StringLongBornToday = (`* เป็นระยะที่ทับกันแบบสนิท 100%`);
+                    if (aOng === 0 && aLib > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aLib} ลิปดา (ผ่านหรือเลยมาแล้ว)`;
+                    } else if (aLib === 0 && aOng > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng} องศา (ผ่านหรือเลยมาแล้ว)`;
+                    } else {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng}.${aLib} องศา (ผ่านหรือเลยมาแล้ว)`;
+                    }
                 } else {
-                    StringLongBornToday = (``);
+                    StringLongBornToday = `* เป็นระยะที่ทับกันแบบสนิท 100%`;
                 }
 
-                // 'หัวข้อย่อย เน้นคำ
-                // console.log(aOng + " " + iStarTodayPowerInOngsa1To20);
-                if (aOng <= iStarTodayPowerInOngsa1To20) { //'ถ้าระยะห่างองศาของดาวจรกับดาวกำเนิดอยู่ในเงื่อนไขที่ตั้งค่าไว้ใน Option
+                if (aOng <= iStarTodayPowerInOngsa1To20) {
                     const MoveDay = TodaySuriyatDate.varTodayPutdate_StarMoveGoDay[index2];
                     const MoveMonth = TodaySuriyatDate.varTodayPutdate_StarMoveGoMonth[index2];
                     const MoveYearB = TodaySuriyatDate.varTodayPutdate_StarMoveGoYearB[index2];
                     const MoveH = TodaySuriyatDate.varTodayPutdate_StarMoveGoH[index2];
                     const MoveM = TodaySuriyatDate.varTodayPutdate_StarMoveGoM[index2];
-                    strSMove = `จนถึงวันที่ ${MoveDay} ${ await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB} เวลา  ${MoveH}:${MoveM} น.`;
+                    const strSMove = `จนถึงวันที่ ${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB} เวลา  ${MoveH}:${MoveM} น.`;
 
-                    // คำพยากรณ์
-                    let StarTodayToStarBorns = "";
                     const LukTamnaiStarTodayToStarBornResults = await db.dbQuery(`SELECT * FROM luktamnaistartodaytostarborn WHERE StarTodayi='${index2}' AND StarBorni='${index1}'`);
                     if (LukTamnaiStarTodayToStarBornResults.length > 0) {
-                        let sTextPayakornToday = "คำพยากรณ์ " + LukTamnaiStarTodayToStarBornResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                        StarTodayToStarBorns = LukTamnaiStarTodayToStarBornResults[0].StarTodayToStarBorns;
+                        const sTextPayakornToday = "คำพยากรณ์ " + LukTamnaiStarTodayToStarBornResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                        const StarTodayToStarBorns = LukTamnaiStarTodayToStarBornResults[0].StarTodayToStarBorns;
                         StarAsInRaseeiAsStar_Desc.push(sTextPayakornToday);
-                    }
 
-                    // ดาวอาทิตย์ จรถึง ดาวจันทร์ (๑-๒)
-                    // console.log(`ดาวเกิด ${index1}.${await Support.fcStariToS(index1)} ราศี ${Raseei_1} (อ.${lblStarO_1} - ล.${lblStarL_1}) ตรงกับดาวจร ${index2}.${await Support.fcStariToS(index2)} ราศี ${Raseei_2} (อ.${lblStarO_2} - ล.${lblStarL_2})`);
-                    let sTextFocus3 = `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`;
-                    let sTextStarStayLongTimeTMDs = `เหตุการณ์ต่อไปนี้มีผลต่อเจ้าชะตา ${strSMove}`;
-                    StarAsInRaseeiAsStar_Move.push(`${sTextFocus3} ${sTextStarStayLongTimeTMDs}`);
-                    let Percent_PakakornStar = await getPercent_PakakornStarTodayKumBorn(varBornLuk_StarLipdaAll[0][index1], varTodayLuk_StarLipdaAll[0][index2]);
-                    StarAsInRaseeiAsStar_Percent.push(`โอกาสและผลที่จะเกิดประมาณ ${Percent_PakakornStar.toFixed(2)}% ${getPercentEventText(Percent_PakakornStar)}`);
+                        const sTextFocus3 = `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`;
+                        const sTextStarStayLongTimeTMDs = `เหตุการณ์ต่อไปนี้มีผลต่อเจ้าชะตา ${strSMove}`;
+                        StarAsInRaseeiAsStar_Move.push(`${sTextFocus3} ${sTextStarStayLongTimeTMDs}`);
+
+                        const Percent_PakakornStar = await getPercent_PakakornStarTodayKumBorn(varBornLuk_StarLipdaAll[0][index1], varTodayLuk_StarLipdaAll[0][index2]);
+                        let probabilityText = `โอกาสและผลที่จะเกิดประมาณ ${Percent_PakakornStar.toFixed(2)}% ${getPercentEventText(Percent_PakakornStar)}`;
+                        StarAsInRaseeiAsStar_Percent.push(probabilityText);
+
+                        const matchingPrediction = {
+                            StarBornIndex: index1,
+                            StarBorn: dayNameLuk[index1],
+                            StartToday: dayNameLuk[index2],
+                            StarBorn_O: lblStarO_1,
+                            StarBorn_L: lblStarL_1,
+                            TodayBorn_O: lblStarO_2,
+                            TodayBorn_L: lblStarL_2,
+                            prediction: sTextPayakornToday,
+                            details: `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`,
+                            moveDate: `${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB}`,
+                            moveTime: `${MoveH}:${MoveM}`,
+                            probability: Percent_PakakornStar.toFixed(2),
+                            probabilityText: probabilityText
+                        };
+
+                        // matchingPredictionsGroup[index1].push(matchingPrediction);
+                        StarAsInRaseeiAsStarGroup[index1].Predictions.push(matchingPrediction);
+                    }
                 }
             }
         }
@@ -3682,6 +3920,826 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         StarAsInRaseeiAsStar_Desc,
         StarAsInRaseeiAsStar_Move,
         StarAsInRaseeiAsStar_Percent,
+        StarAsInRaseeiAsStarGroup,
+    }
+}
+
+async function PayakornBorn(SuriyatDate) {
+    let iStarAll = 12;
+    let YourDayBornMooniLuk = SuriyatDate.dayMooni;
+
+    // '........ ส่วนของข้อมูลเกี่ยวกับดาวและภพ (กำเนิด)
+    let CharGroupStar = {
+        1: "สระทั้งหมด",
+        2: "ก ข ค ฆ ง",
+        3: "จ ฉ ช ซ ฌ ญ",
+        4: "ฎ ฏ ฐ ฑ ฒ ณ",
+        5: "บ ป ผ ฝ พ ฟ ภ ม",
+        6: "ศ ษ ส ห ฬ ฮ",
+        7: "ด ต ถ ท ธ น",
+        8: "ย ร ล ว",
+    }
+
+    // 'ดาวใดอยู่ทักษาใด เช่น strTaksaStringStar(6) ="บริวาร"  หมายถึง ดาว 6 อยู่ทักษาบริวาร  "ศ ษ ส ห ฬ ฮ" เป็นต้น
+    let strTaksaStringCount = {
+        "": "",
+        1: "บริวาร",
+        2: "อายุ",
+        3: "เดช",
+        4: "ศรี",
+        5: "มูละ",
+        6: "อุตสาหะ",
+        7: "มนตรี",
+        8: "กาลกิณี"
+    };
+
+    // 'รับค่า เกี่ยวกับทักษา ไม่ว่าจะเกิดวันพุธกลางวัน (๔) หรือวันพุธกลางคืน (๘) ให้พุธ (๔) เป็นบริวารเสมอ (เกิดพุธกลางคืน ราหูไม่เป็นบริวารและพฤหัสไม่เป็นกาลี)
+    let ichkTaksaBorn4or8As4 = 1;
+    let TextTaksaBorn8, iCountTaksa;
+
+    // 'ถ้าตั้งค่า เกิดวันพุธกลางคืน ให้ถือว่าพุธกลางวัน
+    if (ichkTaksaBorn4or8As4 == 1) {
+        if (YourDayBornMooniLuk == 8) {
+            TextTaksaBorn8 = "* เกี่ยวกับทักษา-ตรีวัย ผู้ใช้ได้ตั้งค่าในโปรแกรมว่า ไม่ว่าจะเกิดวันพุธกลางวัน (๔) หรือวันพุธกลางคืน (๘) ให้พุธ (๔) เป็นบริวารเสมอ ฉะนั้น เจ้าชะตาเกิดพุธกลางคืน ราหูจึงไม่เป็นบริวารและพฤหัสไม่เป็นกาลกิณี";
+            iCountTaksa = 4;
+        } else {
+            iCountTaksa = YourDayBornMooniLuk;
+        }
+    } else {
+        iCountTaksa = YourDayBornMooniLuk;
+    }
+
+    let strTaksaStringStar = new Array(9);
+
+    let sequence = {
+        1: 2,
+        2: 3,
+        3: 4,
+        4: 7,
+        7: 5,
+        5: 8,
+        8: 6,
+        6: 1,
+    };
+
+    for (let iTaksa = 1; iTaksa <= 8; iTaksa++) {
+        strTaksaStringStar[iCountTaksa] = strTaksaStringCount[iTaksa];
+        // console.log(`Current iCountTaksa: ${iCountTaksa}`);
+        iCountTaksa = sequence[iCountTaksa]; // Correct access to sequence using bracket notation
+        // console.log(`Next iCountTaksa: ${iCountTaksa} : ${strTaksaStringCount[iTaksa]}`);
+    } //' For iTaksa = 1 To 8 'นับ 8 รอบ คือให้ครบ 8 ทักษา คือ 1.บริวาร 2.อายุ 3.เดช 4.ศรี ...... 8.กาลกิณี
+
+    let strTotalCharDot_SUM; //'สรุปอักษรที่ห้ามนำมาตั้งชื่อ (ห้ามมีอยู่ในชื่อ) สำหรับดวงชะตาคุณคือ "s"
+    let strFontEnd, strFontStart;
+    let strBornPopsChars, strAboutStarAndPop, strNameStarString, strDontCharVIP, strCommentDontCharVIP, strCommentDontCharKala, Vangs;
+    strDontCharVIP = "";
+    Vangs = "   ";
+
+    let varBornLuk_PopsChars = [
+        [],
+        []
+    ];
+    let sTextFocus1 = [];
+    let iTextFocus1 = 0;
+    for (let Starii = 0; Starii <= iStarAll; Starii++) {
+
+        strNameStarString = Starii;
+
+        if (Starii == 0 || Starii == 9 || Starii == 11 || Starii == 12) {
+            if (Starii == 11) {
+                strNameStarString = "เนปจูน";
+            }
+            if (Starii == 12) {
+                strNameStarString = "เนปจูน";
+            }
+            // Space(10) & "ดาว " & strNameStarString & " อยู่ภพ " & varBornLuk_PopLuksStar(0, Starii)
+            varBornLuk_PopsChars[0][Starii] = "ดาว " + strNameStarString + " อยู่ภพ " + SuriyatDate.varBornPutdate_PopLuksStar[0][Starii];
+        }
+
+        if (Starii == 1 || Starii == 2 || Starii == 3 || Starii == 4 || Starii == 5 || Starii == 6 || Starii == 7 || Starii == 8) {
+            if (SuriyatDate.varBornPutdate_PopLuksStar == "อริ" || SuriyatDate.varBornPutdate_PopLuksStar == "มรณะ" || SuriyatDate.varBornPutdate_PopLuksStar == "วินาศ") {
+                // varBornLuk_PopsChars[0][Starii] = "ดาว " + strNameStarString + " อยู่ภพ " + SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] + Vangs + "อักขระประจำดาวนี้คือ : " + charGroupStar[Starii] + "  (ทักษา " + strTaksaStringStar[Starii] + ")";
+                varBornLuk_PopsChars[0][Starii] = `ดาว ${strNameStarString} อยู่ภพ ${SuriyatDate.varBornPutdate_PopLuksStar[0][Starii]} ${Vangs}อักขระประจำดาวนี้คือ : ${CharGroupStar[Starii]} (ทักษา ${strTaksaStringStar[Starii]})`;
+                iTextFocus1 += 1;
+                sTextFocus1[iTextFocus1] = varBornLuk_PopsChars[0][Starii];
+            } else {
+                // varBornLuk_PopsChars[0][Starii] = "ดาว " + strNameStarString + " อยู่ภพ " & SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] + Vangs + "อักขระประจำดาวนี้คือ : " + CharGroupStar[Starii] + "  (ทักษา " + strTaksaStringStar[Starii] + ")";
+                varBornLuk_PopsChars[0][Starii] = `ดาว ${strNameStarString} อยู่ภพ ${SuriyatDate.varBornPutdate_PopLuksStar[0][Starii]} ${Vangs}อักขระประจำดาวนี้คือ : ${CharGroupStar[Starii]} (ทักษา ${strTaksaStringStar[Starii]})`;
+            }
+        }
+    }
+
+    let BornLukPopsChars = {
+        "title": "ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)",
+        "sub_title": "ดาวกำเนิดอยู่ในภพต่างๆ และอักขระประจำดาว (ทักษา)",
+        "payakorn": varBornLuk_PopsChars,
+    };
+
+    // let sTextTopicSmall;
+    // iTextTopicSmall += 1;
+    // sTextTopicSmall[iTextTopicSmall] = "ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด";
+
+    // ' หาดาวเจ้าเรือน แล้วรับค่า เช่น "ดาว 2 เป็นเจ้าเรือน ตนุ ตกอยู่ในภพ กัมมะ"  เพื่อแสดง
+    let StarHousei, StarHouseRi, iCountR;
+    let strBornStarAsHouseInPop, Pop2;
+    iCountR = SuriyatDate.varBornPutdate_StarStayR[0][10];
+    let varBornLuk_OwnerHousePopS = [];
+    let varBornLuk_OwnerHousePopSS = [];
+    let varBornLuk_KasediInPopistr = [];
+
+    for (let iPop = 0; iPop <= 11; iPop++) { // 'นับภพ  0-11 (ตนุ-วินาศ)
+        StarHousei = fcRaseeiToHouse(iCountR); // 'หาว่า ราศีนี้มีดาวใดเป็นเจ้าเรือน
+        StarHouseRi = SuriyatDate.varBornPutdate_StarStayR[0][StarHousei]; // 'หาว่า ดาวเจ้าเรือนอยู่ราศีใด
+        Pop2 = SuriyatDate.varBornPutdate_PopLuksStar[0][StarHousei]; // 'รับค่าภพที่ดาวนี้อยู่  เช่น "กัมมะ"    ' Dim varBornLuk_PopLuksStar(1, iStarAll) As String ' ดาว n อยู่ภพ เช่น ดาว 0 = "สหัชชะ"
+        varBornLuk_OwnerHousePopS[iPop] = "เจ้าเรือน  " + await Support.fcPopiToS(iPop) + "  ตกอยู่ในภพ  " + Pop2;
+        // ' ต่อท้ายด้วยมาตรฐานดาว
+        let strSS = "";
+        if (SuriyatDate.varBornPutdate_RaSTD[0][StarHousei] === "-") {
+            strSS = "";
+        } else {
+            strSS += " ";
+        }
+        let strSTDStar = (strSS + SuriyatDate.varBornPutdate_RaSTD[0][StarHousei].replace(/-/g, "")).trim(); // มาตรฐานดาวราศีจักร
+
+        if (strSTDStar.length === 0) {
+            strSTDStar = "";
+        } else {
+            strSTDStar = "   (เป็น " + strSTDStar + ")";
+        }
+
+        varBornLuk_OwnerHousePopSS[iPop] = "ดาว " + StarHousei + " เป็นเจ้าเรือน " + await Support.fcPopiToS(iPop) + " ตกภพ " + Pop2 + " " + strSTDStar;
+        varBornLuk_KasediInPopistr[iPop] = iPop + "-" + await Support.fcPopSToi(Pop2); //' varBornLuk_KasediInPopistr(1)="10-11"
+
+        iCountR = (iCountR + 1) % 12;
+        //  ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
+    }
+
+    let BornLukOwnerHousePop = {
+        "title": "ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด",
+        "sub_title": "ดาวกำเนิดอยู่ในภพต่างๆ และอักขระประจำดาว (ทักษา)",
+        "payakorn": varBornLuk_OwnerHousePopSS,
+    }
+
+    // คำทำนายลัคนาสถิตราศี
+    // ลัคนาสถิตราศีกันย์ กันย์ (5)
+    // ลัคนาสถิตราศีกันย์ พยากรณ์ตามลักษณะราศีเจ้าชะตามักเป็นคนมีรูปร่างอรชอ้อนแอ้น มีผิวขาวปนเหลือง สงบเสงี่ยมเจียมตัว<br>รักสวยรักงาม ชอบความสะอาด พิถีพิถันในการแต่งตัว ชอบความเป็นระเบียบเรียบร้อย พูดจาไพเราะ มักมีตำหนิเป็นไฝปานที่แขน<br>มือ หรือไหล่แห่งใดแห่งหนึ่ง งานที่เหมาะสำหรับคุณควรเป็นงานนักประพันธ์ นักเขียน และเป็นหัวหน้าในหน่วยงานอื่นๆ โรคที่มักเกิดขึ้น<br>ถ้ามีคือโรคโลหิตจาง หลอดลมเอกเสบ หืด หอบ<br>
+    // สีและอัญมณีที่ถูกโฉลกประจำราศี
+    // สีและอัญมณีที่ถูกโฉลก เสริมดวงชะตาและทำให้เกิดโชคลาภ คือสีเขียว อัญมณีคือมรกต,หยก,เขียวส่อง สีและอัญมณีที่ห้ามใช้<br>คือสีม่วงคราม,แสดและส้ม อัญมณีคือโกเมน,พลอยสีส้ม, พลอยสีม่วงคราม<br>
+    // varBornLuk_StarStayR == SuriyatDate.varBornPutdate_StarStayR[0][10] คำทำนายลัคนาสถิตราศี
+    let Sql_StarStayR = "SELECT * FROM luktamnailukliverasee WHERE  Raseei= " + SuriyatDate.varBornPutdate_StarStayR[0][10];
+    let Query_StarStayR10 = await db.dbQuery(Sql_StarStayR);
+
+    let AscendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
+    let AscendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
+    let LukBornRasees = "",
+        AscendantPrediction_Sub = "",
+        AscendantPrediction_Desc = "",
+        AscendantPredictionGem_Desc = "";
+    let AscendantPrediction = "";
+    let AscendantPredictionGem = "";
+
+    // Prediction of ascendant and zodiac sign
+    if (Query_StarStayR10.length === 1) {
+        LukBornRasees = Query_StarStayR10[0].Rasees;
+        AscendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
+        AscendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+        AscendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
+    }
+
+    if (Query_StarStayR10.length === 1) {
+        AscendantPrediction = {
+            "title": AscendantPrediction_Title,
+            "sub_title": AscendantPrediction_Sub,
+            "payakorn": AscendantPrediction_Desc
+        }
+
+        AscendantPredictionGem = {
+            "title": AscendantPrediction_Title,
+            "sub_title": "",
+            "payakorn": AscendantPredictionGem_Desc
+        }
+    }
+
+
+    // 'เริ่ม คำทำนายกุมลัคน์ 17408 
+    let iRasee = SuriyatDate.varBornPutdate_StarStayR[0][10];
+    let StarStay_GumLukArray = [];
+    for (let iStar = 0; iStar <= 9; iStar++) {
+        if (iRasee == SuriyatDate.varBornPutdate_StarStayR[0][iStar]) {
+            const sqlQuery = "SELECT * FROM luktamnaiholdluk WHERE Stari= " + iStar;
+            const queryResult = await db.dbQuery(sqlQuery);
+            if (queryResult.length > 0) {
+                const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                const payakorn = "ดาว " + await Support.fcStariToS(iStar) + " กุมลัคน์ (" + queryResult[0].Stari + ")ลั " + description;
+                // StarStay_GumLukArray[iStar] = payakorn;
+                StarStay_GumLukArray.push(payakorn);
+            }
+        }
+    }
+    const StarStay_GumLuk = {
+        "title": "คำทำนายกุมลัคน์",
+        "sub_stitle": "",
+        "payakon": StarStay_GumLukArray,
+    }
+    // 'จบ คำทำนายกุมลัคน์
+
+
+    // 'เริ่ม  คำทำนายเล็งลัคนา // varBornLuk_PopLuksStar == varBornPutdate_PopLuksStar
+    let StarStay_PataniArray = [];
+    for (let Starii = 0; Starii <= iStarAll; Starii++) {
+        if (SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] == "ปัตนิ") {
+            const sqlQuery = "SELECT * FROM luktamnaioppositeluk WHERE Stari= " + Starii;
+            const queryResult = await db.dbQuery(sqlQuery);
+            if (queryResult && queryResult.length > 0) {
+                const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                const payakorn = "ดาว " + await Support.fcStariToS(Starii) + " เล็งลัคนา (" + queryResult[0].Stari + ") <--> ลั)" + description;
+                StarStay_PataniArray.push(payakorn);
+            }
+        }
+    }
+    const StarStay_Patani = {
+        "title": "คำทำนายเล็งลัคนา",
+        "sub_stitle": "",
+        "payakon": StarStay_PataniArray,
+    }
+    // 'จบ คำทำนายเล็งลัคนา
+
+    // ดาว sTextTopicSmall(iTextTopicSmall) = "ดาว" & fcStariToS(varBornLuk_StarAsTanuSED(0)) & "เป็นตนุเศษ"
+    // varBornLuk_StarAsTanuSED[0] = varBornPutdate_StarAsTanuSED[0]
+    let StarAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
+    let StarAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_StarAsTanuSED[0]) + " เป็นตนุเศษ";
+    let StarAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_StarAsTanuSED[0]);
+    const StarAsTanuSED = {
+        "title": "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา",
+        "sub_title": StarAsTanuSED_Sub,
+        "payakorn": StarAsTanuSED_Desc,
+    };
+
+    // คำทำนายดาวที่อยู่ในราศีเดียวกัน (ดาวคู่หรือดาวกุมกัน)
+    let iStarMate2; //ดาวที่นำมาเทียบ
+    let Star_Same_Title = "คำทำนายดาวที่อยู่ในราศีเดียวกัน (ดาวคู่หรือดาวกุมกัน)";
+    let Star_Same_Sub = [];
+    let Star_Same_Desc = [];
+    for (let iRaseeLoop = 0; iRaseeLoop <= 11; iRaseeLoop++) {
+        for (let iStarLoop = 1; iStarLoop <= 9; iStarLoop++) {
+            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarLoop]) { // 'ถ้าในราศีนี้ มีดาวนี้อยู่
+                switch (iStarLoop) {
+                    case 1: // ' iStarLoop = 1 'ดาว 1
+                        for (let iStarLoopMate2 = 2; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            // '1-n (2-9)     คือเทียบ 1-2  1-3  1-4  1-5......1-9 7 
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+                        //'For iStarLoopMate2 = 2 To 9 ' วนดาวเทียบ (ดาวตัวที่ 2)
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 2:
+                        for (let iStarLoopMate2 = 3; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 3:
+                        for (let iStarLoopMate2 = 4; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 4:
+                        for (let iStarLoopMate2 = 5; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 5:
+                        for (let iStarLoopMate2 = 6; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 6:
+                        for (let iStarLoopMate2 = 7; iStarLoopMate2 <= 9; iStarLoopMate2++) { // 'วนดาวเทียบ (ดาวตัวที่ 2)
+                            iStarMate2 = iStarLoopMate2; //'ดาวที่นำมาเทียบ
+                            if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                                const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                                const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                                Star_Same_Sub.push(Title);
+                                Star_Same_Desc.push(description);
+                            }
+                        }
+
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 7:
+                        iStarMate2 = 8;
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 8:
+                        iStarMate2 = 9;
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    case 9:
+                        iStarMate2 = 0; //'ดาวที่นำมาเทียบ
+                        if (iRaseeLoop == SuriyatDate.varBornPutdate_StarStayR[0][iStarMate2]) {
+                            const Title = "ดาว " + iStarLoop + " กับ ดาว " + iStarMate2 + " อยู่ร่วมกัน (กุมกัน)"; //'หัวข้อย่อย;
+                            const description = await getStarSamePayakornDescription(iRaseeLoop, iStarLoop, iStarMate2);
+                            Star_Same_Sub.push(Title);
+                            Star_Same_Desc.push(description);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+    const StarSame = {
+        "title": Star_Same_Title,
+        "sub_title": Star_Same_Sub,
+        "payakorn": Star_Same_Desc,
+    }
+    // ดาวคู่หรือดาวกุมกัน 
+
+    // 'คุณภาพดาว ราศีจักร
+    let iCountSTD_Ra = 0;
+    let iLoopi;
+    let sSTD$;
+    let txtSTDArray = [];
+    let SS; //'ss ต้องเป็น Variant เท่านั้น
+    let sTamnaiSTD_Ra = "";
+    iLoopi = 0
+    let S = "";
+    let rSTD = SuriyatDate.varBornPutdate_RaSTD[0];
+
+    // ไม่รู้มีไว้ทำไม
+    // let Result_LukSompodStarBorn = await db.dbQuery("SELECT * FROM luksompodstarborn WHERE rSTD<>'-' ORDER BY Stari ASC");
+    // if (Result_LukSompodStarBorn && Result_LukSompodStarBorn.length > 0) {
+    //     Result_LukSompodStarBorn.forEach(async (row) => {
+    //     });
+    // }
+    let Standard_Stars_DuangRasee_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงราศีจักร";
+    let Standard_Stars_DuangRasee_Sub = [];
+    let Standard_Stars_DuangRasee_Desc = [];
+    const QueryDuangRasee = rSTD.map((entry, index) => {
+        if (entry !== '-') {
+            const splitEntries = entry.split(",").filter(e => e.trim() !== "ตนุเศษ");
+            if (splitEntries.length > 0) {
+                return {
+                    entry: splitEntries.join(", "), // Cleaned entries
+                    index
+                };
+            }
+        }
+    }).filter(item => item !== undefined);
+
+    if (QueryDuangRasee && QueryDuangRasee.length > 0) {
+        for (let index = 0; index < QueryDuangRasee.length; index++) {
+            const row = QueryDuangRasee[index];
+            const parts = row.entry.split(",").map(part => part.trim());
+            if (parts.length > 1) {
+                for (let i = 0; i < parts.length; i++) {
+                    const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
+                    const queryParams = [row.index, parts[i]];
+                    const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+                    if (tamnaiResults && tamnaiResults.length > 0) {
+                        const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
+                        const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                        Standard_Stars_DuangRasee_Sub.push(Sub);
+                        Standard_Stars_DuangRasee_Desc.push(description);
+                    }
+                }
+            } else {
+                const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
+                const queryParams = [row.index, row.entry];
+                const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+                if (tamnaiResults && tamnaiResults.length > 0) {
+
+                    const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
+                    const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                    Standard_Stars_DuangRasee_Sub.push(Sub);
+                    Standard_Stars_DuangRasee_Desc.push(description);
+                }
+            }
+        }
+    }
+
+    const Standard_Stars_DuangRasee = {
+        "title": Standard_Stars_DuangRasee_Title,
+        "sub_title": Standard_Stars_DuangRasee_Sub,
+        "payakorn": Standard_Stars_DuangRasee_Desc,
+    }
+    // จบ ดาวมาตรฐาน ในดวงราศีจักร 
+
+    // ดาวมาตรฐาน ในดวงราศีนวางค์จักร 'หาคำทำนายคุณภาพดาว เกษตร ประ.....
+    let Standard_Stars_DuangNavang_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงนวางค์จักร";
+    let Standard_Stars_DuangNavang_Sub = [];
+    let Standard_Stars_DuangNavang_Desc = [];
+    let sSTDNa = SuriyatDate.varBornPutdate_NaRaSTD[0];
+    // RaSTD
+    // varBornPutdate_RaSTD
+    // เกษตร มหาจักร นิจ  มหาจักร เกษตร
+    const QueryDuangNavang = sSTDNa.map((entry, index) => {
+        if (entry !== '-') {
+            const splitEntries = entry.split(",").filter(e => e.trim() !== "ตนุเศษ");
+            if (splitEntries.length > 0) {
+                return {
+                    entry: splitEntries.join(", "), // Cleaned entries
+                    index
+                };
+            }
+        }
+    }).filter(item => item !== undefined);
+
+    if (QueryDuangNavang && QueryDuangNavang.length > 0) {
+        for (let index = 0; index < QueryDuangNavang.length; index++) {
+            const row = QueryDuangNavang[index];
+            const sqlQuery = "SELECT * FROM luktamnaistarasstd WHERE Stari = ? AND AsSTDs = ?";
+            const queryParams = [row.index, row.entry];
+            const tamnaiResults = await db.db_Query(sqlQuery, queryParams);
+            if (tamnaiResults && tamnaiResults.length > 0) {
+                const title = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_NavangStarAsRasee[0][tamnaiResults[0].Stari])} ดวงนวางค์จักร]`;
+                const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                Standard_Stars_DuangNavang_Sub.push(title);
+                Standard_Stars_DuangNavang_Desc.push(description);
+            }
+        }
+    }
+
+    const Standard_Stars_DuangNavang = {
+        "title": Standard_Stars_DuangNavang_Title,
+        "sub_title": Standard_Stars_DuangNavang_Sub,
+        "payakorn": Standard_Stars_DuangNavang_Desc,
+    }
+    // จบ ดาวมาตรฐาน ในดวงราศีนวางค์จักร 'หาคำทำนายคุณภาพดาว เกษตร ประ.....
+
+    // 'ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   
+    // 'กาลกิณี ตามหลักทักษา
+    let DayBornMooniX, StarAsKalakini;
+    let PopsKalakini;
+    let Star_Kalakini_Title = "ดาวกาลกิณี (กาลี)";
+    let Star_Kalakini_Sub = "",
+        Star_Kalakini_Desc = "";
+
+    if (ichkTaksaBorn4or8As4 == 1) {
+        if (SuriyatDate.dayMooni == 8) {
+            DayBornMooniX = 4;
+        } else {
+            DayBornMooniX = SuriyatDate.dayMooni;
+        }
+    } else {
+        DayBornMooniX = SuriyatDate.dayMooni;
+    }
+
+    const starAsKalakiniMap = {
+        1: 6,
+        2: 1,
+        3: 2,
+        4: 3,
+        5: 7,
+        6: 8,
+        7: 4,
+        8: 5
+    };
+
+    StarAsKalakini = starAsKalakiniMap[DayBornMooniX] || null; // Default to null if no match
+
+    if (StarAsKalakini != null) {
+        let Find_Pop = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${StarAsKalakini}'`); // 'เปิดดาวนี้ เพื่อหาภพ
+        if (Find_Pop && Find_Pop.length == 1) {
+            PopsKalakini = Find_Pop[0].rPopLuks;
+        }
+
+        let Open_Pop = await db.dbQuery(`SELECT * FROM luktamnaikalakiniinpop WHERE KalakiniLivePops='${PopsKalakini}'`); // 'เปิดภพ
+        if (Open_Pop && Open_Pop.length == 1) {
+            Star_Kalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
+            Star_Kalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
+            Star_Kalakini_Desc = Open_Pop[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+        }
+    }
+
+    const Star_Kalakini = {
+        "title": Star_Kalakini_Title,
+        "sub_title": Star_Kalakini_Sub,
+        "payakorn": Star_Kalakini_Desc,
+    }
+    // 'ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   
+
+    // 'คำทำนายความสัมพันธ์ของดาวพระเคราะห์กับภพของเจ้าชะตา (คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ)
+    let Star_Born_TamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
+    let Star_Born_TamPop_Sub = [];
+    let Star_Born_TamPop_Desc = [];
+    for (let j = 1; j <= 8; j++) {
+        const tamnaiResults = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
+        if (tamnaiResults && tamnaiResults.length == 1) {
+            const rPopLuks = SuriyatDate.varBornPutdate_PopLuksStar[0][j]
+            const Popi = await Support.fcPopSToi(rPopLuks);
+            const rLiveRasees = await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][j])
+            const Rasees = " (" + await Support.fcStariToS(j) + "เป็น" + rPopLuks + ")   (ราศี" + rLiveRasees + ")"
+            const LukTamnaiPopResults = await db.dbQuery(`SELECT * FROM luktamnaipop WHERE StariLiveinPopi='${j}-${Popi}' `);
+            if (LukTamnaiPopResults && LukTamnaiPopResults.length == 1) {
+                const Sub = LukTamnaiPopResults[0].StarLiveinPops + " " + Rasees;
+                const Description = LukTamnaiPopResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                Star_Born_TamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
+                Star_Born_TamPop_Desc.push(Description);
+            }
+        }
+    }
+    const Star_Born_TamPop = {
+        "title": Star_Born_TamPop_Title,
+        "sub_title": Star_Born_TamPop_Sub,
+        "payakorn": Star_Born_TamPop_Desc,
+    }
+    // ' จบ
+
+    // คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
+    let strItems, sNameTable;
+    let House_Star_Pops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
+    let House_Star_Pops_Sub = [];
+    let House_Star_Pops_Desc = [];
+
+    House_Star_Pops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
+    House_Star_Pops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
+    House_Star_Pops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
+    House_Star_Pops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
+    House_Star_Pops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
+    House_Star_Pops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
+    House_Star_Pops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
+    House_Star_Pops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
+    House_Star_Pops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
+    House_Star_Pops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
+    House_Star_Pops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
+    House_Star_Pops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
+
+    for (let iPop = 0; iPop <= 11; iPop++) {
+        const LukTamnaiKasedInPopResults = await db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
+        if (LukTamnaiKasedInPopResults && LukTamnaiKasedInPopResults.length == 1) {
+            const Description = LukTamnaiKasedInPopResults[0].PayakonText.replace(/<br>/g, "").replace(/<b>/g, "");
+            // House_Star_Pops_Desc.push();
+            House_Star_Pops_Desc[iPop] = `${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`;
+        } else {
+            House_Star_Pops_Desc[iPop] = "-";
+        }
+    }
+
+    const House_Star_Pops = {
+        "title": House_Star_Pops_Title,
+        "sub_title": House_Star_Pops_Sub,
+        "payakorn": House_Star_Pops_Desc,
+    }
+
+    return {
+        BornLukPopsChars, // ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)
+        BornLukOwnerHousePop, //ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
+        varBornLuk_KasediInPopistr,
+        LukBornRasees,
+        AscendantPrediction, // คำทำนายลัคนาสถิตราศี
+        AscendantPredictionGem, //สีและอัญมณีที่ถูกโฉลกประจำราศี
+        StarStay_GumLuk, // กุมลัคน์
+        StarStay_Patani, // เล็งลัคนา
+        StarAsTanuSED, //คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา
+        StarSame, //ดาวคู่หรือดาวกุมกัน
+        Standard_Stars_DuangRasee, //ดาวมาตรฐาน ในดวงราศีจักร
+        Standard_Stars_DuangNavang, // ดาวมาตรฐาน ในดวงราศีนวางค์จักร
+        Star_Kalakini, //ดาวที่เป็นกาลกิณี (กาลี)
+        Star_Born_TamPop, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
+        House_Star_Pops, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
+    }
+}
+
+async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
+    // 'คำทำนายดาวจร
+    // console.log(SuriyatDate.varBornPutdate_StarStayR[0], TodaySuriyatDate.varTodayPutdate_StarStayR[0]);
+    // console.log(SuriyatDate.varBornPutdate_StarO[0], SuriyatDate.varBornPutdate_StarL[0]);
+    // console.log(TodaySuriyatDate.varTodayPutdate_StarO[0] , TodaySuriyatDate.varTodayPutdate_StarL[0]);
+    let StringLongBornToday = "";
+    let iStarTodayPowerInOngsa1To20 = 20;
+    let array1 = SuriyatDate.varBornPutdate_StarStayR[0];
+    let array2 = TodaySuriyatDate.varTodayPutdate_StarStayR[0];
+    let Wandering_Star_Now_Title = "คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)";
+    let Wandering_Star_Now_Sub = "* แสดงคำทำนายดาวจรส่งอิทธิพลในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา คือแสดงคำทำนายดาวจรเฉพาะที่องศาดาวกำเนิดกับองศาดาวจรห่างกันในระยะ " + iStarTodayPowerInOngsa1To20 + " องศาเท่านั้น"
+    let StarAsInRaseeiAsStar_Sub = "ดาวจรเดินมา ทับ/กุม ดาวกำเนิด (อยู่ในราศีเดียวกัน) ในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา"; //'หัวข้อหลัก"
+    let StarAsInRaseeiAsStar_Desc = [];
+    let StarAsInRaseeiAsStar_Move = [];
+    let StarAsInRaseeiAsStar_Percent = [];
+    let varBornLuk_StarLipdaAll = [
+        [],
+        []
+    ];
+    let varTodayLuk_StarLipdaAll = [
+        [],
+        []
+    ];
+
+    const columnIindex = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+
+    let dayNameLuk = {
+        10: "ลั. ลัคนา",
+        1: "1. อาทิตย์",
+        2: "2. จันทร์",
+        3: "3. อังคาร",
+        4: "4. พุธ",
+        5: "5. พฤหัส",
+        6: "6. ศุกร์",
+        7: "7. เสาร์",
+        8: "8. ราหู",
+        9: "9. เกตุ",
+        0: "0. มฤตยู",
+    };
+
+    // let matchingPredictionsGroup = Array(11).fill(null).map(() => []);
+    let StarAsInRaseeiAsStarGroup = columnIindex.map(index => ({
+        StarBornIndex: index,
+        StarBornText: dayNameLuk[index],
+        Predictions: []
+    }));
+
+    for (let index1 = 0; index1 <= 10; index1++) {
+        for (let index2 = 0; index2 <= 10; index2++) {
+            if (array1[index1] === array2[index2]) {
+                const lblStarO_1 = SuriyatDate.varBornPutdate_StarO[0][index1];
+                const lblStarL_1 = SuriyatDate.varBornPutdate_StarL[0][index1];
+                const lblStarO_2 = TodaySuriyatDate.varTodayPutdate_StarO[0][index2];
+                const lblStarL_2 = TodaySuriyatDate.varTodayPutdate_StarL[0][index2];
+
+                varBornLuk_StarLipdaAll[0][index1] = lblStarO_1 * 60 + lblStarL_1; // Convert birth star's angle to minutes
+                varTodayLuk_StarLipdaAll[0][index2] = lblStarO_2 * 60 + lblStarL_2; // Convert today's star's angle to minutes
+
+                let LipdaLongBornToday = 0;
+                let aOng = 0,
+                    aLib = 0,
+                    StringLongBornToday = "";
+
+                if (varTodayLuk_StarLipdaAll[0][index2] < varBornLuk_StarLipdaAll[0][index1]) {
+                    LipdaLongBornToday = varBornLuk_StarLipdaAll[0][index1] - varTodayLuk_StarLipdaAll[0][index2];
+                    aOng = Math.floor(LipdaLongBornToday / 60); // Degrees
+                    aLib = LipdaLongBornToday % 60; // Minutes
+
+                    if (aOng === 0 && aLib > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aLib} ลิปดา (ยังไม่ถึง)`;
+                    } else if (aLib === 0 && aOng > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng} องศา (ยังไม่ถึง)`;
+                    } else {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng}.${aLib} องศา (ยังไม่ถึง)`;
+                    }
+                } else if (varTodayLuk_StarLipdaAll[0][index2] > varBornLuk_StarLipdaAll[0][index1]) {
+                    LipdaLongBornToday = varTodayLuk_StarLipdaAll[0][index2] - varBornLuk_StarLipdaAll[0][index1];
+                    aOng = Math.floor(LipdaLongBornToday / 60); // Degrees
+                    aLib = LipdaLongBornToday % 60; // Minutes
+
+                    if (aOng === 0 && aLib > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aLib} ลิปดา (ผ่านหรือเลยมาแล้ว)`;
+                    } else if (aLib === 0 && aOng > 0) {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng} องศา (ผ่านหรือเลยมาแล้ว)`;
+                    } else {
+                        StringLongBornToday = `* ห่างกันในระยะ ${aOng}.${aLib} องศา (ผ่านหรือเลยมาแล้ว)`;
+                    }
+                } else {
+                    StringLongBornToday = `* เป็นระยะที่ทับกันแบบสนิท 100%`;
+                }
+
+                if (aOng <= iStarTodayPowerInOngsa1To20) {
+                    const MoveDay = TodaySuriyatDate.varTodayPutdate_StarMoveGoDay[index2];
+                    const MoveMonth = TodaySuriyatDate.varTodayPutdate_StarMoveGoMonth[index2];
+                    const MoveYearB = TodaySuriyatDate.varTodayPutdate_StarMoveGoYearB[index2];
+                    const MoveH = TodaySuriyatDate.varTodayPutdate_StarMoveGoH[index2];
+                    const MoveM = TodaySuriyatDate.varTodayPutdate_StarMoveGoM[index2];
+                    const strSMove = `จนถึงวันที่ ${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB} เวลา  ${MoveH}:${MoveM} น.`;
+
+                    const LukTamnaiStarTodayToStarBornResults = await db.dbQuery(`SELECT * FROM luktamnaistartodaytostarborn WHERE StarTodayi='${index2}' AND StarBorni='${index1}'`);
+                    if (LukTamnaiStarTodayToStarBornResults.length > 0) {
+                        const sTextPayakornToday = "คำพยากรณ์ " + LukTamnaiStarTodayToStarBornResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+                        const StarTodayToStarBorns = LukTamnaiStarTodayToStarBornResults[0].StarTodayToStarBorns;
+                        StarAsInRaseeiAsStar_Desc.push(sTextPayakornToday);
+
+                        const sTextFocus3 = `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`;
+                        const sTextStarStayLongTimeTMDs = `เหตุการณ์ต่อไปนี้มีผลต่อเจ้าชะตา ${strSMove}`;
+                        StarAsInRaseeiAsStar_Move.push(`${sTextFocus3} ${sTextStarStayLongTimeTMDs}`);
+
+                        const Percent_PakakornStar = await getPercent_PakakornStarTodayKumBorn(varBornLuk_StarLipdaAll[0][index1], varTodayLuk_StarLipdaAll[0][index2]);
+                        let probabilityText = `โอกาสและผลที่จะเกิดประมาณ ${Percent_PakakornStar.toFixed(2)}% ${getPercentEventText(Percent_PakakornStar)}`;
+                        StarAsInRaseeiAsStar_Percent.push(probabilityText);
+
+                        const matchingPrediction = {
+                            StarBornIndex: index1,
+                            StarBorn: dayNameLuk[index1],
+                            StartToday: dayNameLuk[index2],
+                            StarBorn_O: lblStarO_1,
+                            StarBorn_L: lblStarL_1,
+                            TodayBorn_O: lblStarO_2,
+                            TodayBorn_L: lblStarL_2,
+                            prediction: sTextPayakornToday,
+                            details: `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`,
+                            moveDate: `${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB}`,
+                            moveTime: `${MoveH}:${MoveM}`,
+                            probability: Percent_PakakornStar.toFixed(2),
+                            probabilityText: probabilityText
+                        };
+
+                        // matchingPredictionsGroup[index1].push(matchingPrediction);
+                        StarAsInRaseeiAsStarGroup[index1].Predictions.push(matchingPrediction);
+                    }
+                }
+            }
+        }
+    }
+
+    return {
+        Wandering_Star_Now_Title, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
+        Wandering_Star_Now_Sub,
+        StarAsInRaseeiAsStar_Sub,
+        // StarAsInRaseeiAsStar_Desc,
+        // StarAsInRaseeiAsStar_Move,
+        // StarAsInRaseeiAsStar_Percent,
+        StarAsInRaseeiAsStarGroup,
     }
 }
 
@@ -4067,8 +5125,6 @@ async function CastHoroscope_Star(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z) {
     let Ms = d * 60 - k1 * Math.floor(MK / 2)
     let BU = KH + 5400;
     let ii = Math.sin(BU / 60 * Pi / 180);
-    // 0.6071447282514929 0.67144728251493 
-    // console.log(ii);
 
     let K3 = 1;
     if (ii < 0) {
@@ -4087,9 +5143,6 @@ async function CastHoroscope_Star(Ps, A0, A1, A2, A3, b, c, d, e, Vs, AA, Z) {
     if (BU > 5400) {
         BU = 10800 - BU;
     }
-
-    // 2243 // 2243
-    // console.log(BU)
 
     let Xs = BU / 1800;
     if (Xs < 0) {
@@ -4664,7 +5717,6 @@ function fcRaseeiToHouse(iRasee) {
     }
 }
 
-
 async function fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee) {
     let iCountFromLukToStarAsHomeLuk, iCountFromStarHomeLukToStarHouse;
 
@@ -4814,6 +5866,7 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
     let iStarAll = 12;
     let e10 = 0
 
+    let lblSpeedCharBorn = new Array(13);
     let lblStarStayRNo = new Array(13);
     let lblStarStayR = new Array(13);
     let lblStarO = new Array(13);
@@ -4837,7 +5890,7 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
         columnIindex = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 11, 12];
 
         for (let i = 0; i <= iStarAll; i++) {
-
+            lblSpeedCharBorn[columnIindex[i]] = SuriyatDate.SpeedChar_Born[i];
             lblStarStayRNo[columnIindex[i]] = SuriyatDate.varBornPutdate_StarStayR[e10][i];
             lblStarStayR[columnIindex[i]] = await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[e10][i]); // ' กรกฎ
             lblStarO[columnIindex[i]] = SuriyatDate.varBornPutdate_StarO[e10][i]; // ' 6
@@ -4882,6 +5935,7 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
         lblStdNa = [];
 
         for (let i = 0; i <= 9; i++) {
+            // lblSpeedCharBorn[columnIindex[i]] = SuriyatDate.SpeedChar_Born[i];
             lblStarStayRNo[columnIindex[i]] = SuriyatDate.varBornPutdate_StarStayR[e10][i];
             lblStarStayR[columnIindex[i]] = await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[e10][i]); // ' กรกฎ
             lblStarO[columnIindex[i]] = SuriyatDate.varBornPutdate_StarO[e10][i]; // ' 6
@@ -4918,10 +5972,8 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
         TitleTable = ["ลั. ลัคนา", "1. อาทิตย์", "2. จันทร์", "3. อังคาร", "4. พุธ", "5. พฤหัส", "6. ศุกร์", "7. เสาร์", "8. ราหู", "9. เกตุ", "0. มฤตยู", "น. เนปจูน", "พ. พูลโต"];
         columnIindex = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 11, 12];
 
-        // console.log(SuriyatDate);
-
         for (let i = 0; i <= iStarAll; i++) {
-
+            // lblSpeedCharBorn[columnIindex[i]] = SuriyatDate.SpeedChar_Born[i];
             lblStarStayRNo[columnIindex[i]] = SuriyatDate.varTodayPutdate_StarStayR[e10][i];
             lblStarStayR[columnIindex[i]] = await Support.fcRaseeiToS(SuriyatDate.varTodayPutdate_StarStayR[e10][i]); // ' กรกฎ
             lblStarO[columnIindex[i]] = SuriyatDate.varTodayPutdate_StarO[e10][i]; // ' 6
@@ -4967,6 +6019,7 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
         lblStdNa = [];
 
         for (let i = 0; i <= 9; i++) {
+            // lblSpeedCharBorn[columnIindex[i]] = SuriyatDate.SpeedChar_Born[i];
             lblStarStayRNo[columnIindex[i]] = SuriyatDate.varTodayPutdate_StarStayR[e10][i];
             lblStarStayR[columnIindex[i]] = await Support.fcRaseeiToS(SuriyatDate.varTodayPutdate_StarStayR[e10][i]); // ' กรกฎ
             lblStarO[columnIindex[i]] = SuriyatDate.varTodayPutdate_StarO[e10][i]; // ' 6
@@ -5004,6 +6057,7 @@ async function CastHoroscope_SompodStarOnLabel_Born_Today(option, SuriyatDate) {
     return {
         TitleTable,
         lblStarStayRNo,
+        lblSpeedCharBorn,
         lblStarStayR,
         lblStarO,
         lblStarL,
@@ -5057,7 +6111,6 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
     let TemJs = JS;
     let TemAM = Math.floor(AA / 1800);
     let SystemYearThai = false;
-
     let yearTH = dateInput.getFullYear() + 543;
 
     for (let K = 0; K <= 3600; K++) {
@@ -5065,7 +6118,6 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
         Deff3 = Def + DefMN + DefH + K;
         AA = 0, Ps = 0, VS2 = 0;
         Sun = await CastHoroscope_Sun(Deff3, AA, Ps, VS2, JS);
-        Vs = Sun.Vs;
         Star = await CastHoroscope_Star(Sun.Ps, A0, A1, A2, A3, b, c, d, e, Sun.Vs, AA, Z);
         if (Star.AA / 1800 === Math.floor(Star.AA / 1800) || TemAM < Math.floor(Star.AA / 1800) || TemAM > Math.floor(Star.AA / 1800)) {
             MN = DefTime;
@@ -5087,6 +6139,7 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
                 Dnewyear1 = new Date(Yearddmk1 - 543, 3, findVt + 1);
             }
 
+            // Dnewyear1 = 4/16/2025 ddmk1 = 5/13/2025 Mkdef = 26 // แต่ nodejs ได้ Mkdef = 391 เป็นค่าที่ถูกต้อง
             Mkdef = (ddmk1 - Dnewyear1) / (1000 * 60 * 60 * 24);
             Mkdef = Math.floor(Mkdef); // - 1 ทำให้ค่าไม่เท่ากับ .net
 
@@ -5138,16 +6191,15 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
 
             K = 3600;
 
+            // console.log(Mkdef);  // 26 391  
+
             for (let JK = 0; JK <= 1440; JK++) {
                 DefTime = TemTime + (JK / 60);
                 DefMN = (DefTime * 60) / 1440;
                 Deff3 = Mkdef + DefMN + DefH;
-
                 AA = 0, Ps = 0, VS2 = 0;
                 Sun = await CastHoroscope_Sun(Deff3, AA, Ps, VS2, JS);
-                Vs = Sun.Vs;
                 Star = await CastHoroscope_Star(Sun.Ps, A0, A1, A2, A3, b, c, d, e, Sun.Vs, AA, Z);
-
                 if (Star.AA / 1800 == Math.floor(Star.AA / 1800) || TemAM < Math.floor(Star.AA / 1800)) {
                     MN = DefTime
                     TemAM = Math.floor(Star.AA / 1800);
@@ -5163,7 +6215,7 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
     Mmove = Math.floor((MN - Math.floor(MN)) * 60); // 'นาที่ที่ดาวย้ายราศี
     MNKMove = mnk - 1;
     dDMYforTodayMove = new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate() + mnk);
-    // 22 9 37 2024-06-02T17:00:00.000Z
+    // 25 3 39 2024-07-12T17:00:00.000Z
     // console.log(Hmove, Mmove, MNKMove, dDMYforTodayMove);
     return {
         Hmove,
@@ -5300,6 +6352,7 @@ async function CastHoroscope_TimeStarMoveM(A0, A1, A2, A3, b, c, d, e, AA, DefTi
         Mmove,
         MNKMove,
         dDMYforTodayMove,
+        DefMN
     }
 
 }
@@ -6081,7 +7134,6 @@ function getPercentEventText(iPer) {
     return `เหตุการณ์นี้ ${sStringText}`;
 }
 
-
 module.exports = {
     calculateLunarDay,
     fcGetLukTimeLocalThailandThisProvValue,
@@ -6096,4 +7148,6 @@ module.exports = {
     GetValueControl_SompodStar,
     CastHoroscope_SompodStarOnLabel_Born_Today,
     PakakornSompod,
+    PayakornBorn,
+    PayakornToday,
 }
