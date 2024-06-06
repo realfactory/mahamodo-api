@@ -1772,8 +1772,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
             if (A1 == null) {
                 A1 = 0;
             }
-            // 0 0 2155                     2155
-            // console.log(ii , e10 , Rad[ii][e10]);
 
             // 'รับค่า  ดาวนี้ (ii) อยู่ราศี....... เช่น ดาว 1 อยู่ราศี 7   varTodayPutdate_StarStayR(e10, 1)=7
             varTodayPutdate_StarStayR[e10][ii] = Math.floor(A1 / 1800);
@@ -1808,9 +1806,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
             // 'แก้การ Error เมื่อดาวอยู่ราศี 12 คือ จำนวน Rad(n,n)  / 1800 ได้ 12
             if (varTodayPutdate_StarStayR[e10][ii] >= 12 || varTodayPutdate_StarStayR[e10][ii] == null || varTodayPutdate_StarStayR[e10][ii] == NaN) varTodayPutdate_StarStayR[e10][ii] = 0;
             // ''ขณะกำลังทำ ช่องราศีแสดงราศี ซึ่งในช่องนี้มีดาว..i (0-10)..อยู่
-            // console.log(ii , e10 , varTodayPutdate_StarStayR[e10][ii] , B1);
-            // 0 0 1 355                    0 0 1 355
-
             resultStarStayData = await getStarStayData(varTodayPutdate_StarStayR[e10][ii], B1);
             if (resultStarStayData) {
                 varTodayPutdate_Nasss[e10][ii] = resultStarStayData.Nasss;
@@ -1996,7 +1991,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
             }
 
             varTodayPutdate_RaSTD[1][j] = S;
-            //console.log(varTodayPutdate_StarStayR[1][j] + ' '+ S);
 
             // ''ดวงมาตรฐาน เกษตร ประ มหาอุจจ์ นิจ มหาจักร ราชาโชค ของดวงนวางค์จักร ของราศีจักร
             S = "";
@@ -2409,10 +2403,6 @@ async function CastHoroscope_AllStar_Suriyata_SUM_Main(birthDate, birthHour, bir
         Ps = 0,
         Vs = 0;
 
-    // console.log(Deff1, JS);
-    // 113.86583333333338 1353 113.8825
-    // 112.86583333333338 1353 112.8825
-
     const Sun = await CastHoroscope_Sun(Deff1, AA, Ps, Vs, JS);
 
     let Rad = Array.from({
@@ -2809,8 +2799,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     MoonR[3][0] = degreesToArcMinutes(MoonR[3][5]);
 
     //อาทิตย์
-    // 1.0140443890890996 16.308909735796334 137.5591616465426 135.0951144706618 110.4672395924947 6628.034375549682
-    // 1.0140443890891    16.3089097357963   137.559161646543  135.095114470662  110.467239592495  6628.03437554968     
     SunR[1][1] = calendar.sun(todayValue, 1);
     SunR[1][2] = calendar.sun(todayValue, 2);
     SunR[1][3] = calendar.sun(todayValue, 3);
@@ -2831,8 +2819,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     SunR[3][0] = degreesToArcMinutes(SunR[3][5]);
 
     //อังคาร
-    // 2.4523028754527743 6.832620914053475 166.33912344207326    164.78132261979522 140.15344774162813 8409.206864497688
-    // 2.45230287545276   6.83262091405454  166.33912344207326    164.78132261       140.1534477        8409.206  
     Mars[1][1] = calendar.planet(todayValue, 4, 1);
     Mars[1][2] = calendar.planet(todayValue, 4, 2);
     Mars[1][3] = calendar.planet(todayValue, 4, 3);
@@ -2853,8 +2839,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     Mars[3][0] = degreesToArcMinutes(Mars[3][5]);
 
     // พุธ
-    // 0.6755823399146188 5.706049442489903 156.37034299099898 156.02118895260455 131.39331407443746 7883.598844466247
-    // 0.67558233991465   5.70604944249076  156.370342990998   156.021188952604   131.393314074437   7883.5988444622 
     Mercury[1][1] = calendar.planet(todayValue, 1, 1);
     Mercury[1][2] = calendar.planet(todayValue, 1, 2);
     Mercury[1][3] = calendar.planet(todayValue, 1, 3);
@@ -2875,8 +2859,6 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
     Mercury[3][0] = degreesToArcMinutes(Mercury[3][5]);
 
     // พฤหัส
-    // 6.358949187924624 14.725965142563748 145.0908970392492 142.48478570401116 117.85691082584407 7071.414649550644
-    // 6.35894918792462  14.725965142564    145.090897039248  142.48478570401    117.856910825843   7071.4146495507   
     Jupiter[1][1] = calendar.planet(todayValue, 5, 1);
     Jupiter[1][2] = calendar.planet(todayValue, 5, 2);
     Jupiter[1][3] = calendar.planet(todayValue, 5, 3);
@@ -3139,15 +3121,9 @@ async function CastHoroscope_SumSompodStarCalendarAstronomy_Born_Today(dataInput
         RadSpeed[12][4][0] = 2; // Slow or stationary
     }
 
-    // console.log("ElicYesterday:", ElicYesterday);
-    // console.log("ElicTomorrow:", ElicTomorrow);
-    // console.log("Direction:", Direction);
-    // console.log("Speed:", Speed);
-    // console.log("RadSpeed:", RadSpeed);
-
     // Usage example for Neptune and Pluto, adapt as necessary
-    let A1_Neptune = Neptune[1][0]; // 15604.402798323506   // 15604.4027983235
-    let A1_Pluto = Pluto[1][0]; // 12184.7757067649     // 12184.7757067649
+    let A1_Neptune = Neptune[1][0];
+    let A1_Pluto = Pluto[1][0];
 
     return {
         A1_Neptune,
@@ -3264,12 +3240,9 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     }
 
     //ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)
-    // console.log(varBornLuk_PopsChars);
-
     // let sTextTopicSmall;
     // iTextTopicSmall += 1;
     // sTextTopicSmall[iTextTopicSmall] = "ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด";
-
     // ' หาดาวเจ้าเรือน แล้วรับค่า เช่น "ดาว 2 เป็นเจ้าเรือน ตนุ ตกอยู่ในภพ กัมมะ"  เพื่อแสดง
     let StarHousei, StarHouseRi, iCountR;
     let strBornStarAsHouseInPop, Pop2;
@@ -3306,15 +3279,10 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     }
 
     // คำทำนายลัคนาสถิตราศี
-
     // ลัคนาสถิตราศีกันย์ กันย์ (5)
-
     // ลัคนาสถิตราศีกันย์ พยากรณ์ตามลักษณะราศีเจ้าชะตามักเป็นคนมีรูปร่างอรชอ้อนแอ้น มีผิวขาวปนเหลือง สงบเสงี่ยมเจียมตัว<br>รักสวยรักงาม ชอบความสะอาด พิถีพิถันในการแต่งตัว ชอบความเป็นระเบียบเรียบร้อย พูดจาไพเราะ มักมีตำหนิเป็นไฝปานที่แขน<br>มือ หรือไหล่แห่งใดแห่งหนึ่ง งานที่เหมาะสำหรับคุณควรเป็นงานนักประพันธ์ นักเขียน และเป็นหัวหน้าในหน่วยงานอื่นๆ โรคที่มักเกิดขึ้น<br>ถ้ามีคือโรคโลหิตจาง หลอดลมเอกเสบ หืด หอบ<br>
-
     // สีและอัญมณีที่ถูกโฉลกประจำราศี
-
     // สีและอัญมณีที่ถูกโฉลก เสริมดวงชะตาและทำให้เกิดโชคลาภ คือสีเขียว อัญมณีคือมรกต,หยก,เขียวส่อง สีและอัญมณีที่ห้ามใช้<br>คือสีม่วงคราม,แสดและส้ม อัญมณีคือโกเมน,พลอยสีส้ม, พลอยสีม่วงคราม<br>
-
     // varBornLuk_StarStayR == SuriyatDate.varBornPutdate_StarStayR[0][10] คำทำนายลัคนาสถิตราศี
     let Sql_StarStayR = "SELECT * FROM luktamnailukliverasee WHERE  Raseei= " + SuriyatDate.varBornPutdate_StarStayR[0][10];
     let Query_StarStayR10 = await db.dbQuery(Sql_StarStayR);
@@ -3369,7 +3337,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     let StarAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
     let StarAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_StarAsTanuSED[0]) + " เป็นตนุเศษ";
     let StarAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_StarAsTanuSED[0]);
-
 
     // คำทำนายดาวที่อยู่ในราศีเดียวกัน (ดาวคู่หรือดาวกุมกัน)
     // SuriyatDate.varBornPutdate_StarStayR[0][10]
@@ -3611,8 +3578,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     let Standard_Stars_DuangNavang_Sub = [];
     let Standard_Stars_DuangNavang_Desc = [];
     let sSTDNa = SuriyatDate.varBornPutdate_NaRaSTD[0];
-    // RaSTD
-    // varBornPutdate_RaSTD
     // เกษตร มหาจักร นิจ  มหาจักร เกษตร
     const QueryDuangNavang = sSTDNa.map((entry, index) => {
         if (entry !== '-') {
@@ -3735,9 +3700,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     }
 
     // 'คำทำนายดาวจร
-    // console.log(SuriyatDate.varBornPutdate_StarStayR[0], TodaySuriyatDate.varTodayPutdate_StarStayR[0]);
-    // console.log(SuriyatDate.varBornPutdate_StarO[0], SuriyatDate.varBornPutdate_StarL[0]);
-    // console.log(TodaySuriyatDate.varTodayPutdate_StarO[0] , TodaySuriyatDate.varTodayPutdate_StarL[0]);
     let StringLongBornToday = "";
     let iStarTodayPowerInOngsa1To20 = 20;
     let array1 = SuriyatDate.varBornPutdate_StarStayR[0];
@@ -3772,7 +3734,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         9: "9. เกตุ",
         0: "0. มฤตยู",
     };
-
 
     // let matchingPredictionsGroup = Array(11).fill(null).map(() => []);
     let StarAsInRaseeiAsStarGroup = columnIindex.map(index => ({
@@ -3872,7 +3833,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             probabilityText: probabilityText
                         };
 
-                        // matchingPredictionsGroup[index1].push(matchingPrediction);
                         StarAsInRaseeiAsStarGroup[index1].Predictions.push(matchingPrediction);
                     }
                 }

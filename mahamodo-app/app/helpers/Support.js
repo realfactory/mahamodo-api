@@ -237,7 +237,7 @@ async function SpeedChar_Born(VarInput){
     const popMapping = {
         1: "พ",
         2: "ม",
-        3: " ",
+        3: "",
         4: "ส",
     };
     return popMapping[VarInput] || "";
