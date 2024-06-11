@@ -3,10 +3,9 @@ const db = require('./db.js');
 const calendar = require('./calendarAstronomy.js');
 const parameter = require('./parameter.js');
 
-
-function calculateAges(req) {
+async function calculateAges(dateInput) {
     try {
-        const birthdate = new Date(req.query.birthdate);
+        const birthdate = new Date(dateInput);
         const today = new Date();
         let age = today.getFullYear() - birthdate.getFullYear();
         const m = today.getMonth() - birthdate.getMonth();

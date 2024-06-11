@@ -499,6 +499,24 @@ async function fcRaseeiToS(varInput) {
     return result;
 }
 
+async function fcLifeToS(varInput) {
+    const mapping = {
+        1: "วาสนา",
+        2: "ทรัพย์",
+        3: "เพื่อน",
+        4: "ญาติ",
+        5: "บริวาร",
+        6: "ศัตรู",
+        7: "คู่ครอง",
+        8: "โรคภัย",
+        9: "ความสุข",
+        10: "การงาน",
+        11: "ลาภยศ",
+        12: "หายนะ"
+    };
+    return mapping[varInput] || "";
+}
+
 module.exports = {
     fcDayi17ToS,
     fcYearOldiToS,
@@ -523,5 +541,6 @@ module.exports = {
     fcPopSToi,
     fcTimeSToi,
     fcMonthiToSSht,
-    SpeedChar_Born
+    SpeedChar_Born,
+    fcLifeToS
 }

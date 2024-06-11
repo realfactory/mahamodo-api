@@ -10,6 +10,16 @@ const ValidationSomPutDateApi = [
         }
         return true;
     }),
+    body('time_of_birth').custom((value, { req }) => {
+        if (value === undefined || value.trim() === '') {
+            throw new Error('Please input date_of_time');
+        }
+        const formattedTime = moment(value, 'HH:mm', true);
+        if (!formattedTime.isValid()) {
+            throw new Error('date_of_time must be in HH:mm format');
+        }
+        return true;
+    }),
     body('province').notEmpty().withMessage('Please input province language thailand.'),
     body('current_date').custom((value, { req }) => {
         if (value === undefined || value.trim() === '') {

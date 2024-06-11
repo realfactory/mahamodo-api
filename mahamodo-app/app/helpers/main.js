@@ -176,12 +176,18 @@ async function SetUpDownMThaiMoon(date, DayMooni, DaySuni) {
                     let Nighti = resMoon[0].night;
                     let MThai = resMoon[0].mthai;
                     let YThai = resMoon[0].ythai;
+                    let DThai = resMoon[0].dayi;
 
                     MoonInfo = await DownThaiMoonInfo(DownUps, Nighti, MThai, YThai);
+
+                    // UpDownBornS = DownUps 'เก็บค่า "ขึ้น" หรือ "แรม" ไว้ในตัวแปร Public เพื่อนำไปใช้
+                    // UDiBorn = Nighti 'เก็บค่า จำนวนค่ำ ไว้ในตัวแปร Public เพื่อนำไปใช้
+                    // MonthOldiBorn = MThai 'เก็บค่า เดือนไทย ไว้ในตัวแปร Public เพื่อนำไปใช้
 
                     resolve({
                         DownUps: DownUps,
                         Nighti: Nighti,
+                        DThai : DThai,
                         MThai: MThai,
                         YThai: YThai,
                         MoonInfo: MoonInfo,
@@ -6094,12 +6100,11 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
             findVt = Math.floor(FindTaleanSuk.findVt);
 
             if (SystemYearThai) {
-                Dnewyear1 = new Date(Yearddmk1, 3, findVt); // Month is 0-indexed in JS: 3 = April
+                Dnewyear1 = new Date(Yearddmk2, 3, findVt); // Month is 0-indexed in JS: 3 = April
             } else {
-                Dnewyear1 = new Date(Yearddmk1 - 543, 3, findVt + 1);
+                Dnewyear1 = new Date(Yearddmk2 - 543, 3, findVt + 1);
             }
 
-            // Dnewyear1 = 4/16/2025 ddmk1 = 5/13/2025 Mkdef = 26 // แต่ nodejs ได้ Mkdef = 391 เป็นค่าที่ถูกต้อง
             Mkdef = (ddmk1 - Dnewyear1) / (1000 * 60 * 60 * 24);
             Mkdef = Math.floor(Mkdef); // - 1 ทำให้ค่าไม่เท่ากับ .net
 
@@ -6175,8 +6180,7 @@ async function CastHoroscope_TimeStarMove(A0, A1, A2, A3, b, c, d, e, AA, DefTim
     Mmove = Math.floor((MN - Math.floor(MN)) * 60); // 'นาที่ที่ดาวย้ายราศี
     MNKMove = mnk - 1;
     dDMYforTodayMove = new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate() + mnk);
-    // 25 3 39 2024-07-12T17:00:00.000Z
-    // console.log(Hmove, Mmove, MNKMove, dDMYforTodayMove);
+    
     return {
         Hmove,
         Mmove,
