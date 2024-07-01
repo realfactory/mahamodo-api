@@ -358,13 +358,13 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
     const lblDayBirth = Support.fcDayi17ToS(LunarDay.daySuni);
     const getMoonBirth = await SetUpDownMThaiMoon(dataInput, LunarDay.dayMooni, LunarDay.daySuni);
     const birthTimeInfo = await adjustBirthTime(dataInput, Hour, min, CutTimeLocalYN, sProv);
-    const YearAgeInfo = await helpers.formatTimeDifference(dataInput, Hour, min);
+    const yearAgeInfo = await helpers.formatTimeDifference(dataInput, Hour, min);
 
-    let YourBirthday = birthTimeInfo.formattedDate;
-    let YourBirthdayDateUse = birthTimeInfo.dateUse;
+    let yourBirthday = birthTimeInfo.formattedDate;
+    let yourBirthdayDateUse = birthTimeInfo.dateUse;
     let birthDateMoonInfo = getMoonBirth.MoonInfo;
-    let SurisBirth = lblDayBirth.replace("(กลางวัน)", "").replace("(กลางคืน)", "");
-    let lblDaySBirthSuriyaKati = "สุริยคติ: " + SurisBirth;
+    let surisBirth = lblDayBirth.replace("(กลางวัน)", "").replace("(กลางคืน)", "");
+    let lblDaySBirthSuriyaKati = "สุริยคติ: " + surisBirth;
     let iStarAll = 12; // 'กำหนดจำนวนสมาชิกอาเรย์
 
     let StarStayData = require('../json/StarStay.json');
@@ -796,23 +796,23 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
     let iStarAsHouse = await Support.fcRaseeToStarKased(iStarKasedOfLukAsRasee); // 'รับค่าดาวเจ้าบ้าน
     let iStarAsHouseOfLukAsRasee = iStarRa[0][iStarAsHouse]; // '4. ดาวเจ้าเรือนลัคนาอยู่ในตำแหน่งราศีที่..... คือค่าจาก iStarRa10(0, iStarAsHouse) นั่นเอง
 
-    let iStarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee);
-    let varBornPutdate_StarAsTanuSED = [];
-    varBornPutdate_StarAsTanuSED[0] = iStarAsTanuSED;
+    let istarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee);
+    let varBornPutdate_starAsTanuSED = [];
+    varBornPutdate_starAsTanuSED[0] = istarAsTanuSED;
 
     //  'ใส่ข้อความว่า "ตนุเศษ" ใน STD (คุณภาพดาว)
-    S = varBornPutdate_RaSTD[0][iStarAsTanuSED];
+    S = varBornPutdate_RaSTD[0][istarAsTanuSED];
     if (S === "-" || S === "") {
         if (S === "-") {
             S = S.replace("-", ""); // Replace '-' with an empty string.
         }
-        varBornPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ";
+        varBornPutdate_RaSTD[0][istarAsTanuSED] = "ตนุเศษ";
     } else {
-        varBornPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ, " + S;
+        varBornPutdate_RaSTD[0][istarAsTanuSED] = "ตนุเศษ, " + S;
     }
 
     // 'ใส่ค่าภพตนุเศษ  ให้กับดวงราศีจักร (ดวงอีแปะ) กำเนิด
-    iCountR = varBornPutdate_StarStayR[0][iStarAsTanuSED];
+    iCountR = varBornPutdate_StarStayR[0][istarAsTanuSED];
     for (let iPop = 0; iPop <= 11; iPop++) {
         // 'ใส่ค่าภพตนุเศษ ให้กับดวงราศีจักร (ดวงอีแปะ) 
         varBornPutdate_PopTanusedRasee[0][iCountR] = await Support.fcPopiToS(iPop); // Assuming fcPopiToS(iPop) is defined and returns a string.
@@ -832,22 +832,22 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
     let iStarAsHouse10 = await Support.fcRaseeToStarKased(iStarKasedOfLukAsRasee10); // 'รับค่าดาวเจ้าบ้าน
     let iStarAsHouse10OfLukAsRasee = iStarRa10[1][iStarAsHouse10]; // '4. ดาวเจ้าเรือนลัคนาอยู่ในตำแหน่งราศีที่..... คือค่าจาก iStarRa10(0, iStarAsHouse) นั่นเอง
 
-    iStarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee10, iStarAsHomeLuk10, iStarKasedOfLukAsRasee10, iStarAsHouse10OfLukAsRasee);
-    varBornPutdate_StarAsTanuSED[1] = iStarAsTanuSED;
+    istarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee10, iStarAsHomeLuk10, iStarKasedOfLukAsRasee10, iStarAsHouse10OfLukAsRasee);
+    varBornPutdate_starAsTanuSED[1] = istarAsTanuSED;
 
     // ''ใส่ข้อความว่า "ตนุเศษ" ใน STD (คุณภาพดาว)
-    S = varBornPutdate_RaSTD[1][iStarAsTanuSED];
+    S = varBornPutdate_RaSTD[1][istarAsTanuSED];
     if (S === "-" || S === "") {
         if (S === "-") {
             S = S.replace("-", ""); // Replace '-' with an empty string.
         }
-        varBornPutdate_RaSTD[1][iStarAsTanuSED] = "ตนุเศษ";
+        varBornPutdate_RaSTD[1][istarAsTanuSED] = "ตนุเศษ";
     } else {
-        varBornPutdate_RaSTD[1][iStarAsTanuSED] = "ตนุเศษ, " + S;
+        varBornPutdate_RaSTD[1][istarAsTanuSED] = "ตนุเศษ, " + S;
     }
 
     // ''ใส่ค่าภพตนุเศษ  ให้กับดวง10ลัคน์
-    iCountR = varBornPutdate_StarStayR[1][iStarAsTanuSED]; // 'ตนุเศษ10ลัคน์ อยู่ที่ ราศี.....
+    iCountR = varBornPutdate_StarStayR[1][istarAsTanuSED]; // 'ตนุเศษ10ลัคน์ อยู่ที่ ราศี.....
     for (let iPop = 0; iPop <= 11; iPop++) {
         // ' ใส่ค่าภพตนุเศษ ให้กับดวง10ลัคน์ 
         varBornPutdate_PopTanusedRasee[1][iCountR] = await Support.fcPopiToS(iPop); // Assuming fcPopiToS(iPop) is defined and returns a string.
@@ -862,11 +862,11 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
     return {
         dayMooni: LunarDay.dayMooni,
         daySuni: LunarDay.daySuni,
-        YearAgeInfo: YearAgeInfo,
-        YourBirthday: YourBirthday,
-        YourBirthdayDateUse: YourBirthdayDateUse,
+        yearAgeInfo: yearAgeInfo,
+        yourBirthday: yourBirthday,
+        yourBirthdayDateUse: yourBirthdayDateUse,
         birthDateMoonInfo: birthDateMoonInfo,
-        SurisBirth: SurisBirth,
+        surisBirth: surisBirth,
         lblDaySBirthSuriyaKati: lblDaySBirthSuriyaKati,
         Rad: Rad,
         SpeedChar_Born,
@@ -892,7 +892,7 @@ async function CastHoroscope_SumSuriyatMain_Born(dataInput, Hour, min, CutTimeLo
         varBornPutdate_TriyangHarms,
         varBornPutdate_RaSTD,
         varBornPutdate_NaRaSTD,
-        varBornPutdate_StarAsTanuSED,
+        varBornPutdate_starAsTanuSED,
     };
 
 }
@@ -2051,25 +2051,25 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     let iStarAsHouseOfLukAsRasee = iStarRa[0][iStarAsHouse]; // '4. ดาวเจ้าเรือนลัคนาอยู่ในตำแหน่งราศีที่..... คือค่าจาก iStarRa(0, iStarAsHouse) นั่นเอง
 
 
-    let iStarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee)
-    let varTodayPutdate_StarAsTanuSED = [];
-    varTodayPutdate_StarAsTanuSED[0] = iStarAsTanuSED;
+    let istarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKasedOfLukAsRasee, iStarAsHouseOfLukAsRasee)
+    let varTodayPutdate_starAsTanuSED = [];
+    varTodayPutdate_starAsTanuSED[0] = istarAsTanuSED;
 
-    // console.log(iStarAsTanuSED);
+    // console.log(istarAsTanuSED);
 
     //  'ใส่ข้อความว่า "ตนุเศษ" ใน STD (คุณภาพดาว)
-    S = varTodayPutdate_RaSTD[0][iStarAsTanuSED];
+    S = varTodayPutdate_RaSTD[0][istarAsTanuSED];
     if (S === "-" || S === "") {
         if (S === "-") {
             S = S.replace("-", ""); // Replace '-' with an empty string.
         }
-        varTodayPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ";
+        varTodayPutdate_RaSTD[0][istarAsTanuSED] = "ตนุเศษ";
     } else {
-        varTodayPutdate_RaSTD[0][iStarAsTanuSED] = "ตนุเศษ, " + S;
+        varTodayPutdate_RaSTD[0][istarAsTanuSED] = "ตนุเศษ, " + S;
     }
 
     // 'ใส่ค่าภพตนุเศษ  ให้กับดวงราศีจักร (ดวงอีแปะ) กำเนิด
-    iCountR = varTodayPutdate_StarStayR[0][iStarAsTanuSED];
+    iCountR = varTodayPutdate_StarStayR[0][istarAsTanuSED];
     for (let iPop = 0; iPop <= 11; iPop++) {
         // 'ใส่ค่าภพตนุเศษ ให้กับดวงราศีจักร (ดวงอีแปะ) 
         varTodayPutdate_PopTanusedRasee[0][iCountR] = await Support.fcPopiToS(iPop); // Assuming fcPopiToS(iPop) is defined and returns a string.
@@ -2088,21 +2088,21 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     let iStarAsHouse10 = await Support.fcRaseeToStarKased(iStarKasedOfLukAsRasee10); // 'รับค่าดาวเจ้าบ้าน
     let iStarAsHouse10OfLukAsRasee = iStarRa10[1][iStarAsHouse10]; // '4. ดาวเจ้าเรือนลัคนาอยู่ในตำแหน่งราศีที่..... คือค่าจาก iStarRa10(0, iStarAsHouse) นั่นเอง
 
-    iStarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee10, iStarAsHomeLuk10, iStarKasedOfLukAsRasee10, iStarAsHouse10OfLukAsRasee)
-    varTodayPutdate_StarAsTanuSED = [];
-    varTodayPutdate_StarAsTanuSED[1] = iStarAsTanuSED;
-    S = varTodayPutdate_RaSTD[1][iStarAsTanuSED];
+    istarAsTanuSED = await fcGetTanused_CastHoroscope(iLukStayRasee10, iStarAsHomeLuk10, iStarKasedOfLukAsRasee10, iStarAsHouse10OfLukAsRasee)
+    varTodayPutdate_starAsTanuSED = [];
+    varTodayPutdate_starAsTanuSED[1] = istarAsTanuSED;
+    S = varTodayPutdate_RaSTD[1][istarAsTanuSED];
     if (S === "-" || S === "") {
         if (S === "-") {
             S = S.replace("-", ""); // Replace '-' with an empty string.
         }
-        varTodayPutdate_RaSTD[1][iStarAsTanuSED] = "ตนุเศษ";
+        varTodayPutdate_RaSTD[1][istarAsTanuSED] = "ตนุเศษ";
     } else {
-        varTodayPutdate_RaSTD[1][iStarAsTanuSED] = "ตนุเศษ, " + S;
+        varTodayPutdate_RaSTD[1][istarAsTanuSED] = "ตนุเศษ, " + S;
     }
 
     // ''ใส่ค่าภพตนุเศษ  ให้กับดวง10ลัคน์
-    iCountR = varTodayPutdate_StarStayR[1][iStarAsTanuSED]; // 'ตนุเศษ10ลัคน์ อยู่ที่ ราศี.....
+    iCountR = varTodayPutdate_StarStayR[1][istarAsTanuSED]; // 'ตนุเศษ10ลัคน์ อยู่ที่ ราศี.....
     for (let iPop = 0; iPop <= 11; iPop++) {
         // ' ใส่ค่าภพตนุเศษ ให้กับดวง10ลัคน์ 
         varTodayPutdate_PopTanusedRasee[1][iCountR] = await Support.fcPopiToS(iPop); // Assuming fcPopiToS(iPop) is defined and returns a string.
@@ -2115,14 +2115,6 @@ async function CastHoroscope_SumSuriyatMain_Today(dateInput, Hour, min) {
     }
 
     return {
-        // dayMooni: LunarDay.dayMooni,
-        // daySuni: LunarDay.daySuni,
-        // YearAgeInfo: YearAgeInfo,
-        // YourBirthday: YourBirthday,
-        // YourBirthdayDateUse: YourBirthdayDateUse,
-        // birthDateMoonInfo: birthDateMoonInfo,
-        // SurisBirth: SurisBirth,
-        // lblDaySBirthSuriyaKati: lblDaySBirthSuriyaKati,
         Rad: Rad,
         varTodayPutdate_PopTanusedRasee: varTodayPutdate_PopTanusedRasee,
         varTodayPutdate_PopTanusedStar: varTodayPutdate_PopTanusedStar,
@@ -3292,57 +3284,57 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     // varBornLuk_StarStayR == SuriyatDate.varBornPutdate_StarStayR[0][10] คำทำนายลัคนาสถิตราศี
     let Sql_StarStayR = "SELECT * FROM luktamnailukliverasee WHERE  Raseei= " + SuriyatDate.varBornPutdate_StarStayR[0][10];
     let Query_StarStayR10 = await db.dbQuery(Sql_StarStayR);
-    let AscendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
-    let AscendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
-    let AscendantPrediction_Sub = "",
-        AscendantPrediction_Desc = "",
-        AscendantPredictionGem_Desc = "";
+    let ascendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
+    let ascendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
+    let ascendantPrediction_Sub = "",
+        ascendantPrediction_Desc = "",
+        ascendantPredictionGem_Desc = "";
     // Prediction of ascendant and zodiac sign
     if (Query_StarStayR10.length === 1) {
-        AscendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
-        AscendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-        AscendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
+        ascendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
+        ascendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+        ascendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
     }
     // 'เริ่ม คำทำนายกุมลัคน์ 17408 
     let iRasee = SuriyatDate.varBornPutdate_StarStayR[0][10];
-    let StarStay_GumLuk = [];
+    let starStayGumLuk = [];
     for (let iStar = 0; iStar <= 9; iStar++) {
         if (iRasee == SuriyatDate.varBornPutdate_StarStayR[0][iStar]) {
             const sqlQuery = "SELECT * FROM luktamnaiholdluk WHERE Stari= " + iStar;
             const queryResult = await db.dbQuery(sqlQuery);
             if (queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                StarStay_GumLuk[iStar] = "ดาว " + await Support.fcStariToS(iStar) + " กุมลัคน์ (" + queryResult[0].Stari + ")ลั " + description;
+                starStayGumLuk[iStar] = "ดาว " + await Support.fcStariToS(iStar) + " กุมลัคน์ (" + queryResult[0].Stari + ")ลั " + description;
             }
         } else {
-            StarStay_GumLuk[0] = " ไม่มีคำทำนายนี้ ";
+            starStayGumLuk[0] = " ไม่มีคำทำนายนี้ ";
         }
     }
     // 'จบ คำทำนายกุมลัคน์
 
     // 'เริ่ม เล็งลัคนา // varBornLuk_PopLuksStar == varBornPutdate_PopLuksStar
-    let StarStay_Patani = [];
+    let starStayPatani = [];
     for (let Starii = 0; Starii <= iStarAll; Starii++) {
         if (SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] == "ปัตนิ") {
             const sqlQuery = "SELECT * FROM luktamnaioppositeluk WHERE Stari= " + Starii;
             const queryResult = await db.dbQuery(sqlQuery);
             if (queryResult && queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                StarStay_Patani[Starii] = "ดาว " + await Support.fcStariToS(Starii) + " เล็งลัคนา (" + queryResult[0].Stari + ") <--> ลั)" + description;
+                starStayPatani[Starii] = "ดาว " + await Support.fcStariToS(Starii) + " เล็งลัคนา (" + queryResult[0].Stari + ") <--> ลั)" + description;
             } else {
-                StarStay_Patani[Starii] = " - ";
+                starStayPatani[Starii] = " - ";
             }
         } else {
-            StarStay_Patani[0] = " ไม่มีคำทำนายนี้ ";
+            starStayPatani[0] = " ไม่มีคำทำนายนี้ ";
         }
     }
     // 'จบ เล็งลัคนา
 
-    // ดาว sTextTopicSmall(iTextTopicSmall) = "ดาว" & fcStariToS(varBornLuk_StarAsTanuSED(0)) & "เป็นตนุเศษ"
-    // varBornLuk_StarAsTanuSED[0] = varBornPutdate_StarAsTanuSED[0]
-    let StarAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
-    let StarAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_StarAsTanuSED[0]) + " เป็นตนุเศษ";
-    let StarAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_StarAsTanuSED[0]);
+    // ดาว sTextTopicSmall(iTextTopicSmall) = "ดาว" & fcStariToS(varBornLuk_starAsTanuSED(0)) & "เป็นตนุเศษ"
+    // varBornLuk_starAsTanuSED[0] = varBornPutdate_starAsTanuSED[0]
+    let starAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
+    let starAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_starAsTanuSED[0]) + " เป็นตนุเศษ";
+    let starAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_starAsTanuSED[0]);
 
     // คำทำนายดาวที่อยู่ในราศีเดียวกัน (ดาวคู่หรือดาวกุมกัน)
     // SuriyatDate.varBornPutdate_StarStayR[0][10]
@@ -3532,9 +3524,9 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     //     });
     // }
 
-    let Standard_Stars_DuangRasee_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงราศีจักร";
-    let Standard_Stars_DuangRasee_Sub = [];
-    let Standard_Stars_DuangRasee_Desc = [];
+    let standardStarsDuangRasee_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงราศีจักร";
+    let standardStarsDuangRasee_Sub = [];
+    let standardStarsDuangRasee_Desc = [];
     const QueryDuangRasee = rSTD.map((entry, index) => {
         if (entry !== '-') {
             const splitEntries = entry.split(",").filter(e => e.trim() !== "ตนุเศษ");
@@ -3559,8 +3551,8 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                     if (tamnaiResults && tamnaiResults.length > 0) {
                         const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
                         const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                        Standard_Stars_DuangRasee_Sub.push(Sub);
-                        Standard_Stars_DuangRasee_Desc.push(description);
+                        standardStarsDuangRasee_Sub.push(Sub);
+                        standardStarsDuangRasee_Desc.push(description);
                     }
                 }
             } else {
@@ -3571,8 +3563,8 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
 
                     const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
                     const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                    Standard_Stars_DuangRasee_Sub.push(Sub);
-                    Standard_Stars_DuangRasee_Desc.push(description);
+                    standardStarsDuangRasee_Sub.push(Sub);
+                    standardStarsDuangRasee_Desc.push(description);
                 }
             }
         }
@@ -3580,9 +3572,9 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     // จบ ดาวมาตรฐาน ในดวงราศีจักร 
 
     // ดาวมาตรฐาน ในดวงราศีนวางค์จักร 'หาคำทำนายคุณภาพดาว เกษตร ประ.....
-    let Standard_Stars_DuangNavang_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงนวางค์จักร";
-    let Standard_Stars_DuangNavang_Sub = [];
-    let Standard_Stars_DuangNavang_Desc = [];
+    let standardStarsDuangNavang_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงนวางค์จักร";
+    let standardStarsDuangNavang_Sub = [];
+    let standardStarsDuangNavang_Desc = [];
     let sSTDNa = SuriyatDate.varBornPutdate_NaRaSTD[0];
     // เกษตร มหาจักร นิจ  มหาจักร เกษตร
     const QueryDuangNavang = sSTDNa.map((entry, index) => {
@@ -3606,8 +3598,8 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             if (tamnaiResults && tamnaiResults.length > 0) {
                 const title = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_NavangStarAsRasee[0][tamnaiResults[0].Stari])} ดวงนวางค์จักร]`;
                 const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                Standard_Stars_DuangNavang_Sub.push(title);
-                Standard_Stars_DuangNavang_Desc.push(description);
+                standardStarsDuangNavang_Sub.push(title);
+                standardStarsDuangNavang_Desc.push(description);
             }
         }
     }
@@ -3616,7 +3608,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     // 'กาลกิณี ตามหลักทักษา
     let DayBornMooniX, StarAsKalakini;
     let PopsKalakini;
-    let Star_Kalakini_Sub, Star_Kalakini_Title, Star_Kalakini_Desc;
+    let starKalakini_Sub, starKalakini_Title, starKalakini_Desc;
 
     if (ichkTaksaBorn4or8As4 == 1) {
         if (SuriyatDate.dayMooni == 8) {
@@ -3649,17 +3641,17 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
 
         let Open_Pop = await db.dbQuery(`SELECT * FROM luktamnaikalakiniinpop WHERE KalakiniLivePops='${PopsKalakini}'`); // 'เปิดภพ
         if (Open_Pop && Open_Pop.length == 1) {
-            Star_Kalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
-            Star_Kalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
-            Star_Kalakini_Desc = Open_Pop[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+            starKalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
+            starKalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
+            starKalakini_Desc = Open_Pop[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
         }
     }
     // 'ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   
 
     // 'คำทำนายความสัมพันธ์ของดาวพระเคราะห์กับภพของเจ้าชะตา (คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ)
-    let Star_Born_TamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
-    let Star_Born_TamPop_Sub = [];
-    let Star_Born_TamPop_Desc = [];
+    let starBornTamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
+    let starBornTamPop_Sub = [];
+    let starBornTamPop_Desc = [];
     for (let j = 1; j <= 8; j++) {
         const tamnaiResults = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
         if (tamnaiResults && tamnaiResults.length == 1) {
@@ -3671,37 +3663,36 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             if (LukTamnaiPopResults && LukTamnaiPopResults.length == 1) {
                 const Sub = LukTamnaiPopResults[0].StarLiveinPops + " " + Rasees;
                 const Description = LukTamnaiPopResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                Star_Born_TamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
-                Star_Born_TamPop_Desc.push(Description);
+                starBornTamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
+                starBornTamPop_Desc.push(Description);
             }
         }
     }
     // ' จบ
 
     // คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
-    let strItems, sNameTable;
-    let House_Star_Pops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
-    let House_Star_Pops_Sub = [];
-    let House_Star_Pops_Desc = [];
+    let housesStarPops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
+    let housesStarPops_Sub = [];
+    let housesStarPops_Desc = [];
 
-    House_Star_Pops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
-    House_Star_Pops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
-    House_Star_Pops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
-    House_Star_Pops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
-    House_Star_Pops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
-    House_Star_Pops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
-    House_Star_Pops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
-    House_Star_Pops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
-    House_Star_Pops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
-    House_Star_Pops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
-    House_Star_Pops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
-    House_Star_Pops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
+    housesStarPops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
+    housesStarPops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
+    housesStarPops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
+    housesStarPops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
+    housesStarPops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
+    housesStarPops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
+    housesStarPops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
+    housesStarPops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
+    housesStarPops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
+    housesStarPops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
+    housesStarPops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
+    housesStarPops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
 
     for (let iPop = 0; iPop <= 11; iPop++) {
         const LukTamnaiKasedInPopResults = await db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
         if (LukTamnaiKasedInPopResults && LukTamnaiKasedInPopResults.length == 1) {
             const Description = LukTamnaiKasedInPopResults[0].PayakonText.replace(/<br>/g, "").replace(/<b>/g, "");
-            House_Star_Pops_Desc.push(`${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`);
+            housesStarPops_Desc.push(`${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`);
         }
     }
 
@@ -3710,9 +3701,9 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
     let iStarTodayPowerInOngsa1To20 = 20;
     let array1 = SuriyatDate.varBornPutdate_StarStayR[0];
     let array2 = TodaySuriyatDate.varTodayPutdate_StarStayR[0];
-    let Wandering_Star_Now_Title = "คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)";
-    let Wandering_Star_Now_Sub = "* แสดงคำทำนายดาวจรส่งอิทธิพลในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา คือแสดงคำทำนายดาวจรเฉพาะที่องศาดาวกำเนิดกับองศาดาวจรห่างกันในระยะ " + iStarTodayPowerInOngsa1To20 + " องศาเท่านั้น"
-    let StarAsInRaseeiAsStar_Sub = "ดาวจรเดินมา ทับ/กุม ดาวกำเนิด (อยู่ในราศีเดียวกัน) ในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา"; //'หัวข้อหลัก"
+    let wanderingStarNowTitle = "คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)";
+    let wanderingStarNowSub = "* แสดงคำทำนายดาวจรส่งอิทธิพลในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา คือแสดงคำทำนายดาวจรเฉพาะที่องศาดาวกำเนิดกับองศาดาวจรห่างกันในระยะ " + iStarTodayPowerInOngsa1To20 + " องศาเท่านั้น"
+    let starAsInRaseeiAsStarSub = "ดาวจรเดินมา ทับ/กุม ดาวกำเนิด (อยู่ในราศีเดียวกัน) ในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา"; //'หัวข้อหลัก"
     let StarAsInRaseeiAsStar_Desc = [];
     let StarAsInRaseeiAsStar_Move = [];
     let StarAsInRaseeiAsStar_Percent = [];
@@ -3741,19 +3732,19 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         0: "0. มฤตยู",
     };
 
-    // let matchingPredictionsGroup = Array(11).fill(null).map(() => []);
-    let StarAsInRaseeiAsStarGroup = columnIindex.map(index => ({
-        StarBornIndex: index,
-        StarBornText: dayNameLuk[index],
-        Predictions: []
+    // let matchingpredictionsGroup = Array(11).fill(null).map(() => []);
+    let starAsInRaseeiAsStarGroup = columnIindex.map(index => ({
+        starBornIndex: index,
+        starBornText: dayNameLuk[index],
+        predictions: []
     }));
 
-    // let matchingPredictionsGroup = [];
+    // let matchingpredictionsGroup = [];
     // for (let i = 0; i <= 10; i++) {
-    //     matchingPredictionsGroup.push({
-    //         StarBornIndex: columnIindex[i],
-    //         StarBornText: dayNameLuk[columnIindex[i]],
-    //         Predictions: []
+    //     matchingpredictionsGroup.push({
+    //         starBornIndex: columnIindex[i],
+    //         starBornText: dayNameLuk[columnIindex[i]],
+    //         predictions: []
     //     });
     // }
 
@@ -3824,7 +3815,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                         StarAsInRaseeiAsStar_Percent.push(probabilityText);
 
                         const matchingPrediction = {
-                            StarBornIndex: index1,
+                            starBornIndex: index1,
                             StarBorn: dayNameLuk[index1],
                             StartToday: dayNameLuk[index2],
                             StarBorn_O: lblStarO_1,
@@ -3839,7 +3830,7 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
                             probabilityText: probabilityText
                         };
 
-                        StarAsInRaseeiAsStarGroup[index1].Predictions.push(matchingPrediction);
+                        starAsInRaseeiAsStarGroup[index1].predictions.push(matchingPrediction);
                     }
                 }
             }
@@ -3851,42 +3842,42 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         strBornStarAsHouseInPop,
         varBornLuk_OwnerHousePopSS, //ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
         varBornLuk_KasediInPopistr,
-        AscendantPrediction_Title, // คำทำนายลัคนาสถิตราศี
-        AscendantPredictionGem_Title, // สีและอัญมณีที่ถูกโฉลกประจำราศี
-        AscendantPrediction_Sub,
-        AscendantPrediction_Desc,
-        AscendantPredictionGem_Desc,
+        ascendantPrediction_Title, // คำทำนายลัคนาสถิตราศี
+        ascendantPredictionGem_Title, // สีและอัญมณีที่ถูกโฉลกประจำราศี
+        ascendantPrediction_Sub,
+        ascendantPrediction_Desc,
+        ascendantPredictionGem_Desc,
         Query_StarStayR10, // คำทำนายลัคนาสถิตราศี
-        StarStay_GumLuk, // กุมลัคน์
-        StarStay_Patani, // เล็งลัคนา
-        StarAsTanuSED_Title, //คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา
-        StarAsTanuSED_Sub,
-        StarAsTanuSED_Desc,
+        starStayGumLuk, // กุมลัคน์
+        starStayPatani, // เล็งลัคนา
+        starAsTanuSED_Title, //คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา
+        starAsTanuSED_Sub,
+        starAsTanuSED_Desc,
         Star_Same_Title, //ดาวคู่หรือดาวกุมกัน
         Star_Same_Sub,
         Star_Same_Desc,
-        Standard_Stars_DuangRasee_Title, //ดาวมาตรฐาน ในดวงราศีจักร
-        Standard_Stars_DuangRasee_Sub,
-        Standard_Stars_DuangRasee_Desc,
-        Standard_Stars_DuangNavang_Title, // ดาวมาตรฐาน ในดวงราศีนวางค์จักร 
-        Standard_Stars_DuangNavang_Sub,
-        Standard_Stars_DuangNavang_Desc,
-        Star_Kalakini_Title, //ดาวที่เป็นกาลกิณี (กาลี)
-        Star_Kalakini_Sub,
-        Star_Kalakini_Desc,
-        Star_Born_TamPop_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
-        Star_Born_TamPop_Sub,
-        Star_Born_TamPop_Desc,
-        House_Star_Pops_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
-        House_Star_Pops_Sub,
-        House_Star_Pops_Desc,
-        Wandering_Star_Now_Title, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
-        Wandering_Star_Now_Sub,
-        StarAsInRaseeiAsStar_Sub,
+        standardStarsDuangRasee_Title, //ดาวมาตรฐาน ในดวงราศีจักร
+        standardStarsDuangRasee_Sub,
+        standardStarsDuangRasee_Desc,
+        standardStarsDuangNavang_Title, // ดาวมาตรฐาน ในดวงราศีนวางค์จักร 
+        standardStarsDuangNavang_Sub,
+        standardStarsDuangNavang_Desc,
+        starKalakini_Title, //ดาวที่เป็นกาลกิณี (กาลี)
+        starKalakini_Sub,
+        starKalakini_Desc,
+        starBornTamPop_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
+        starBornTamPop_Sub,
+        starBornTamPop_Desc,
+        housesStarPops_Title, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
+        housesStarPops_Sub,
+        housesStarPops_Desc,
+        wanderingStarNowTitle, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
+        wanderingStarNowSub,
+        starAsInRaseeiAsStarSub,
         StarAsInRaseeiAsStar_Desc,
         StarAsInRaseeiAsStar_Move,
         StarAsInRaseeiAsStar_Percent,
-        StarAsInRaseeiAsStarGroup,
+        starAsInRaseeiAsStarGroup,
     }
 }
 
@@ -3995,7 +3986,7 @@ async function PayakornBorn(SuriyatDate) {
         }
     }
 
-    let BornLukPopsChars = {
+    let bornLukPopsChars = {
         "title": "ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)",
         "sub_title": "ดาวกำเนิดอยู่ในภพต่างๆ และอักขระประจำดาว (ทักษา)",
         "payakorn": varBornLuk_PopsChars,
@@ -4040,7 +4031,7 @@ async function PayakornBorn(SuriyatDate) {
         //  ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
     }
 
-    let BornLukOwnerHousePop = {
+    let bornLukOwnerHousePop = {
         "title": "ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด",
         "sub_title": "ดาวกำเนิดอยู่ในภพต่างๆ และอักขระประจำดาว (ทักษา)",
         "payakorn": varBornLuk_OwnerHousePopSS,
@@ -4055,41 +4046,41 @@ async function PayakornBorn(SuriyatDate) {
     let Sql_StarStayR = "SELECT * FROM luktamnailukliverasee WHERE  Raseei= " + SuriyatDate.varBornPutdate_StarStayR[0][10];
     let Query_StarStayR10 = await db.dbQuery(Sql_StarStayR);
 
-    let AscendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
-    let AscendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
-    let LukBornRasees = "",
-        AscendantPrediction_Sub = "",
-        AscendantPrediction_Desc = "",
-        AscendantPredictionGem_Desc = "";
-    let AscendantPrediction = "";
-    let AscendantPredictionGem = "";
+    let ascendantPrediction_Title = "คำทำนายลัคนาสถิตราศี";
+    let ascendantPredictionGem_Title = "สีและอัญมณีที่ถูกโฉลกประจำราศี";
+    let lukBornRasees = "",
+        ascendantPrediction_Sub = "",
+        ascendantPrediction_Desc = "",
+        ascendantPredictionGem_Desc = "";
+    let ascendantPrediction = "";
+    let ascendantPredictionGem = "";
 
     // Prediction of ascendant and zodiac sign
     if (Query_StarStayR10.length === 1) {
-        LukBornRasees = Query_StarStayR10[0].Rasees;
-        AscendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
-        AscendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-        AscendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
+        lukBornRasees = Query_StarStayR10[0].Rasees;
+        ascendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
+        ascendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+        ascendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
     }
 
     if (Query_StarStayR10.length === 1) {
-        AscendantPrediction = {
-            "title": AscendantPrediction_Title,
-            "sub_title": AscendantPrediction_Sub,
-            "payakorn": AscendantPrediction_Desc
+        ascendantPrediction = {
+            "title": ascendantPrediction_Title,
+            "sub_title": ascendantPrediction_Sub,
+            "payakorn": ascendantPrediction_Desc
         }
 
-        AscendantPredictionGem = {
-            "title": AscendantPrediction_Title,
+        ascendantPredictionGem = {
+            "title": ascendantPrediction_Title,
             "sub_title": "",
-            "payakorn": AscendantPredictionGem_Desc
+            "payakorn": ascendantPredictionGem_Desc
         }
     }
 
 
     // 'เริ่ม คำทำนายกุมลัคน์ 17408 
     let iRasee = SuriyatDate.varBornPutdate_StarStayR[0][10];
-    let StarStay_GumLukArray = [];
+    let starStayGumLukArray = [];
     for (let iStar = 0; iStar <= 9; iStar++) {
         if (iRasee == SuriyatDate.varBornPutdate_StarStayR[0][iStar]) {
             const sqlQuery = "SELECT * FROM luktamnaiholdluk WHERE Stari= " + iStar;
@@ -4097,21 +4088,21 @@ async function PayakornBorn(SuriyatDate) {
             if (queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                 const payakorn = "ดาว " + await Support.fcStariToS(iStar) + " กุมลัคน์ (" + queryResult[0].Stari + ")ลั " + description;
-                // StarStay_GumLukArray[iStar] = payakorn;
-                StarStay_GumLukArray.push(payakorn);
+                // starStayGumLukArray[iStar] = payakorn;
+                starStayGumLukArray.push(payakorn);
             }
         }
     }
-    const StarStay_GumLuk = {
+    const starStayGumLuk = {
         "title": "คำทำนายกุมลัคน์",
         "sub_stitle": "",
-        "payakon": StarStay_GumLukArray,
+        "payakon": starStayGumLukArray,
     }
     // 'จบ คำทำนายกุมลัคน์
 
 
     // 'เริ่ม  คำทำนายเล็งลัคนา // varBornLuk_PopLuksStar == varBornPutdate_PopLuksStar
-    let StarStay_PataniArray = [];
+    let starStayPataniArray = [];
     for (let Starii = 0; Starii <= iStarAll; Starii++) {
         if (SuriyatDate.varBornPutdate_PopLuksStar[0][Starii] == "ปัตนิ") {
             const sqlQuery = "SELECT * FROM luktamnaioppositeluk WHERE Stari= " + Starii;
@@ -4119,26 +4110,26 @@ async function PayakornBorn(SuriyatDate) {
             if (queryResult && queryResult.length > 0) {
                 const description = queryResult[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                 const payakorn = "ดาว " + await Support.fcStariToS(Starii) + " เล็งลัคนา (" + queryResult[0].Stari + ") <--> ลั)" + description;
-                StarStay_PataniArray.push(payakorn);
+                starStayPataniArray.push(payakorn);
             }
         }
     }
-    const StarStay_Patani = {
+    const starStayPatani = {
         "title": "คำทำนายเล็งลัคนา",
         "sub_stitle": "",
-        "payakon": StarStay_PataniArray,
+        "payakon": starStayPataniArray,
     }
     // 'จบ คำทำนายเล็งลัคนา
 
-    // ดาว sTextTopicSmall(iTextTopicSmall) = "ดาว" & fcStariToS(varBornLuk_StarAsTanuSED(0)) & "เป็นตนุเศษ"
-    // varBornLuk_StarAsTanuSED[0] = varBornPutdate_StarAsTanuSED[0]
-    let StarAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
-    let StarAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_StarAsTanuSED[0]) + " เป็นตนุเศษ";
-    let StarAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_StarAsTanuSED[0]);
-    const StarAsTanuSED = {
+    // ดาว sTextTopicSmall(iTextTopicSmall) = "ดาว" & fcStariToS(varBornLuk_starAsTanuSED(0)) & "เป็นตนุเศษ"
+    // varBornLuk_starAsTanuSED[0] = varBornPutdate_starAsTanuSED[0]
+    let starAsTanuSED_Title = "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา";
+    let starAsTanuSED_Sub = "ดาว " + await Support.fcStariToS(SuriyatDate.varBornPutdate_starAsTanuSED[0]) + " เป็นตนุเศษ";
+    let starAsTanuSED_Desc = await fcGetTanuPayakon(SuriyatDate.varBornPutdate_starAsTanuSED[0]);
+    const starAsTanuSED = {
         "title": "คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา",
-        "sub_title": StarAsTanuSED_Sub,
-        "payakorn": StarAsTanuSED_Desc,
+        "sub_title": starAsTanuSED_Sub,
+        "payakorn": starAsTanuSED_Desc,
     };
 
     // คำทำนายดาวที่อยู่ในราศีเดียวกัน (ดาวคู่หรือดาวกุมกัน)
@@ -4308,7 +4299,7 @@ async function PayakornBorn(SuriyatDate) {
             }
         }
     }
-    const StarSame = {
+    const starSame = {
         "title": Star_Same_Title,
         "sub_title": Star_Same_Sub,
         "payakorn": Star_Same_Desc,
@@ -4332,9 +4323,9 @@ async function PayakornBorn(SuriyatDate) {
     //     Result_LukSompodStarBorn.forEach(async (row) => {
     //     });
     // }
-    let Standard_Stars_DuangRasee_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงราศีจักร";
-    let Standard_Stars_DuangRasee_Sub = [];
-    let Standard_Stars_DuangRasee_Desc = [];
+    let standardStarsDuangRasee_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงราศีจักร";
+    let standardStarsDuangRasee_Sub = [];
+    let standardStarsDuangRasee_Desc = [];
     const QueryDuangRasee = rSTD.map((entry, index) => {
         if (entry !== '-') {
             const splitEntries = entry.split(",").filter(e => e.trim() !== "ตนุเศษ");
@@ -4359,8 +4350,8 @@ async function PayakornBorn(SuriyatDate) {
                     if (tamnaiResults && tamnaiResults.length > 0) {
                         const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
                         const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                        Standard_Stars_DuangRasee_Sub.push(Sub);
-                        Standard_Stars_DuangRasee_Desc.push(description);
+                        standardStarsDuangRasee_Sub.push(Sub);
+                        standardStarsDuangRasee_Desc.push(description);
                     }
                 }
             } else {
@@ -4371,24 +4362,24 @@ async function PayakornBorn(SuriyatDate) {
 
                     const Sub = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][tamnaiResults[0].Stari])} ดวงราศีจักร]`;
                     const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                    Standard_Stars_DuangRasee_Sub.push(Sub);
-                    Standard_Stars_DuangRasee_Desc.push(description);
+                    standardStarsDuangRasee_Sub.push(Sub);
+                    standardStarsDuangRasee_Desc.push(description);
                 }
             }
         }
     }
 
-    const Standard_Stars_DuangRasee = {
-        "title": Standard_Stars_DuangRasee_Title,
-        "sub_title": Standard_Stars_DuangRasee_Sub,
-        "payakorn": Standard_Stars_DuangRasee_Desc,
+    const standardStarsDuangRasee = {
+        "title": standardStarsDuangRasee_Title,
+        "sub_title": standardStarsDuangRasee_Sub,
+        "payakorn": standardStarsDuangRasee_Desc,
     }
     // จบ ดาวมาตรฐาน ในดวงราศีจักร 
 
     // ดาวมาตรฐาน ในดวงราศีนวางค์จักร 'หาคำทำนายคุณภาพดาว เกษตร ประ.....
-    let Standard_Stars_DuangNavang_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงนวางค์จักร";
-    let Standard_Stars_DuangNavang_Sub = [];
-    let Standard_Stars_DuangNavang_Desc = [];
+    let standardStarsDuangNavang_Title = "ดาวที่เป็น ดาวมาตรฐาน ในดวงนวางค์จักร";
+    let standardStarsDuangNavang_Sub = [];
+    let standardStarsDuangNavang_Desc = [];
     let sSTDNa = SuriyatDate.varBornPutdate_NaRaSTD[0];
     // RaSTD
     // varBornPutdate_RaSTD
@@ -4414,16 +4405,16 @@ async function PayakornBorn(SuriyatDate) {
             if (tamnaiResults && tamnaiResults.length > 0) {
                 const title = `${tamnaiResults[0].StarsAsSTDs} [อยู่ราศี${await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_NavangStarAsRasee[0][tamnaiResults[0].Stari])} ดวงนวางค์จักร]`;
                 const description = tamnaiResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                Standard_Stars_DuangNavang_Sub.push(title);
-                Standard_Stars_DuangNavang_Desc.push(description);
+                standardStarsDuangNavang_Sub.push(title);
+                standardStarsDuangNavang_Desc.push(description);
             }
         }
     }
 
-    const Standard_Stars_DuangNavang = {
-        "title": Standard_Stars_DuangNavang_Title,
-        "sub_title": Standard_Stars_DuangNavang_Sub,
-        "payakorn": Standard_Stars_DuangNavang_Desc,
+    const standardStarsDuangNavang = {
+        "title": standardStarsDuangNavang_Title,
+        "sub_title": standardStarsDuangNavang_Sub,
+        "payakorn": standardStarsDuangNavang_Desc,
     }
     // จบ ดาวมาตรฐาน ในดวงราศีนวางค์จักร 'หาคำทำนายคุณภาพดาว เกษตร ประ.....
 
@@ -4431,9 +4422,9 @@ async function PayakornBorn(SuriyatDate) {
     // 'กาลกิณี ตามหลักทักษา
     let DayBornMooniX, StarAsKalakini;
     let PopsKalakini;
-    let Star_Kalakini_Title = "ดาวกาลกิณี (กาลี)";
-    let Star_Kalakini_Sub = "",
-        Star_Kalakini_Desc = "";
+    let starKalakini_Title = "ดาวกาลกิณี (กาลี)";
+    let starKalakini_Sub = "",
+        starKalakini_Desc = "";
 
     if (ichkTaksaBorn4or8As4 == 1) {
         if (SuriyatDate.dayMooni == 8) {
@@ -4466,23 +4457,23 @@ async function PayakornBorn(SuriyatDate) {
 
         let Open_Pop = await db.dbQuery(`SELECT * FROM luktamnaikalakiniinpop WHERE KalakiniLivePops='${PopsKalakini}'`); // 'เปิดภพ
         if (Open_Pop && Open_Pop.length == 1) {
-            Star_Kalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
-            Star_Kalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
-            Star_Kalakini_Desc = Open_Pop[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
+            starKalakini_Title = "ดาวที่เป็นกาลกิณี (กาลี) กับวันเกิด (วัน" + await Support.fcDayi17ToS(SuriyatDate.dayMooni) + ")"; // 'หัวข้อหลัก
+            starKalakini_Sub = "มีดาว" + await Support.fcStariToS(StarAsKalakini) + "(" + StarAsKalakini + ") เป็นกาลกิณี ราศี" + await Support.fcRaseeiToS(SuriyatDate.varBornPutdate_StarStayR[0][StarAsKalakini]) + " ตกภพ" + PopsKalakini;
+            starKalakini_Desc = Open_Pop[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
         }
     }
 
-    const Star_Kalakini = {
-        "title": Star_Kalakini_Title,
-        "sub_title": Star_Kalakini_Sub,
-        "payakorn": Star_Kalakini_Desc,
+    const starKalakini = {
+        "title": starKalakini_Title,
+        "sub_title": starKalakini_Sub,
+        "payakorn": starKalakini_Desc,
     }
     // 'ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   ดาวกาลกิณี (กาลี)   
 
     // 'คำทำนายความสัมพันธ์ของดาวพระเคราะห์กับภพของเจ้าชะตา (คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ)
-    let Star_Born_TamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
-    let Star_Born_TamPop_Sub = [];
-    let Star_Born_TamPop_Desc = [];
+    let starBornTamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
+    let starBornTamPop_Sub = [];
+    let starBornTamPop_Desc = [];
     for (let j = 1; j <= 8; j++) {
         const tamnaiResults = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
         if (tamnaiResults && tamnaiResults.length == 1) {
@@ -4494,70 +4485,70 @@ async function PayakornBorn(SuriyatDate) {
             if (LukTamnaiPopResults && LukTamnaiPopResults.length == 1) {
                 const Sub = LukTamnaiPopResults[0].StarLiveinPops + " " + Rasees;
                 const Description = LukTamnaiPopResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
-                Star_Born_TamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
-                Star_Born_TamPop_Desc.push(Description);
+                starBornTamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
+                starBornTamPop_Desc.push(Description);
             }
         }
     }
-    const Star_Born_TamPop = {
-        "title": Star_Born_TamPop_Title,
-        "sub_title": Star_Born_TamPop_Sub,
-        "payakorn": Star_Born_TamPop_Desc,
+    const starBornTamPop = {
+        "title": starBornTamPop_Title,
+        "sub_title": starBornTamPop_Sub,
+        "payakorn": starBornTamPop_Desc,
     }
     // ' จบ
 
     // คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
     let strItems, sNameTable;
-    let House_Star_Pops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
-    let House_Star_Pops_Sub = [];
-    let House_Star_Pops_Desc = [];
+    let housesStarPops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
+    let housesStarPops_Sub = [];
+    let housesStarPops_Desc = [];
 
-    House_Star_Pops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
-    House_Star_Pops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
-    House_Star_Pops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
-    House_Star_Pops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
-    House_Star_Pops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
-    House_Star_Pops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
-    House_Star_Pops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
-    House_Star_Pops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
-    House_Star_Pops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
-    House_Star_Pops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
-    House_Star_Pops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
-    House_Star_Pops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
+    housesStarPops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
+    housesStarPops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
+    housesStarPops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
+    housesStarPops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
+    housesStarPops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
+    housesStarPops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
+    housesStarPops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
+    housesStarPops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
+    housesStarPops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
+    housesStarPops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
+    housesStarPops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
+    housesStarPops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
 
     for (let iPop = 0; iPop <= 11; iPop++) {
         const LukTamnaiKasedInPopResults = await db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
         if (LukTamnaiKasedInPopResults && LukTamnaiKasedInPopResults.length == 1) {
             const Description = LukTamnaiKasedInPopResults[0].PayakonText.replace(/<br>/g, "").replace(/<b>/g, "");
-            // House_Star_Pops_Desc.push();
-            House_Star_Pops_Desc[iPop] = `${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`;
+            // housesStarPops_Desc.push();
+            housesStarPops_Desc[iPop] = `${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`;
         } else {
-            House_Star_Pops_Desc[iPop] = "-";
+            housesStarPops_Desc[iPop] = "-";
         }
     }
 
-    const House_Star_Pops = {
-        "title": House_Star_Pops_Title,
-        "sub_title": House_Star_Pops_Sub,
-        "payakorn": House_Star_Pops_Desc,
+    const housesStarPops = {
+        "title": housesStarPops_Title,
+        "sub_title": housesStarPops_Sub,
+        "payakorn": housesStarPops_Desc,
     }
 
     return {
-        BornLukPopsChars, // ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)
-        BornLukOwnerHousePop, //ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
+        bornLukPopsChars, // ข้อมูลเกี่ยวกับดาวและภพ (ดวงกำเนิดของเจ้าชะตา)
+        bornLukOwnerHousePop, //ดาว เจ้าเรือน ภพ และมาตรฐานดาวกำเนิด
         varBornLuk_KasediInPopistr,
-        LukBornRasees,
-        AscendantPrediction, // คำทำนายลัคนาสถิตราศี
-        AscendantPredictionGem, //สีและอัญมณีที่ถูกโฉลกประจำราศี
-        StarStay_GumLuk, // กุมลัคน์
-        StarStay_Patani, // เล็งลัคนา
-        StarAsTanuSED, //คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา
-        StarSame, //ดาวคู่หรือดาวกุมกัน
-        Standard_Stars_DuangRasee, //ดาวมาตรฐาน ในดวงราศีจักร
-        Standard_Stars_DuangNavang, // ดาวมาตรฐาน ในดวงราศีนวางค์จักร
-        Star_Kalakini, //ดาวที่เป็นกาลกิณี (กาลี)
-        Star_Born_TamPop, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
-        House_Star_Pops, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
+        lukBornRasees,
+        ascendantPrediction, // คำทำนายลัคนาสถิตราศี
+        ascendantPredictionGem, //สีและอัญมณีที่ถูกโฉลกประจำราศี
+        starStayGumLuk, // กุมลัคน์
+        starStayPatani, // เล็งลัคนา
+        starAsTanuSED, //คำทำนายตนุเศษ ทายเรื่องจิตใจของเจ้าชะตา
+        starSame, //ดาวคู่หรือดาวกุมกัน
+        standardStarsDuangRasee, //ดาวมาตรฐาน ในดวงราศีจักร
+        standardStarsDuangNavang, // ดาวมาตรฐาน ในดวงราศีนวางค์จักร
+        starKalakini, //ดาวที่เป็นกาลกิณี (กาลี)
+        starBornTamPop, //คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ
+        housesStarPops, //คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
     }
 }
 
@@ -4570,9 +4561,9 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
     let iStarTodayPowerInOngsa1To20 = 20;
     let array1 = SuriyatDate.varBornPutdate_StarStayR[0];
     let array2 = TodaySuriyatDate.varTodayPutdate_StarStayR[0];
-    let Wandering_Star_Now_Title = "คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)";
-    let Wandering_Star_Now_Sub = "* แสดงคำทำนายดาวจรส่งอิทธิพลในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา คือแสดงคำทำนายดาวจรเฉพาะที่องศาดาวกำเนิดกับองศาดาวจรห่างกันในระยะ " + iStarTodayPowerInOngsa1To20 + " องศาเท่านั้น"
-    let StarAsInRaseeiAsStar_Sub = "ดาวจรเดินมา ทับ/กุม ดาวกำเนิด (อยู่ในราศีเดียวกัน) ในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา"; //'หัวข้อหลัก"
+    let wanderingStarNowTitle = "คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)";
+    let wanderingStarNowSub = "* แสดงคำทำนายดาวจรส่งอิทธิพลในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา คือแสดงคำทำนายดาวจรเฉพาะที่องศาดาวกำเนิดกับองศาดาวจรห่างกันในระยะ " + iStarTodayPowerInOngsa1To20 + " องศาเท่านั้น"
+    let starAsInRaseeiAsStarSub = "ดาวจรเดินมา ทับ/กุม ดาวกำเนิด (อยู่ในราศีเดียวกัน) ในเกณฑ์ " + iStarTodayPowerInOngsa1To20 + " องศา"; //'หัวข้อหลัก"
     let StarAsInRaseeiAsStar_Desc = [];
     let StarAsInRaseeiAsStar_Move = [];
     let StarAsInRaseeiAsStar_Percent = [];
@@ -4601,11 +4592,11 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
         0: "0. มฤตยู",
     };
 
-    // let matchingPredictionsGroup = Array(11).fill(null).map(() => []);
-    let StarAsInRaseeiAsStarGroup = columnIindex.map(index => ({
-        StarBornIndex: index,
-        StarBornText: dayNameLuk[index],
-        Predictions: []
+    // let matchingpredictionsGroup = Array(11).fill(null).map(() => []);
+    let starAsInRaseeiAsStarGroup = columnIindex.map(index => ({
+        starBornIndex: index,
+        starBornText: dayNameLuk[index],
+        predictions: []
     }));
 
     for (let index1 = 0; index1 <= 10; index1++) {
@@ -4675,7 +4666,7 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
                         StarAsInRaseeiAsStar_Percent.push(probabilityText);
 
                         const matchingPrediction = {
-                            StarBornIndex: index1,
+                            starBornIndex: index1,
                             StarBorn: dayNameLuk[index1],
                             StartToday: dayNameLuk[index2],
                             StarBorn_O: lblStarO_1,
@@ -4690,8 +4681,8 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
                             probabilityText: probabilityText
                         };
 
-                        // matchingPredictionsGroup[index1].push(matchingPrediction);
-                        StarAsInRaseeiAsStarGroup[index1].Predictions.push(matchingPrediction);
+                        // matchingpredictionsGroup[index1].push(matchingPrediction);
+                        starAsInRaseeiAsStarGroup[index1].predictions.push(matchingPrediction);
                     }
                 }
             }
@@ -4699,13 +4690,13 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
     }
 
     return {
-        Wandering_Star_Now_Title, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
-        Wandering_Star_Now_Sub,
-        StarAsInRaseeiAsStar_Sub,
+        wanderingStarNowTitle, //คำทำนายเหตุการณ์ปัจจุบัน (ดาวจร)
+        wanderingStarNowSub,
+        starAsInRaseeiAsStarSub,
         // StarAsInRaseeiAsStar_Desc,
         // StarAsInRaseeiAsStar_Move,
         // StarAsInRaseeiAsStar_Percent,
-        StarAsInRaseeiAsStarGroup,
+        starAsInRaseeiAsStarGroup,
     }
 }
 
@@ -5775,13 +5766,13 @@ async function fcGetTanused_CastHoroscope(iLukStayRasee, iStarAsHomeLuk, iStarKa
 
     }
 
-    let iStarAsTanuSED = (iCountFromLukToStarAsHomeLuk * iCountFromStarHomeLukToStarHouse) % 7;
+    let istarAsTanuSED = (iCountFromLukToStarAsHomeLuk * iCountFromStarHomeLukToStarHouse) % 7;
 
-    if (iStarAsTanuSED == 0) {
-        iStarAsTanuSED = 7;
+    if (istarAsTanuSED == 0) {
+        istarAsTanuSED = 7;
     }
 
-    return iStarAsTanuSED;
+    return istarAsTanuSED;
 }
 
 async function GetValueControl_SompodStar() {

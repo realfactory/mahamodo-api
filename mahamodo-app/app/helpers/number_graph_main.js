@@ -14,10 +14,10 @@ async function frmTamnai_Number_Graph_Main(
   sProv
 ) {
   let lblDaySBirthSuriyaKati,
-    YearAgeInfo,
+    yearAgeInfo,
     Day1To8Born,
-    YourBirthday,
-    YourBirthdayDateUse,
+    yourBirthday,
+    yourBirthdayDateUse,
     SurisBirth;
 
   let fcGetItemInTableDB = "ใช่";
@@ -34,10 +34,15 @@ async function frmTamnai_Number_Graph_Main(
       CutTimeLocalYN,
       sProv
     );
+
     const lblDayBirth = Support.fcDayi17ToS(LunarDay.daySuni);
-    const getMoonBirth = await main.SetUpDownMThaiMoon(NewBirthDate, lblDayBirth.dayMooni, lblDayBirth.daySuni);
-   
-    if(!getMoonBirth.DownUps){
+    const getMoonBirth = await main.SetUpDownMThaiMoon(
+      NewBirthDate,
+      lblDayBirth.dayMooni,
+      lblDayBirth.daySuni
+    );
+
+    if (!getMoonBirth.DownUps) {
       return false;
     }
 
@@ -49,12 +54,13 @@ async function frmTamnai_Number_Graph_Main(
       sProv
     );
 
-    YearAge = await helpers.calculateAges(NewBirthDate);
-    YearAgeInfo = await helpers.formatTimeDifference(NewBirthDate, Hour, min);
-    YourBirthday = birthTimeInfo.formattedDate;
-    YourBirthdayDateUse = birthTimeInfo.dateUse;
+    yearAge = await helpers.calculateAges(NewBirthDate);
+    yearAgeInfo = await helpers.formatTimeDifference(NewBirthDate, Hour, min);
+    yourBirthday = birthTimeInfo.formattedDate;
+    yourBirthdayDateUse = birthTimeInfo.dateUse;
     SurisBirth = lblDayBirth.replace("(กลางวัน)", "").replace("(กลางคืน)", "");
     lblDaySBirthSuriyaKati = "สุริยคติ: " + SurisBirth;
+
     if (fcGetItemInTableDB === "ใช่") {
       Day1To8Born = LunarDay.dayMooni;
     } else {
@@ -155,15 +161,16 @@ async function frmTamnai_Number_Graph_Main(
     // Loop through NumFinish to find matching เลขสำเร็จ
     for (let i = 0; i < NumFinish[0].length; i++) {
       if (NumFinish[1][i] === j) {
-        relatedLifePaths.push(NumFinish[2][i]);
+        relatedLifePaths.push(await Support.fcLifeToN(NumFinish[2][i]));
       }
     }
+
     // Concatenate the values and remove duplicates
     if (relatedLifePaths.length > 1) {
       let uniquePaths = [...new Set(relatedLifePaths)];
-      NumFinish[3][j - 1] = uniquePaths.join(" + ");
+      NumFinish[3][j - 1] = uniquePaths.join("-");
     } else if (relatedLifePaths.length === 1) {
-      NumFinish[3][j - 1] = relatedLifePaths[0]; // For single matching value
+      NumFinish[3][j - 1] = relatedLifePaths[0];
     }
   }
 
@@ -177,13 +184,26 @@ async function frmTamnai_Number_Graph_Main(
   const seenValues = new Set();
 
   for (let value of orderedNumFinish3) {
-    processValue(value);
+    const transformedValue = await transformValue(value);
+    processValue(transformedValue);
+  }
+
+  async function transformValue(value) {
+    if (typeof value !== "string" || !value) return "";
+
+    // Split the value by '-' and map to prefixed letters
+    const parts = value.split("-").map((num, index) => {
+      return `${String.fromCharCode(65 + index)}${num}`;
+    });
+
+    // Join with '+' if there are only two parts, otherwise join with '-'
+    return parts.length === 2 ? parts.join("-") : parts.join("-");
   }
 
   // Function to process and add unique values
   async function processValue(value) {
     if (!value) return; // Skip empty values
-    const parts = value.split(" + ").map((v) => v.trim());
+    const parts = value.split("-").map((v) => v.trim());
     const uniqueParts = parts.filter((part) => {
       if (!seenValues.has(part)) {
         seenValues.add(part);
@@ -192,7 +212,7 @@ async function frmTamnai_Number_Graph_Main(
       return false;
     });
     if (uniqueParts.length) {
-      outputNumFinish3.push(uniqueParts.join(" + "));
+      outputNumFinish3.push(uniqueParts.join("-"));
     }
   }
 
@@ -202,26 +222,24 @@ async function frmTamnai_Number_Graph_Main(
   NumFinish[4] = await extractUniqueConcatenatedValues(NumFinish[3]);
 
   return {
-    YourBirthday,
-    YourBirthdayDateUse,
-    YearAge,
-    YearAgeInfo,
+    yourBirthday,
+    yourBirthdayDateUse,
+    yearAge,
+    yearAgeInfo,
     lblDaySBirthSuriyaKati,
-    YearAgeInfo,
+    yearAgeInfo,
     NumFinish,
   };
-
 }
 
-async function frmTamnai_Number_Graph_Payakorn(NumFinish, YearAge) {
-  const dataPayakorn = require("../json/NumFinishPayakorn.json");
-
+async function frmTamnai_Number_Graph_Payakorn(NumFinish, yearAge) {
+  const dataPayakorn = require("../json/GraphLifePayakorn.json");
   const GraphTitle = "คำทำนายกราฟชีวิต";
   const GraphRelationshipsArray = NumFinish[4]
-    .filter((key) => dataPayakorn.relationships[key])
+    .filter((key) => dataPayakorn.Relationships[key])
     .map((key) => ({
-      key,
-      Payakorn: dataPayakorn.relationships[key],
+      Key: key,
+      Details: dataPayakorn.Relationships[key],
     }));
 
   function getGraphLvDescription(attribute, XFinish) {
@@ -236,7 +254,12 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, YearAge) {
       return `${attribute} ของคุณ ไม่อยู่ในเกณฑ์ที่กำหนด`;
     }
     const description = dataPayakorn.GraphLv[attribute][range];
-    return description.replace("{XFinish}", XFinish);
+    // return description;
+    if (description) {
+      return {
+        description: description.payakorn.replace("{XFinish}", XFinish),
+      };
+    }
   }
 
   const GraphLvArray = [];
@@ -244,11 +267,15 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, YearAge) {
     const attribute = NumFinish[1][n];
     const XFinish = NumFinish[0][n];
     const Payakorn = getGraphLvDescription(attribute, XFinish);
-    GraphLvArray.push({ key: NumFinish[2][n], Payakorn });
+    GraphLvArray.push({
+      fortune: NumFinish[0][n],
+      raphNumbe: NumFinish[1][n],
+      details: Payakorn,
+    });
   }
 
-  // 'ทำนาย อายุ....ปี ตกเลข......
-  const TYearPlus1 = YearAge + 1;
+  // // 'ทำนาย อายุ....ปี ตกเลข......
+  const TYearPlus1 = yearAge + 1;
   let iCountId1To12 = 0;
   let IdPointer;
 
@@ -263,6 +290,7 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, YearAge) {
       }
     }
   }
+
   const NumForAge = NumFinish[1][iCountId1To12 - 1];
   const now = new Date(); // Get the current date and time
   const YearBToday = now.getFullYear() + 543; // Extract the year
@@ -274,20 +302,47 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, YearAge) {
     YearBToday
   );
 
-  // Function to get the description
   function getNumForAgeDescription(TYearPlus1, NumForAge, YearBToday) {
     const key = NumForAge.toString();
-    if (dataPayakorn.NumForAgeDescriptions[key]) {
-      return dataPayakorn.NumForAgeDescriptions[key]
-        .replace("{TYearPlus1}", TYearPlus1)
-        .replace("{NumForAge}", NumForAge)
-        .replace("{YearBToday}", YearBToday);
+    const description = dataPayakorn.NumForAgeDescriptions[key];
+
+    if (description) {
+      return {
+        title: description.title
+          .replace("{TYearPlus1}", TYearPlus1)
+          .replace("{NumForAge}", NumForAge)
+          .replace("{YearBToday}", YearBToday),
+        payakorn: description.payakorn
+          .replace("{TYearPlus1}", TYearPlus1)
+          .replace("{NumForAge}", NumForAge)
+          .replace("{YearBToday}", YearBToday),
+        counsel: description.counsel,
+        prompt: description.prompt,
+      };
     }
-    return "No description available.";
+
+    return {
+      title: "No description available.",
+      payakorn: "",
+      counsel: "",
+      prompt: "",
+    };
   }
 
+  const transformGraphRelationships = (array) => {
+    return array.map((item) => ({
+      key: item.Key,
+      details: item.Details,
+    }));
+  };
+
+
+  const transformedGraphRelationships = transformGraphRelationships(
+    GraphRelationshipsArray
+  );
+
   return {
-    GraphRelations: GraphRelationshipsArray,
+    GraphRelations: transformedGraphRelationships,
     GraphLv: GraphLvArray,
     NumForAgePayakorn: NumForAgePayakorn,
   };
@@ -373,32 +428,50 @@ async function MonthNormal(MonthOldiBorn) {
   };
 }
 
-// Function to extract unique concatenated values
 async function extractUniqueConcatenatedValues(inputArray) {
-  const uniqueConcatenatedValues = new Set();
-  const uniqueParts = new Set();
+  const uniqueConcatenatedValues = new Set(inputArray); // Start with the original values
+  const usedParts = new Set();
 
   for (const value of inputArray) {
     if (!value) continue; // Skip empty values
-    const parts = value.split(" + ").map((v) => v.trim());
-    if (parts.length > 1) {
-      // It's a concatenated value
-      let isUnique = true;
-      for (const part of parts) {
-        if (uniqueParts.has(part)) {
-          isUnique = false;
-          break;
-        }
-      }
-      if (isUnique) {
-        uniqueConcatenatedValues.add(value);
-        parts.forEach((part) => uniqueParts.add(part));
+
+    const parts = value.split("-").map((v) => v.trim());
+
+    if (parts.length > 2) {
+      // Generate all 2-part combinations for values with more than 2 parts
+      const combinations = getAllCombinations(parts);
+
+      for (const combination of combinations) {
+        const combinedValue = combination.join("-");
+        uniqueConcatenatedValues.add(combinedValue); // Add the combination
+        combination.forEach((part) => usedParts.add(part));
       }
     }
   }
 
   return Array.from(uniqueConcatenatedValues);
 }
+
+// Helper function to get all 2-part combinations from an array
+function getAllCombinations(parts) {
+  const combinations = [];
+  const length = parts.length;
+
+  // Create combinations of any two parts
+  for (let i = 0; i < length - 1; i++) {
+    for (let j = i + 1; j < length; j++) {
+      combinations.push([parts[i], parts[j]]);
+      combinations.push([parts[j], parts[i]]);
+    }
+  }
+
+  return combinations;
+}
+
+// Example usage
+const NumFinish = {
+  3: ["A1-B5", "A2-B6-C9", "A3-B7", "A4-B12"],
+};
 
 module.exports = {
   frmTamnai_Number_Graph_Main,

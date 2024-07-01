@@ -2,11 +2,11 @@ const { body } = require('express-validator');
 const moment = require('moment');
 
 const ValidationSomPutDateApi = [
-    body('date_of_birth').notEmpty().withMessage('Please input birthday')
+    body('date_of_birth').notEmpty().withMessage('Please input date_of_birth')
     .custom(value => {
         const formattedDate = moment(value, 'YYYY-MM-DD', true);
         if (!formattedDate.isValid()) {
-            throw new Error('Birthday must be in YYYY-MM-DD format');
+            throw new Error('date_of_birth must be in YYYY-MM-DD format');
         }
         return true;
     }),

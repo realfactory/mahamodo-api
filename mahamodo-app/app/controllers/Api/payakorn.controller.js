@@ -5,153 +5,10 @@ const Validation = require("../../helpers/validation.js");
 const main = require("../../helpers/main.js");
 const Support = require("../../helpers/Support");
 const GraphMain = require("../../helpers/number_graph_main.js");
+const aiGenerator = require("../../helpers/aiGenerator.js");
 
 const moment = require("moment");
-
-// Function to retrieve table names from the database
-function fetchValidTables(callback) {
-  connection.query("SHOW TABLES", (error, results) => {
-    if (error) {
-      console.error(`Error fetching table names: ${error.message}`);
-      callback(error, null);
-    } else {
-      const tables = results.map((row) => Object.values(row)[0]);
-      callback(null, tables);
-    }
-  });
-}
-
-const findDataInTable = (req, res) => {
-  const { table, id } = req.params;
-
-  fetchValidTables((err, validTables) => {
-    if (err) {
-      return res.status(500).send({
-        status: 500,
-        message: `Error retrieving valid table names: ${err.message}`,
-      });
-    }
-
-    if (!validTables.includes(table)) {
-      return res.status(400).send({
-        status: 400,
-        message: "Invalid table name provided.",
-      });
-    }
-
-    let query = "";
-    if (id) {
-      query = `SELECT * FROM ?? WHERE id = ?`;
-      connection.query(query, [table, id], (error, results) => {
-        if (error) {
-          console.error(`Error occurred: ${error.message}`);
-          return res.status(500).send({
-            status: 500,
-            message: `Error retrieving data for ID ${id} in table ${table}: ${error.message}`,
-          });
-        }
-        res.status(200).send({
-          status: 200,
-          message: results,
-        });
-      });
-    } else {
-      query = `SELECT * FROM ??`;
-      connection.query(query, [table], (error, results) => {
-        if (error) {
-          console.error(`Error occurred: ${error.message}`);
-          return res.status(500).send({
-            status: 500,
-            message: `Error retrieving data from table ${table}: ${error.message}`,
-          });
-        }
-        res.status(200).send({
-          status: 200,
-          message: results,
-        });
-      });
-    }
-  });
-};
-
-const updateDataInTable = async (req, res) => {
-  const { tableName, id, counsel, prompt } = req.body;
-
-  if (!id || !tableName) {
-    return res.status(400).send({
-      status: 400,
-      message: "Missing id or tableName for update.",
-    });
-  }
-
-  fetchValidTables((err, validTables) => {
-    if (err) {
-      return res.status(500).send({
-        status: 500,
-        message: `Error retrieving valid table names: ${err.message}`,
-      });
-    }
-
-    if (!validTables.includes(tableName)) {
-      return res.status(400).send({
-        status: 400,
-        message: "Invalid table name provided.",
-      });
-    }
-
-    // Ensure necessary columns exist before updating
-    db.CreateColumnInTable(tableName)
-      .then(() => {
-        let updateQuery =
-          "UPDATE ?? SET counsel = ?, prompt = ?, updatedAt = NOW() WHERE id = ?";
-        connection.query(
-          updateQuery,
-          [tableName, counsel, prompt, id],
-          (error, results) => {
-            if (error) {
-              console.error(`Error occurred: ${error.message}`);
-              return res.status(500).send({
-                status: 500,
-                message: `Error updating data in ${tableName}: ${error.message}`,
-              });
-            }
-
-            if (results.affectedRows === 0) {
-              return res.status(404).send({
-                status: 404,
-                message: `No record found with ID ${id} in ${tableName}.`,
-              });
-            }
-
-            // Fetch and return the updated data
-            let selectQuery = "SELECT * FROM ?? WHERE id = ?";
-            connection.query(selectQuery, [tableName, id], (error, results) => {
-              if (error) {
-                console.error(`Error occurred: ${error.message}`);
-                return res.status(500).send({
-                  status: 500,
-                  message: `Error fetching updated data from ${tableName} with ID ${id}: ${error.message}`,
-                });
-              }
-
-              res.status(200).send({
-                status: 200,
-                message: "Data updated successfully.",
-                data: results[0], // Assuming 'id' is unique
-              });
-            });
-          }
-        );
-      })
-      .catch((error) => {
-        console.error(`Error ensuring columns: ${error.message}`);
-        return res.status(500).send({
-          status: 500,
-          message: `Failed to ensure columns in ${tableName}: ${error.message}`,
-        });
-      });
-  });
-};
+const { logger } = require("sequelize/lib/utils/logger");
 
 const DreamPredict = async (req, res) => {
   // Run validation and handle any validation errors within the Validation.validation function
@@ -170,43 +27,43 @@ const DreamPredict = async (req, res) => {
     if (results.length > 0) {
       return res.status(200).send({
         status: 200,
+        success: true,
         message: "Data retrieved successfully.",
         data: results,
       });
     } else {
       return res.status(200).send({
         status: 200,
-        message: "No data found matching the criteria.",
-        data: [],
+        success: true,
+        message: "Data retrieved successfully.",
+        data: null,
       });
     }
   } catch (error) {
     console.error("Error in DreamPredict:", error);
     return res.status(500).send({
       status: 500,
-      message: "Internal server error. Please try again later.",
+      success: false,
+      message: "Failed to fetch data.",
+      errors: {
+        code: "ERROR",
+        details: error.message,
+      },
     });
   }
 };
 
-const SompudLuk = async (req, res, next) => {
+const SompudLuk = async (req, res) => {
   // Assume Validation.validation sends a response if there are errors and halts if not
   const validationResult = Validation.validation(req, res);
   if (validationResult) {
     return; // Stop further execution if the response was already sent
   }
 
-  /* ############## format date Input ###################### 
-        "date_of_birth": "1993-01-10",
-        "time_of_birth": "10:30",
-        "province" : "กระบี่",
-        "unknow_time_of_birth" : 1
-        "new_payakorn_status" : 1 or 0;
-        ############## format date Input ###################### 
-    */
-
   const {
     new_payakorn_status,
+    get_payakorn_summary_born,
+    get_payakorn_summary_today,
     lukborn,
     date_of_birth,
     time_of_birth,
@@ -217,16 +74,10 @@ const SompudLuk = async (req, res, next) => {
   } = req.body;
 
   let CutTimeLocalYN = "Y";
-  let MappingProvince = "";
   if (province) {
     const findProvince = await main.fcGetLukTimeLocalThailandThisProvValue(
       province
     );
-    if (findProvince.length > 0) {
-      MappingProvince = "Y";
-    } else {
-      MappingProvince = "N";
-    }
   } else {
     province = "Not provided";
   }
@@ -246,7 +97,6 @@ const SompudLuk = async (req, res, next) => {
 
   // ' รับค่าสมผุส เดิม (สมผุสดาวกำเนิด)
   if (new_payakorn_status) {
-    console.log("new Payakorn Born");
     const NewBirthDate = await Support.fcDateGlobal(date_of_birth);
     SuriyatDate = await main.CastHoroscope_SumSuriyatMain_Born(
       NewBirthDate,
@@ -258,12 +108,25 @@ const SompudLuk = async (req, res, next) => {
     SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
     SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
   } else {
-    console.log("Old Payakorn Born");
-    // const jsonObject = JSON.parse(lukborn);
-    // const cleanedString = jsonObject.replace(/\\/g, '');
-    SuriyatDate = JSON.parse(lukborn);
-    SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(1, SuriyatDate);
-    SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(2, SuriyatDate);
+    try {
+      SuriyatDate = JSON.parse(lukborn);
+
+      try {
+        SompodStar = await rdiOptionSompodBorn_Ra_CheckedChanged(
+          1,
+          SuriyatDate
+        );
+        SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(
+          2,
+          SuriyatDate
+        
+        );
+      } catch (asyncError) {
+        console.error("Error in asynchronous operations:", asyncError);
+      }
+    } catch (jsonError) {
+      console.error("Error parsing JSON:", jsonError);
+    }
   }
 
   // ' รับค่าสมผุส จร (สมผุสดาววันนี้)
@@ -284,14 +147,91 @@ const SompudLuk = async (req, res, next) => {
     );
   }
 
-  let Payakorn, PayakornBorn, PayakornToday;
-  //  Payakorn = await main.PakakornSompod(SuriyatDate, TodaySuriyatDate);
+  let PayakornBorn,
+    summaryPayakornBorn = null,
+    PayakornToday,
+    summaryPayakornToday = null;
+
   if (new_payakorn_status) {
-    PayakornBorn = await main.PayakornBorn(SuriyatDate);
+    try {
+      PayakornBorn = await main.PayakornBorn(SuriyatDate);
+    } catch (error) {
+      console.error("Error fetching PayakornBorn data:", error);
+      return res.status(500).send({
+        status: 500,
+        success: false,
+        message: "Error PayakornBorn",
+        errors: {
+          code: "ERROR",
+          details: error.message,
+        },
+      });
+    }
+
+    if (get_payakorn_summary_born) {
+      try {
+        const contentPayakornBorn = createSummaryPayakornBorn(PayakornBorn);
+        summaryPayakornBorn = await aiGenerator.gptAiGenerator(
+          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด :",
+          contentPayakornBorn,
+          "gpt-3.5-turbo"
+        );
+      } catch (error) {
+        console.error("Error fetching gptAiGenerator data:", error);
+        return res.status(500).send({
+          status: 500,
+          success: false,
+          message: "Error generating text using gptAiGenerator.",
+          errors: {
+            code: "API_AI_ERROR",
+            details: error.message,
+          },
+        });
+      }
+    }
   } else {
     PayakornBorn = [];
   }
-  PayakornToday = await main.PayakornToday(SuriyatDate, TodaySuriyatDate);
+
+  try {
+    PayakornToday = await main.PayakornToday(SuriyatDate, TodaySuriyatDate);
+  } catch (error) {
+    console.error("Error fetching PayakornToday data:", error);
+    return res.status(500).send({
+      status: 500,
+      success: false,
+      message: "Error PayakornToday",
+      errors: {
+        code: "ERROR",
+        details: error.message,
+      },
+    });
+  }
+
+  if (get_payakorn_summary_today) {
+    try {
+      const contentPayakornToday = createSummaryPayakornToday(PayakornToday);
+
+      if (contentPayakornToday) {
+        summaryPayakornToday = await aiGenerator.gptAiGenerator(
+          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด:",
+          contentPayakornToday,
+          "gpt-3.5-turbo"
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching gptAiGenerator data:", error);
+      return res.status(500).send({
+        status: 500,
+        success: false,
+        message: "Error generating text using gptAiGenerator.",
+        errors: {
+          code: "API_AI_ERROR",
+          details: error.message,
+        },
+      });
+    }
+  }
 
   async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
     let SompodStarOnLabel;
@@ -303,101 +243,246 @@ const SompudLuk = async (req, res, next) => {
   }
 
   const astrologyInfo = {
-    YearAgeInfo: SuriyatDate.YearAgeInfo,
-    YourBirthday: SuriyatDate.YourBirthday,
-    YourBirthdayDateUse: SuriyatDate.YourBirthdayDateUse,
+    yearAgeInfo: SuriyatDate.yearAgeInfo,
+    yourBirthday: SuriyatDate.yourBirthday,
+    yourBirthdayDateUse: SuriyatDate.yourBirthdayDateUse,
     birthDateMoonInfo: SuriyatDate.birthDateMoonInfo,
-    SurisBirth: SuriyatDate.SurisBirth,
+    surisBirth: SuriyatDate.surisBirth,
     lblDaySBirthSuriyaKati: SuriyatDate.lblDaySBirthSuriyaKati,
-    LukBornRasees: PayakornBorn.LukBornRasees,
-    // dayMooni : SuriyatDate.dayMooni,
-    // daySuni : SuriyatDate.daySuni,
+    lukBornRasees: PayakornBorn.LukBornRasees,
   };
 
   const res_lukborn = {
     astrologyInfo: astrologyInfo,
-    SuriyatDate: SuriyatDate,
-    PayakornBorn: PayakornBorn,
+    suriyatDate: SuriyatDate,
+    payakornBorn: PayakornBorn,
+    summaryPayakornBorn: summaryPayakornBorn,
   };
 
   const res_today = {
-    PayakornToday: PayakornToday,
+    payakornToday: PayakornToday,
+    summaryPayakornToday: summaryPayakornToday,
   };
 
-  const StartforThaiHoroscopeChart = {
-    SompodStarBorn: SompodStar,
-    SompodStarToday: SompodStarToday,
+  const startforThaiHoroscopeChart = {
+    sompodStarBorn: SompodStar,
+    sompodStarToday: SompodStarToday,
   };
 
   return res.status(200).send({
     status: 200,
+    success: true,
     message: "success",
     data: {
       lukborn: res_lukborn,
       luktoday: res_today,
-      StartforThaiHoroscopeChart: StartforThaiHoroscopeChart,
+      startforThaiHoroscopeChart: startforThaiHoroscopeChart,
     },
   });
 };
 
 const graphlife = async (req, res) => {
-
-  const { date_of_birth, time_of_birth, province } = req.body;
-  let CutTimeLocalYN = 1;
-  let sProv = province;
-
-  const [finalHour, finalMinute] = time_of_birth.split(":");
-
-  const Number_Graph_Main = await GraphMain.frmTamnai_Number_Graph_Main(
-    date_of_birth,
-    finalHour,
-    finalMinute,
-    CutTimeLocalYN,
-    sProv
-  );
-
-  if(!Number_Graph_Main){
-    return res.status(200).send({
-        status: 401,
-        message: "error date out of range.",
-      });
+  // Validate request
+  if (Validation.validation(req, res)) {
+    return; // Stop further execution if the response was already sent
   }
 
-  const Number_Graph_Payakorn = await GraphMain.frmTamnai_Number_Graph_Payakorn(
-    Number_Graph_Main.NumFinish,
-    Number_Graph_Main.YearAge
-  );
+  const { date_of_birth, time_of_birth, province, get_payakorn_summary } =
+    req.body;
+  const CutTimeLocalYN = 1;
+  const sProv = province;
+  const [finalHour, finalMinute] = time_of_birth.split(":");
 
-  const Graphs = {
-    Order: Number_Graph_Main.NumFinish[0],
-    Text: Number_Graph_Main.NumFinish[2],
-    Lv: Number_Graph_Main.NumFinish[1],
-    Relationships: Number_Graph_Main.NumFinish[4],
-  };
+  try {
+    // Get main graph number
+    const Number_Graph_Main = await GraphMain.frmTamnai_Number_Graph_Main(
+      date_of_birth,
+      finalHour,
+      finalMinute,
+      CutTimeLocalYN,
+      sProv
+    );
 
-  const Payakorn = {
-    NumForAge: Number_Graph_Payakorn.NumForAgePayakorn,
-    Relations: Number_Graph_Payakorn.GraphRelations,
-    Lv: Number_Graph_Payakorn.GraphLv,
-  };
+    if (!Number_Graph_Main) {
+      return res.status(422).send({
+        status: 422,
+        success: false,
+        message: "Validation Error",
+        error: {
+          code: "DATE_OUT_OF_RANGE",
+          details: "The provided date is out of the acceptable range.",
+        },
+      });
+    }
 
-  return res.status(200).send({
-    status: 200,
-    message: "success",
-    data: {
-      YourBirthday: Number_Graph_Main.YourBirthday,
-      YourBirthdayDateUse: Number_Graph_Main.YourBirthdayDateUse,
-      YearAge: Number_Graph_Main.YearAge,
-      YearAgeInfo: Number_Graph_Main.YearAgeInfo,
-      lblDaySBirthSuriyaKati: Number_Graph_Main.lblDaySBirthSuriyaKati,
-      Graphs: Graphs,
-      PayakornGraphs: Payakorn,
-    },
-  });
+    // Get payakorn graph number
+    const Number_Graph_Payakorn =
+      await GraphMain.frmTamnai_Number_Graph_Payakorn(
+        Number_Graph_Main.NumFinish,
+        Number_Graph_Main.yearAge
+      );
+
+    const graphs = {
+      graphNumbe: Number_Graph_Main.NumFinish[0],
+      graphText: Number_Graph_Main.NumFinish[2],
+      graphLv: Number_Graph_Main.NumFinish[1],
+      relationships: Number_Graph_Main.NumFinish[4],
+    };
+
+    const Payakorn = {
+      numForAge: Number_Graph_Payakorn.NumForAgePayakorn,
+      relations: Number_Graph_Payakorn.GraphRelations,
+      graphLv: Number_Graph_Payakorn.GraphLv,
+    };
+
+    // Create content for Payakorn graph
+    const contentPayakornGraph = createSummaryPayakornGraph(
+      Number_Graph_Payakorn
+    );
+
+    // Generate summary using AI
+    let summaryPayakornGraph;
+
+    if (get_payakorn_summary) {
+      try {
+        summaryPayakornGraph = await aiGenerator.gptAiGenerator(
+          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด :",
+          contentPayakornGraph,
+          "gpt-3.5-turbo"
+        );
+      } catch (error) {
+        console.error("Error generating summary with gptAiGenerator:", error);
+        return res.status(500).send({
+          status: 500,
+          success: false,
+          message: "Error generating text using gptAiGenerator.",
+          errors: {
+            code: "API_AI_ERROR",
+            details: error.message,
+          },
+        });
+      }
+    }
+
+    // Send successful response
+    return res.status(200).send({
+      status: 200,
+      message: "Success",
+      success: true,
+      data: {
+        yourBirthday: Number_Graph_Main.yourBirthday,
+        yourBirthdayDateUse: Number_Graph_Main.yourBirthdayDateUse,
+        yearAge: Number_Graph_Main.yearAge,
+        yearAgeInfo: Number_Graph_Main.yearAgeInfo,
+        lblDaySBirthSuriyaKati: Number_Graph_Main.lblDaySBirthSuriyaKati,
+        graphs,
+        payakornGraphs: Payakorn,
+        summaryPayakornGraph: summaryPayakornGraph,
+      },
+    });
+  } catch (error) {
+    console.error("Error processing graph life data:", error);
+    return res.status(500).send({
+      status: 500,
+      success: false,
+      message: "Internal Server Error",
+      error: {
+        code: "SERVER_ERROR",
+        details: error.message,
+      },
+    });
+  }
 };
 
-exports.findDataInTable = findDataInTable;
-exports.updateDataInTable = updateDataInTable;
+const createSummaryPayakornBorn = (PayakornBorn) => {
+  const ascendantPrediction = PayakornBorn.AscendantPrediction?.payakorn || "";
+  const ascendantPredictionGem =
+    PayakornBorn.AscendantPredictionGem?.payakorn || "";
+  const starStayPatani = Support.joinArray(
+    PayakornBorn.StarStay_Patani?.payakorn
+  );
+  const starStayGumLuk = Support.joinArray(
+    PayakornBorn.StarStay_GumLuk?.payakorn
+  );
+  const starAsTanuSED = PayakornBorn.starAsTanuSED?.payakorn || "";
+  const starSame = Support.joinArray(PayakornBorn.starSame?.payakorn);
+  const standardStarsDuangRasee = Support.joinArray(
+    PayakornBorn.standardStarsDuangRasee?.payakorn
+  );
+  const standardStarsDuangNavang = Support.joinArray(
+    PayakornBorn.standardStarsDuangNavang?.payakorn
+  );
+  const starKalakini = PayakornBorn.starKalakini?.payakorn || "";
+  const starBornTamPop = PayakornBorn.starBornTamPop?.payakorn || "";
+  const housesStarPops = Support.joinArray(
+    PayakornBorn.housesStarPops?.payakorn
+  );
+
+  return `${ascendantPrediction} ${ascendantPredictionGem} ${starStayGumLuk} ${starStayPatani} ${starAsTanuSED} ${starSame} ${standardStarsDuangRasee} ${standardStarsDuangNavang} ${starKalakini} ${starBornTamPop} ${housesStarPops}`;
+};
+
+const createSummaryPayakornToday = (PayakornToday) => {
+  // Extract data
+  const {
+    wanderingStarNowTitle,
+    wanderingStarNowSub,
+    starAsInRaseeiAsStarSub,
+    starAsInRaseeiAsStarGroup,
+  } = PayakornToday;
+
+  let concatenatedPredictions = "";
+
+  if (starAsInRaseeiAsStarGroup && starAsInRaseeiAsStarGroup.length > 0) {
+    for (let index = 0; index < starAsInRaseeiAsStarGroup.length; index++) {
+      const predictions = starAsInRaseeiAsStarGroup[index].predictions;
+      predictions.forEach(({ prediction, details, probabilityText }) => {
+        if (prediction !== "") {
+          concatenatedPredictions += `${details} ${prediction} ${probabilityText} `;
+        }
+      });
+    }
+  }
+
+  // Create a summary string with all parts
+  let summary = "";
+  if (concatenatedPredictions) {
+    summary = `
+      ${wanderingStarNowTitle || ""}
+      ${starAsInRaseeiAsStarSub || ""}
+      ${concatenatedPredictions.trim() || ""}
+    `
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  return summary;
+};
+
+const createSummaryPayakornGraph = (Number_Graph_Payakorn) => {
+  // Extract NumForAgePayakorn data
+  const { title, payakorn } = Number_Graph_Payakorn.NumForAgePayakorn;
+
+  // Format GraphRelations data
+  const graphRelations = Number_Graph_Payakorn.GraphRelations.map(
+    (relation) => `${relation.details.description}`
+  ).join(" ");
+
+  // Format GraphLv data
+  const graphLv = Number_Graph_Payakorn.GraphLv.map(
+    (lv) => `${lv.fortune}, ${lv.details.description}`
+  ).join(" ");
+
+  // Create SummaryPayakornGraph
+  const summaryPayakornGraph = `
+    ${title}
+    ${payakorn}
+    ${graphRelations}
+    ${graphLv}
+  `;
+
+  return summaryPayakornGraph.replace(/\s+/g, " ").trim();
+};
+
 exports.DreamPredict = DreamPredict;
 exports.SompudLuk = SompudLuk;
 exports.graphlife = graphlife;

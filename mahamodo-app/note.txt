@@ -1,5 +1,8 @@
 pm2 start
-
 pm2 list
-
 pm2 restart server
+
+install for ai 
+
+npm install axios
+npm install express-rate-limit
