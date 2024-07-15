@@ -264,17 +264,19 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, yearAge) {
 
   const GraphLvArray = [];
   for (let n = 0; n < 12; n++) {
-    const attribute = NumFinish[1][n];
-    const XFinish = NumFinish[0][n];
+
+    const attribute = NumFinish[0][n];
+    const XFinish = NumFinish[1][n];
+
     const Payakorn = getGraphLvDescription(attribute, XFinish);
     GraphLvArray.push({
-      fortune: NumFinish[0][n],
-      raphNumbe: NumFinish[1][n],
+      graphLv: attribute,
+      fortune: XFinish,
       details: Payakorn,
     });
   }
 
-  // // 'ทำนาย อายุ....ปี ตกเลข......
+  // 'ทำนาย อายุ....ปี ตกเลข......
   const TYearPlus1 = yearAge + 1;
   let iCountId1To12 = 0;
   let IdPointer;
