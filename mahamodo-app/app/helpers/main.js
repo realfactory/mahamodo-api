@@ -217,7 +217,7 @@ async function SetUpDownMThaiMoon(date, DayMooni, DaySuni) {
 async function DownThaiMoonInfo(DownUps, Night, MThai, YThai) {
     let varsBornStringUDLuk = "";
     if (DownUps !== '-') {
-        varsBornStringUDLuk = ` ตรงกับ ${DownUps} ${Night} ค่ำ เดือน ${MThai} ปี${Support.fcYearOldiToS(YThai)}`;
+        varsBornStringUDLuk = `ตรงกับ ${DownUps} ${Night} ค่ำ เดือน ${MThai} ปี${Support.fcYearOldiToS(YThai)}`;
     }
     return varsBornStringUDLuk;
 }
@@ -237,7 +237,7 @@ async function adjustBirthTime(birthDate, birthHour, birthMinute, cutTimeLocalYN
     const zeroPad = (num, places) => String(num).padStart(places, '0');
 
     const formattedDate = `เกิด ${zeroPad(day, 2)}/${zeroPad(month, 2)}/${year} เวลา ${zeroPad(adjustedHour, 2)}:${zeroPad(adjustedMinute, 2)} น.${cutTimeLocalYN ? ' (ตัดเวลาท้องถิ่น)' : ''}`;
-    const dateUse = `${zeroPad(day, 2)}/${zeroPad(month, 2)}/${year} ${zeroPad(adjustedHour, 2)}:${zeroPad(adjustedMinute, 2)}`;
+    const dateUse = `${zeroPad(day, 2)}/${zeroPad(month, 2)}/${year}`;
 
     return {
         formattedDate,
@@ -3732,21 +3732,26 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
         0: "0. มฤตยู",
     };
 
+    let dayNameLukText = {
+        10: "ลัคนา",
+        1: "อาทิตย์",
+        2: "จันทร์",
+        3: "อังคาร",
+        4: "พุธ",
+        5: "พฤหัส",
+        6: "ศุกร์",
+        7: "เสาร์",
+        8: "ราหู",
+        9: "เกตุ",
+        0: "มฤตยู",
+    };
+
     // let matchingpredictionsGroup = Array(11).fill(null).map(() => []);
     let starAsInRaseeiAsStarGroup = columnIindex.map(index => ({
         starBornIndex: index,
-        starBornText: dayNameLuk[index],
+        starBornText: dayNameLukText[index],
         predictions: []
     }));
-
-    // let matchingpredictionsGroup = [];
-    // for (let i = 0; i <= 10; i++) {
-    //     matchingpredictionsGroup.push({
-    //         starBornIndex: columnIindex[i],
-    //         starBornText: dayNameLuk[columnIindex[i]],
-    //         predictions: []
-    //     });
-    // }
 
     for (let index1 = 0; index1 <= 10; index1++) {
         for (let index2 = 0; index2 <= 10; index2++) {
@@ -3816,12 +3821,12 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
 
                         const matchingPrediction = {
                             starBornIndex: index1,
-                            StarBorn: dayNameLuk[index1],
-                            StartToday: dayNameLuk[index2],
-                            StarBorn_O: lblStarO_1,
-                            StarBorn_L: lblStarL_1,
-                            TodayBorn_O: lblStarO_2,
-                            TodayBorn_L: lblStarL_2,
+                            starBorn: dayNameLuk[index1],
+                            startToday: dayNameLuk[index2],
+                            starBorn_O: lblStarO_1,
+                            starBorn_L: lblStarL_1,
+                            todayBorn_O: lblStarO_2,
+                            todayBorn_L: lblStarL_2,
                             prediction: sTextPayakornToday,
                             details: `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`,
                             moveDate: `${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB}`,
@@ -4057,7 +4062,12 @@ async function PayakornBorn(SuriyatDate) {
 
     // Prediction of ascendant and zodiac sign
     if (Query_StarStayR10.length === 1) {
-        lukBornRasees = Query_StarStayR10[0].Rasees;
+         
+        lukBornRasees = {
+            calendar: Support.fcLukBornRaseesCalendar(Query_StarStayR10[0].Rasees),
+            title : Query_StarStayR10[0].Rasees
+        };
+
         ascendantPrediction_Sub = Query_StarStayR10[0].LukLiveRasees + " " + Query_StarStayR10[0].Rasees + " (" + Query_StarStayR10[0].Raseei + ")";
         ascendantPrediction_Desc = Query_StarStayR10[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
         ascendantPredictionGem_Desc = Query_StarStayR10[0].PayakornColorGem.replace(/<br>/g, "").replace(/<b>/g, "");
@@ -4554,9 +4564,6 @@ async function PayakornBorn(SuriyatDate) {
 
 async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
     // 'คำทำนายดาวจร
-    // console.log(SuriyatDate.varBornPutdate_StarStayR[0], TodaySuriyatDate.varTodayPutdate_StarStayR[0]);
-    // console.log(SuriyatDate.varBornPutdate_StarO[0], SuriyatDate.varBornPutdate_StarL[0]);
-    // console.log(TodaySuriyatDate.varTodayPutdate_StarO[0] , TodaySuriyatDate.varTodayPutdate_StarL[0]);
     let StringLongBornToday = "";
     let iStarTodayPowerInOngsa1To20 = 20;
     let array1 = SuriyatDate.varBornPutdate_StarStayR[0];
@@ -4592,10 +4599,24 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
         0: "0. มฤตยู",
     };
 
+    let dayNameLukText = {
+        10: "ลัคนา",
+        1: "อาทิตย์",
+        2: "จันทร์",
+        3: "อังคาร",
+        4: "พุธ",
+        5: "พฤหัส",
+        6: "ศุกร์",
+        7: "เสาร์",
+        8: "ราหู",
+        9: "เกตุ",
+        0: "มฤตยู",
+    };
+
     // let matchingpredictionsGroup = Array(11).fill(null).map(() => []);
     let starAsInRaseeiAsStarGroup = columnIindex.map(index => ({
         starBornIndex: index,
-        starBornText: dayNameLuk[index],
+        starBornText: dayNameLukText[index],
         predictions: []
     }));
 
@@ -4667,12 +4688,13 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
 
                         const matchingPrediction = {
                             starBornIndex: index1,
-                            StarBorn: dayNameLuk[index1],
-                            StartToday: dayNameLuk[index2],
-                            StarBorn_O: lblStarO_1,
-                            StarBorn_L: lblStarL_1,
-                            TodayBorn_O: lblStarO_2,
-                            TodayBorn_L: lblStarL_2,
+                            starBorn: dayNameLukText[index1],
+                            startTodayIndex: index2, 
+                            startToday: dayNameLukText[index2],
+                            starBorn_O: lblStarO_1,
+                            starBorn_L: lblStarL_1,
+                            todayBorn_O: lblStarO_2,
+                            todayBorn_L: lblStarL_2,
                             prediction: sTextPayakornToday,
                             details: `${StarTodayToStarBorns} [ดวงกำเนิด ${lblStarO_1}.${lblStarL_1} องศา ดวงจร ${lblStarO_2}.${lblStarL_2}] ${StringLongBornToday}`,
                             moveDate: `${MoveDay} ${await Support.fcMonthiToSSht(MoveMonth)} ${MoveYearB}`,

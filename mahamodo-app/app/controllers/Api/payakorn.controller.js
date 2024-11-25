@@ -119,7 +119,6 @@ const SompudLuk = async (req, res) => {
         SompodStar10 = await rdiOptionSompodBorn_Ra_CheckedChanged(
           2,
           SuriyatDate
-        
         );
       } catch (asyncError) {
         console.error("Error in asynchronous operations:", asyncError);
@@ -168,27 +167,21 @@ const SompudLuk = async (req, res) => {
       });
     }
 
-    if (get_payakorn_summary_born) {
-      try {
-        const contentPayakornBorn = createSummaryPayakornBorn(PayakornBorn);
-        summaryPayakornBorn = await aiGenerator.gptAiGenerator(
-          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด :",
-          contentPayakornBorn,
-          "gpt-3.5-turbo"
-        );
-      } catch (error) {
-        console.error("Error fetching gptAiGenerator data:", error);
-        return res.status(500).send({
-          status: 500,
-          success: false,
-          message: "Error generating text using gptAiGenerator.",
-          errors: {
-            code: "API_AI_ERROR",
-            details: error.message,
-          },
-        });
-      }
+    try {
+      summaryPayakornBorn = createSummaryPayakornBorn(PayakornBorn);
+    } catch (error) {
+      console.error("Error fetching createSummaryPayakornBorn data:", error);
+      return res.status(500).send({
+        status: 500,
+        success: false,
+        message: "Error generating PayakornBorn text using gptAiGenerator.",
+        errors: {
+          code: "ERROR",
+          details: error.message,
+        },
+      });
     }
+
   } else {
     PayakornBorn = [];
   }
@@ -208,29 +201,19 @@ const SompudLuk = async (req, res) => {
     });
   }
 
-  if (get_payakorn_summary_today) {
-    try {
-      const contentPayakornToday = createSummaryPayakornToday(PayakornToday);
-
-      if (contentPayakornToday) {
-        summaryPayakornToday = await aiGenerator.gptAiGenerator(
-          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด:",
-          contentPayakornToday,
-          "gpt-3.5-turbo"
-        );
-      }
-    } catch (error) {
-      console.error("Error fetching gptAiGenerator data:", error);
-      return res.status(500).send({
-        status: 500,
-        success: false,
-        message: "Error generating text using gptAiGenerator.",
-        errors: {
-          code: "API_AI_ERROR",
-          details: error.message,
-        },
-      });
-    }
+  try {
+    summaryPayakornToday = createSummaryPayakornToday(PayakornToday)
+  } catch (error) {
+    console.error("Error fetching createSummaryPayakornToday data:", error);
+    return res.status(500).send({
+      status: 500,
+      success: false,
+      message: "Error generating PayakornToday text using gptAiGenerator.",
+      errors: {
+        code: "ERROR",
+        details: error.message,
+      },
+    });
   }
 
   async function rdiOptionSompodBorn_Ra_CheckedChanged(option, SuriyatDate) {
@@ -253,7 +236,7 @@ const SompudLuk = async (req, res) => {
   };
 
   const res_lukborn = {
-    astrologyInfo: astrologyInfo,
+    // astrologyInfo: astrologyInfo,
     suriyatDate: SuriyatDate,
     payakornBorn: PayakornBorn,
     summaryPayakornBorn: summaryPayakornBorn,
@@ -264,7 +247,7 @@ const SompudLuk = async (req, res) => {
     summaryPayakornToday: summaryPayakornToday,
   };
 
-  const startforThaiHoroscopeChart = {
+  const starForThaiHoroscopeChart = {
     sompodStarBorn: SompodStar,
     sompodStarToday: SompodStarToday,
   };
@@ -276,7 +259,7 @@ const SompudLuk = async (req, res) => {
     data: {
       lukborn: res_lukborn,
       luktoday: res_today,
-      startforThaiHoroscopeChart: startforThaiHoroscopeChart,
+      starForThaiHoroscopeChart: starForThaiHoroscopeChart,
     },
   });
 };
@@ -335,34 +318,10 @@ const graphlife = async (req, res) => {
       graphLv: Number_Graph_Payakorn.GraphLv,
     };
 
-    // Create content for Payakorn graph
-    const contentPayakornGraph = createSummaryPayakornGraph(
+    // Generate summary using AI
+    let summaryPayakornGraph = createSummaryPayakornGraph(
       Number_Graph_Payakorn
     );
-
-    // Generate summary using AI
-    let summaryPayakornGraph;
-
-    if (get_payakorn_summary) {
-      try {
-        summaryPayakornGraph = await aiGenerator.gptAiGenerator(
-          "สรุปเนื้อหาคําทํานายนี้ไม่เกิน 3 บรรทัด :",
-          contentPayakornGraph,
-          "gpt-3.5-turbo"
-        );
-      } catch (error) {
-        console.error("Error generating summary with gptAiGenerator:", error);
-        return res.status(500).send({
-          status: 500,
-          success: false,
-          message: "Error generating text using gptAiGenerator.",
-          errors: {
-            code: "API_AI_ERROR",
-            details: error.message,
-          },
-        });
-      }
-    }
 
     // Send successful response
     return res.status(200).send({

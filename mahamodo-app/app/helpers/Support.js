@@ -651,6 +651,24 @@ function joinArray(array) {
   return Array.isArray(array) ? array.join(" ") : array;
 }
 
+function fcLukBornRaseesCalendar(varInput) {
+  const mapping = {
+    มังกร: 1,
+    กุมภ์: 2,
+    มีน: 3,
+    เมษ: 4,
+    พฤษภ: 5,
+    เมถุน: 6,
+    กรกฎ: 7,
+    สิงห์: 8,
+    กันย์: 9,
+    ตุลย์: 10,
+    พิจิก: 11,
+    ธนู: 12,
+  };
+  return mapping[varInput] || "";
+}
+
 module.exports = {
   fcDayi17ToS,
   fcYearOldiToS,
@@ -678,5 +696,6 @@ module.exports = {
   SpeedChar_Born,
   fcLifeToS,
   fcLifeToN,
-  joinArray
+  joinArray,
+  fcLukBornRaseesCalendar,
 };
