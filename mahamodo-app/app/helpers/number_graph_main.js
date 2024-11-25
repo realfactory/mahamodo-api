@@ -254,10 +254,10 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, yearAge) {
       return `${attribute} ของคุณ ไม่อยู่ในเกณฑ์ที่กำหนด`;
     }
     const description = dataPayakorn.GraphLv[attribute][range];
-    // return description;
     if (description) {
       return {
         description: description.payakorn.replace("{XFinish}", XFinish),
+        counsel : "",
       };
     }
   }
@@ -267,6 +267,8 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, yearAge) {
     const attribute = NumFinish[1][n];
     const XFinish = NumFinish[0][n];
     const Payakorn = getGraphLvDescription(attribute, XFinish);
+    console.log(Payakorn);
+    
     GraphLvArray.push({
       fortune: NumFinish[0][n],
       raphNumbe: NumFinish[1][n],
