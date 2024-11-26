@@ -50,36 +50,45 @@ async function getSettingoption() {
 }
 
 async function formatTimeDifference(dateInput, Hour, min) {
+    console.log(dateInput, Hour, min);
+    
+    const timezoneOffset = 7 * 60 * 60 * 1000; // UTC+7 สำหรับ Bangkok
     const currentDate = new Date();
     const pastDate = new Date(dateInput);
 
-    // Set the hours and minutes if provided
+    // ตั้งค่าเวลาของ pastDate
     if (Hour !== undefined && min !== undefined) {
         pastDate.setHours(Hour);
         pastDate.setMinutes(min);
     }
 
-    let diffInSeconds = Math.floor((currentDate - pastDate) / 1000);
+    // คำนวณเวลาเป็น timestamp (แก้ไข timezone)
+    pastDate.setTime(pastDate.getTime() + timezoneOffset);
+
+    // คำนวณความแตกต่างระหว่างปัจจุบันกับวันเกิด
+    const diffInSeconds = Math.floor((currentDate - pastDate) / 1000);
 
     const years = Math.floor(diffInSeconds / (365 * 24 * 3600));
-    diffInSeconds -= years * 365 * 24 * 3600;
-    const months = Math.floor(diffInSeconds / (30 * 24 * 3600));
-    diffInSeconds -= months * 30 * 24 * 3600;
-    const days = Math.floor(diffInSeconds / (24 * 3600));
-    diffInSeconds -= days * 24 * 3600;
-    const hours = Math.floor(diffInSeconds / 3600);
-    diffInSeconds -= hours * 3600;
-    const minutes = Math.floor(diffInSeconds / 60);
+    let remainingSeconds = diffInSeconds - years * 365 * 24 * 3600;
 
-    let formattedDiff = '';
-    formattedDiff += years > 0 ? years + ' ปี ' : '';
-    formattedDiff += months > 0 ? months + ' เดือน ' : '';
-    formattedDiff += days > 0 ? days + ' วัน ' : '';
-    formattedDiff += hours > 0 ? hours + ' ชั่วโมง ' : '';
-    formattedDiff += minutes > 0 ? minutes + ' นาที ' : '';
+    const months = Math.floor(remainingSeconds / (30 * 24 * 3600));
+    remainingSeconds -= months * 30 * 24 * 3600;
 
+    const days = Math.floor(remainingSeconds / (24 * 3600));
+    remainingSeconds -= days * 24 * 3600;
+
+    const hours = Math.floor(remainingSeconds / 3600);
+    remainingSeconds -= hours * 3600;
+
+    const minutes = Math.floor(remainingSeconds / 60);
+
+    // สร้างข้อความผลลัพธ์
+    const formattedDiff = `${years} ปี ${months} เดือน ${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
+
+    console.log(`Current: ${currentDate}, Past: ${pastDate}, Result: ${formattedDiff}`);
     return formattedDiff.trim();
 }
+
 
 module.exports = {
     calculateAges,
