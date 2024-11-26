@@ -93,7 +93,8 @@ async function formatTimeDifference(dateInput, Hour, min) {
     }
 
     // สร้างผลลัพธ์
-    const formattedDiff = `${years} ปี ${months} เดือน ${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
+    const formattedDiff = `${years} ปี ${months} เดือน ${days} วัน`;
+    // const formattedDiff = `${years} ปี ${months} เดือน ${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
 
     console.log(`Current: ${currentDate}, Past: ${pastDate}, Result: ${formattedDiff}`);
     return formattedDiff.trim();
