@@ -50,39 +50,49 @@ async function getSettingoption() {
 }
 
 async function formatTimeDifference(dateInput, Hour, min) {
-    console.log(dateInput, Hour, min);
-    
-    const timezoneOffset = 7 * 60 * 60 * 1000; // UTC+7 สำหรับ Bangkok
     const currentDate = new Date();
     const pastDate = new Date(dateInput);
 
-    // ตั้งค่าเวลาของ pastDate
+    // ตั้งค่าเวลาในอดีต
     if (Hour !== undefined && min !== undefined) {
         pastDate.setHours(Hour);
         pastDate.setMinutes(min);
     }
 
-    // คำนวณเวลาเป็น timestamp (แก้ไข timezone)
-    pastDate.setTime(pastDate.getTime() + timezoneOffset);
+    // คำนวณปี
+    let years = currentDate.getFullYear() - pastDate.getFullYear();
 
-    // คำนวณความแตกต่างระหว่างปัจจุบันกับวันเกิด
-    const diffInSeconds = Math.floor((currentDate - pastDate) / 1000);
+    // คำนวณเดือน
+    let months = currentDate.getMonth() - pastDate.getMonth();
+    if (months < 0) {
+        years--;
+        months += 12;
+    }
 
-    const years = Math.floor(diffInSeconds / (365 * 24 * 3600));
-    let remainingSeconds = diffInSeconds - years * 365 * 24 * 3600;
+    // คำนวณวัน
+    let days = currentDate.getDate() - pastDate.getDate();
+    if (days < 0) {
+        months--;
+        const previousMonth = (currentDate.getMonth() - 1 + 12) % 12; // เดือนก่อนหน้า
+        const yearForPreviousMonth = previousMonth === 11 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+        const daysInPreviousMonth = new Date(yearForPreviousMonth, previousMonth + 1, 0).getDate(); // วันในเดือนก่อนหน้า
+        days += daysInPreviousMonth;
+    }
 
-    const months = Math.floor(remainingSeconds / (30 * 24 * 3600));
-    remainingSeconds -= months * 30 * 24 * 3600;
+    // คำนวณชั่วโมงและนาที
+    let hours = currentDate.getHours() - pastDate.getHours();
+    if (hours < 0) {
+        days--;
+        hours += 24;
+    }
 
-    const days = Math.floor(remainingSeconds / (24 * 3600));
-    remainingSeconds -= days * 24 * 3600;
+    let minutes = currentDate.getMinutes() - pastDate.getMinutes();
+    if (minutes < 0) {
+        hours--;
+        minutes += 60;
+    }
 
-    const hours = Math.floor(remainingSeconds / 3600);
-    remainingSeconds -= hours * 3600;
-
-    const minutes = Math.floor(remainingSeconds / 60);
-
-    // สร้างข้อความผลลัพธ์
+    // สร้างผลลัพธ์
     const formattedDiff = `${years} ปี ${months} เดือน ${days} วัน ${hours} ชั่วโมง ${minutes} นาที`;
 
     console.log(`Current: ${currentDate}, Past: ${pastDate}, Result: ${formattedDiff}`);
