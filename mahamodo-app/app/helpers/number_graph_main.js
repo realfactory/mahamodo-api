@@ -271,8 +271,8 @@ async function frmTamnai_Number_Graph_Payakorn(NumFinish, yearAge) {
     const Payakorn = getGraphLvDescription(attribute, XFinish);
     
     GraphLvArray.push({
-      graphLv: attribute,
-      fortune: XFinish,
+      graphLv: XFinish,
+      fortune: attribute,
       details: Payakorn,
     });
   }
