@@ -35,4 +35,6 @@ router.post(
   payakornController.graphlife
 );
 
+router.post("/payakorn/sompudluk/move", payakornController.SompudLukMove);
+
 module.exports = router;

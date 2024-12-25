@@ -353,6 +353,163 @@ const graphlife = async (req, res) => {
   }
 };
 
+const SompudLukMove = async (req, res) => {
+
+  const zodiacMaster = [
+    { key: 0, value: "เมษ" },
+    { key: 1, value: "พฤษภ" },
+    { key: 2, value: "เมถุน" },
+    { key: 3, value: "กรกฎ" },
+    { key: 4, value: "สิงห์" },
+    { key: 5, value: "กันย์" },
+    { key: 6, value: "ตุลย์" },
+    { key: 7, value: "พิจิก" },
+    { key: 8, value: "ธนู" },
+    { key: 9, value: "มังกร" },
+    { key: 10, value: "กุมภ์" },
+    { key: 11, value: "มีน" }
+  ];
+  
+  const lukNameMaster = [
+    { key: 10, value: "ลั. ลัคนา" },
+    { key: 1, value: "1. อาทิตย์" },
+    { key: 2, value: "2. จันทร์" },
+    { key: 3, value: "3. อังคาร" },
+    { key: 4, value: "4. พุธ" },
+    { key: 5, value: "5. พฤหัส" },
+    { key: 6, value: "6. ศุกร์" },
+    { key: 7, value: "7. เสาร์" },
+    { key: 8, value: "8. ราหู" },
+    { key: 9, value: "9. เกตุ" },
+    { key: 0, value: "0. มฤตยู" }
+  ];
+  
+const finalCurrentDate = moment().format("YYYY-MM-DD");
+const finalCurrentHour = moment().format("HH");
+const finalCurrentMinute = moment().format("mm");
+
+// Time range for the day
+const startOfDay = moment("2025-01-01 00:00", "YYYY-MM-DD HH:mm");
+// const startOfDay = moment().startOf("day");
+// const endOfDay = moment().endOf("day");
+const endOfDay = startOfDay.clone().add(3650, "days"); // 30 วันจาก startOfDay
+
+let currentTime = startOfDay.clone();
+let previousDate = startOfDay;
+
+let lblStarStayName_Old, lblStarStayRNo_Old, lukIndex, lukIndexName, todaySuriyatDate = "";
+let sompodStarToday;
+
+while (currentTime <= endOfDay) {
+
+  currentTime.add(1, "hour");
+
+  const newTodayDate = await Support.fcDateGlobal(currentTime.format("YYYY-MM-DD"));
+
+  try {
+    todaySuriyatDate = await main.CastHoroscope_SumSuriyatMain_Today(
+      newTodayDate,
+      currentTime.format("HH"),
+      currentTime.format("mm")
+    );
+
+    sompodStarToday = await getSompodStarToday(3, todaySuriyatDate);
+
+  } catch (error) {
+    console.error(`Error occurred on ${currentTime.format("YYYY-MM-DD HH:mm")}:`, error);
+    break;
+  }
+
+  if (sompodStarToday.lblStarStayRNo[1] !== lblStarStayRNo_Old && lblStarStayRNo_Old) {
+    console.log("Create new entry");
+    console.log(
+      previousDate.format("YYYY-MM-DD HH:mm"),
+      lblStarStayRNo_Old,
+      lblStarStayName_Old,
+      lukIndex,
+      lukIndexName
+    );
+
+    // อัปเดต previousDate ก่อนดำเนินการต่อ
+    previousDate = currentTime.clone();
+
+    const formattedPreviousDate = previousDate.format("YYYY-MM-DD HH:mm:ss");
+
+    try {
+
+      let queryResult = await db.dbQuery(`SELECT * FROM star_move WHERE move_date='${formattedPreviousDate}'`);
+
+      if (queryResult.length === 0) {
+        const tableName = "star_move";
+        const data = {
+          move_date: formattedPreviousDate, // Formatted date
+          star_index: 1, // Star index
+          star_name: sompodStarToday.TitleTable[1], // Star name
+          zodiac_index: sompodStarToday.lblStarStayRNo[1], // Star index
+          zodiac_name: zodiacMaster.find(
+            (item) => item.key === sompodStarToday.lblStarStayRNo[1]
+          )?.value || "Unknown", // Star name
+        };
+
+        await db.db_Insert(tableName, data)
+          .then(result => {
+            console.log("Insert successful:", result);
+          })
+          .catch(error => {
+            console.error("Insert failed:", error.message);
+          });
+      }
+    } catch (error) {
+      console.error("Error occurred:", error.message);
+      break;
+    }
+    
+  }
+
+  // Update old values for the next loop iteration
+  lblStarStayName_Old = zodiacMaster.find(
+    (item) => item.key === sompodStarToday.lblStarStayRNo[1]
+  )?.value || "Unknown";
+
+  lblStarStayRNo_Old = sompodStarToday.lblStarStayRNo[1];
+
+  lukIndex = lukNameMaster.find(
+    (item) => item.value === sompodStarToday.TitleTable[1]
+  )?.key || "Unknown";
+
+  lukIndexName = sompodStarToday.TitleTable[1];
+
+  // Delay before the next iteration
+  // await delay(100); // หน่วงเวลา 1 วินาที (1000 มิลลิวินาที)
+  console.log(`end.. ${currentTime.format("YYYY-MM-DD HH:mm")}:`);
+}
+  
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+  // Helper function for getting star data
+  async function getSompodStarToday(option, suriyatDate) {
+    return await main.CastHoroscope_SompodStarOnLabel_Born_Today(option, suriyatDate);
+  }
+  
+  // Response
+  return res.status(200).send({
+    status: 200,
+    success: true,
+    message: "success",
+    data: {
+      finalCurrentDate,
+      finalCurrentHour,
+      finalCurrentMinute,
+      lukIndex,
+      lukIndexName,
+      lblStarStayRNo_Old,
+      lblStarStayName_Old
+    }
+  });
+}
+
 const createSummaryPayakornBorn = (PayakornBorn) => {
   const ascendantPrediction = PayakornBorn.AscendantPrediction?.payakorn || "";
   const ascendantPredictionGem =
@@ -377,7 +534,7 @@ const createSummaryPayakornBorn = (PayakornBorn) => {
     PayakornBorn.housesStarPops?.payakorn
   );
 
-  return `${ascendantPrediction} ${ascendantPredictionGem} ${starStayGumLuk} ${starStayPatani} ${starAsTanuSED} ${starSame} ${standardStarsDuangRasee} ${standardStarsDuangNavang} ${starKalakini} ${starBornTamPop} ${housesStarPops}`;
+  return `${ascendantPrediction ?? ''} ${ascendantPredictionGem?? ''} ${starStayGumLuk?? ''} ${starStayPatani?? ''} ${starAsTanuSED ?? ''} ${starSame?? ''} ${standardStarsDuangRasee ?? ''} ${standardStarsDuangNavang ?? ''} ${starKalakini ?? ''} ${starBornTamPop ?? ''} ${housesStarPops ?? ''}`;
 };
 
 const createSummaryPayakornToday = (PayakornToday) => {
@@ -420,7 +577,6 @@ const createSummaryPayakornToday = (PayakornToday) => {
 const createSummaryPayakornGraph = (Number_Graph_Payakorn) => {
   // Extract NumForAgePayakorn data
   const { title, payakorn } = Number_Graph_Payakorn.NumForAgePayakorn;
-
   // Format GraphRelations data
   const graphRelations = Number_Graph_Payakorn.GraphRelations.map(
     (relation) => `${relation.details.description}`
@@ -433,15 +589,14 @@ const createSummaryPayakornGraph = (Number_Graph_Payakorn) => {
 
   // Create SummaryPayakornGraph
   const summaryPayakornGraph = `
-    ${title}
     ${payakorn}
     ${graphRelations}
     ${graphLv}
   `;
-
   return summaryPayakornGraph.replace(/\s+/g, " ").trim();
 };
 
 exports.DreamPredict = DreamPredict;
 exports.SompudLuk = SompudLuk;
 exports.graphlife = graphlife;
+exports.SompudLukMove = SompudLukMove;

@@ -12,6 +12,24 @@ async function db_Query(sql, params) {
     });
 }
 
+async function db_Insert(tableName, data) {
+    const keys = Object.keys(data).join(", ");
+    const values = Object.values(data);
+    const placeholders = values.map(() => "?").join(", ");
+  
+    const sql = `INSERT INTO ${tableName} (${keys}) VALUES (${placeholders})`;
+  
+    return new Promise((resolve, reject) => {
+      db.query(sql, values, (error, results) => {
+        if (error) {
+          reject(new Error(`Error inserting data into ${tableName}: ${error.message}`));
+        } else {
+          resolve(results);
+        }
+      });
+    });
+  }
+
 async function dbQuery(sql) {
     return new Promise((resolve, reject) => {
         const query = sql;
@@ -88,6 +106,7 @@ async function CreateColumnInTable(tableName) {
 
 module.exports = {
     db_Query,
+    db_Insert,
     dbQuery,
     getProvince,
     fcGetItemInTableDB,

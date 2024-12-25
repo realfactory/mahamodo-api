@@ -6582,7 +6582,7 @@ async function CastHoroscope_TimeStarMove82(AA, DefTime, Def, DefMN, DefH, dateI
             // 19800 15.533333333333333 17 0.25 0.6475000000000399 2025-05-04 15.533333333333333 11 374
             // console.log(Star81.AA, DefTime, Mkdef, DefMN, DefH, ddmk1, TemTime, TemAM, mnk, JS, dateInput, Hour, Min);
             // ยังไม่ได้ test case
-            const CheckMove8 = await CastHoroscope_CheckMove8(Star81.AA, DefTime, Mkdef, DefMN, DefH, ddmk1, TemTime, TemAM, mnk, JS, dateInput, Hour, Min)
+            // const CheckMove8 = await CastHoroscope_CheckMove8(Star81.AA, DefTime, Mkdef, DefMN, DefH, ddmk1, TemTime, TemAM, mnk, JS, dateInput, Hour, Min)
             K = 3600;
             for (let JK = 0; JK <= 1440; JK++) {
 
