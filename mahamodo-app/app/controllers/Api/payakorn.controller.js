@@ -511,7 +511,9 @@ function delay(ms) {
 }
 
 const createSummaryPayakornBorn = (PayakornBorn) => {
-  const ascendantPrediction = PayakornBorn.AscendantPrediction?.payakorn || "";
+  const ascendantPredictionTitle = PayakornBorn.ascendantPrediction?.title || "";
+  const ascendantPredictionPayakorn = PayakornBorn.ascendantPrediction?.payakorn || "";
+  const ascendantPrediction = ascendantPredictionTitle +' '+ ascendantPredictionPayakorn;
   const ascendantPredictionGem =
     PayakornBorn.AscendantPredictionGem?.payakorn || "";
   const starStayPatani = Support.joinArray(
