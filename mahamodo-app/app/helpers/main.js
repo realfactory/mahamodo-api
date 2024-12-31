@@ -4579,7 +4579,7 @@ async function PayakornBorn(SuriyatDate) {
                 'astrological_Houses' : astrological_Houses[iPop],
                 'housesStarPops_Sub' : housesStarPops_Sub[iPop],
                 'kasedsInPops' : LukTamnaiKasedInPopResults[0].KasedsInPops,
-                'payakron' : Description
+                'payakorn' : Description
             }
             housesStarGroup.push(Group);
         } else {
@@ -4589,7 +4589,7 @@ async function PayakornBorn(SuriyatDate) {
                 'astrological_Houses' : astrological_Houses[iPop],
                 'housesStarPops_Sub' : housesStarPops_Sub[iPop],
                 'kasedsInPops' : null,
-                'payakron' : null
+                'payakorn' : null
             }
             housesStarGroup.push(Group);
         }
