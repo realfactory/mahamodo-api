@@ -529,10 +529,25 @@ const createSummaryPayakornBorn = (PayakornBorn) => {
     PayakornBorn.standardStarsDuangNavang?.payakorn
   );
   const starKalakini = PayakornBorn.starKalakini?.payakorn || "";
-  const starBornTamPop = PayakornBorn.starBornTamPop?.payakorn || "";
-  const housesStarPops = Support.joinArray(
-    PayakornBorn.housesStarPops?.payakorn
-  );
+
+  const starSummaries = PayakornBorn.starBornTamPop.predictions.map(prediction => {
+    // const starBornIndex = prediction?.starBornIndex || "";
+    const starLiveinPops = prediction?.starLiveinPops || "";
+    const payakorn = prediction?.payakorn || "";
+    return `${starLiveinPops} ${payakorn}`.trim();
+  });
+
+  const starBornTamPop = PayakornBorn.starBornTamPop.title + ':' + starSummaries || "";
+
+  const starSummariesPops = PayakornBorn.housesStarPops.predictions.map(prediction => {
+    const astrological_Houses = prediction?.astrological_Houses || "";
+    const housesStarPops_Sub = prediction?.housesStarPops_Sub || "";
+    const kasedsInPops = prediction?.kasedsInPops || "";
+    const payakorn = prediction?.payakorn || "";
+    return `${astrological_Houses} ${housesStarPops_Sub} ${kasedsInPops} ${payakorn}`.trim();
+  });
+
+  const housesStarPops = PayakornBorn.housesStarPops.title + ':' + starSummariesPops;
 
   return `${ascendantPrediction ?? ''} ${ascendantPredictionGem?? ''} ${starStayGumLuk?? ''} ${starStayPatani?? ''} ${starAsTanuSED ?? ''} ${starSame?? ''} ${standardStarsDuangRasee ?? ''} ${standardStarsDuangNavang ?? ''} ${starKalakini ?? ''} ${starBornTamPop ?? ''} ${housesStarPops ?? ''}`;
 };

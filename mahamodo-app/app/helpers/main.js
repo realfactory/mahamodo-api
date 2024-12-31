@@ -3668,6 +3668,8 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             }
         }
     }
+
+
     // ' จบ
 
     // คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
@@ -4484,6 +4486,7 @@ async function PayakornBorn(SuriyatDate) {
     let starBornTamPop_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวที่อยู่ในภพต่างๆ";
     let starBornTamPop_Sub = [];
     let starBornTamPop_Desc = [];
+    let starBornTamPopGroup = [];
     for (let j = 1; j <= 8; j++) {
         const tamnaiResults = await db.dbQuery(`SELECT * FROM luksompodstarborn WHERE Stari='${j}'`);
         if (tamnaiResults && tamnaiResults.length == 1) {
@@ -4497,13 +4500,34 @@ async function PayakornBorn(SuriyatDate) {
                 const Description = LukTamnaiPopResults[0].PayakornText.replace(/<br>/g, "").replace(/<b>/g, "");
                 starBornTamPop_Sub.push(Sub); //เช่น "ดาวอาทิตย์ อยู่ในภพอริ (ราศีกุมภ์)"
                 starBornTamPop_Desc.push(Description);
+                const Group = {
+                    "starBornIndex" : j,
+                    "starBorn" : await Support.fcStariToS(j),
+                    "rasees" : {
+                        "calendar": SuriyatDate.varBornPutdate_StarStayR[0][j],
+                        "title" : rLiveRasees
+                    },
+                    "starLiveinPops" : LukTamnaiPopResults[0].StarLiveinPops,
+                    "payakorn" : Description
+                }
+                starBornTamPopGroup.push(Group);
+            }else{
+                const Group = {
+                    "starBornIndex" : j,
+                    "starBorn" : await Support.fcStariToS(j),
+                    "rasees" : null,
+                    "starLiveinPops" : null,
+                    "payakorn" : null
+                }
+                starBornTamPopGroup.push(Group);
+
             }
         }
     }
+
     const starBornTamPop = {
         "title": starBornTamPop_Title,
-        "sub_title": starBornTamPop_Sub,
-        "payakorn": starBornTamPop_Desc,
+        "predictions" : starBornTamPopGroup,
     }
     // ' จบ
 
@@ -4512,35 +4536,68 @@ async function PayakornBorn(SuriyatDate) {
     let housesStarPops_Title = "คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)";
     let housesStarPops_Sub = [];
     let housesStarPops_Desc = [];
+    let astrological_Houses = [];
+    let housesStarGroup = [];
+    
 
-    housesStarPops_Sub[0] = "1. ภพตนุ  ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
-    housesStarPops_Sub[1] = "2. ภพกดุมภะ  ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
-    housesStarPops_Sub[2] = "3. ภพสหัชชะ  เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
-    housesStarPops_Sub[3] = "4. ภพพันธุ  ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
-    housesStarPops_Sub[4] = "5. ภพปุตตะ  ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
-    housesStarPops_Sub[5] = "6. ภพอริ  ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
-    housesStarPops_Sub[6] = "7. ภพปัตนิ  ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
-    housesStarPops_Sub[7] = "8. ภพปัตนิ  ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
-    housesStarPops_Sub[8] = "9. ภพศุภะ  ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
-    housesStarPops_Sub[9] = "10. ภพกัมมะ  ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
-    housesStarPops_Sub[10] = "11. ภพลาภะ ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
-    housesStarPops_Sub[11] = "12. ภพวินาศ ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
+    astrological_Houses[0] = "ตัวตน (ภพตนุ)";            // หมวดลักษณะส่วนตัว
+    astrological_Houses[1] = "การเงิน (ภพกดุมภะ)";       // หมวดทรัพย์สิน/การเงิน
+    astrological_Houses[2] = "สังคม (ภพสหัชชะ)";        // หมวดความสัมพันธ์และการสื่อสาร
+    astrological_Houses[3] = "ครอบครัว (ภพพันธุ)";      // หมวดบ้านและครอบครัว
+    astrological_Houses[4] = "บริวาร (ภพปุตตะ)";        // หมวดลูกหลานและความสุข
+    astrological_Houses[5] = "อุปสรรค (ภพอริ)";         // หมวดอุปสรรคและการทำงานหนัก
+    astrological_Houses[6] = "คู่ครอง (ภพปัตนิ)";       // หมวดคู่ครองและความสัมพันธ์
+    astrological_Houses[7] = "โรคภัย (ภพมรณะ)";         // หมวดการเปลี่ยนแปลงและสุขภาพ
+    astrological_Houses[8] = "ความเจริญ (ภพศุภะ)";      // หมวดการเดินทางและจิตวิญญาณ
+    astrological_Houses[9] = "การงาน (ภพกัมมะ)";        // หมวดอาชีพและหน้าที่การงาน
+    astrological_Houses[10] = "โชคลาภ (ภพลาภะ)";       // หมวดโอกาสและความสำเร็จ
+    astrological_Houses[11] = "สิ่งซ่อนเร้น (ภพวินาศ)"; // หมวดสิ่งที่ซ่อนเร้นและการปล่อยวาง
+    
+    housesStarPops_Sub[0] = "ทำนายเกี่ยวกับร่างกายตัวตนเจ้าชะตา จิตใจ ความต้องการ ความรู้สึกนึกคิดทางด้านอารมณ์";
+    housesStarPops_Sub[1] = "ทำนายเกี่ยวกับการเงิน ทรัพย์สินต่าง ๆ  รายรับ รายจ่าย สังหาริมทรัพย์ และอสังหาริมทรัพย์";
+    housesStarPops_Sub[2] = "เพื่อนฝูง การสังคม การสมาคม บริษัทการเดินทางใกล้ๆ หุ้นส่วน";
+    housesStarPops_Sub[3] = "ทำนายถึงเกี่ยวเนื่องกัน หมายถึง ญาติพี่น้อง หรือสิ่งที่อยู่ใกล้ชิดผูกพันกัน บิดา มารดา คนใกล้ชิด เพื่อนบ้าน ยานพาหนะ";
+    housesStarPops_Sub[4] = "ด็ก บริวาร ผู้มีอายุน้อยกว่า  ลูกน้อง  ผู้ใต้บังคับบัญชา ภริยาน้อย  ชายชู้";
+    housesStarPops_Sub[5] = "ทำนายเกี่ยวกับศัตรู โรคภัยไข้เจ็บ อุปสรรคต่าง ๆ  หนี้สิน  และ สัตว์เลี้ยง";
+    housesStarPops_Sub[6] = "ทำนายเกี่ยวกับคู่รักคู่ครอง หุ้นส่วน คู่สัญญากรณี  คู่ความในคดีแพ่ง คู่แข่งขัน หรือห้างร้านที่เป็นคู่แข่งขัน   เพศตรงข้าม หรือ ศัตรูคู่แค้น";
+    housesStarPops_Sub[7] = "ทำนายเกี่ยวกับความตาย การทิ้งถิ่นฐาน การพลัดพรากจากกัน การไปต่างถิ่นต่างประเทศ  การเลิกร้างกัน ความโศกเศร้าเสียใจ";
+    housesStarPops_Sub[8] = "ทำนายเกี่ยวกับบิดา ผู้อุปการะที่เป็นผู้ชาย เจ้านาย  อสังหาริมทรัพย์ทุกชนิด ความเจริญรุ่งเรือง  ความเจริญทางอำนาจ วาสนา ความเจริญทางจิตใจ";
+    housesStarPops_Sub[9] = "ทำนายเกี่ยวกับอาชีพ  การงาน การทำงาน  การดำเนินกิจการ คนงาน กรรมกร ลูกจ้าง   ลูกน้อง";
+    housesStarPops_Sub[10] = "ทำนายเกี่ยวกับรายได้ เช่นทรัพย์สินเงินทอง  วัตถุสิ่งของหรือจะเป็นบุคคลก็ได้";
+    housesStarPops_Sub[11] = "ทำนายเกี่ยวกับความพินาศล่มจมเสียหายอย่างหนัก  การพลัดพรากจากกัน การโยกย้าย ถ้าหนักก็หมายถึง ความตาย  การติดคุกตาราง การถูกกักขัง  และการล้มละลาย";
 
     for (let iPop = 0; iPop <= 11; iPop++) {
+        
         const LukTamnaiKasedInPopResults = await db.dbQuery(`SELECT * FROM luktamnaikasedinpop WHERE KasediInPopi='${varBornLuk_KasediInPopistr[iPop]}' `);
+        
         if (LukTamnaiKasedInPopResults && LukTamnaiKasedInPopResults.length == 1) {
+
             const Description = LukTamnaiKasedInPopResults[0].PayakonText.replace(/<br>/g, "").replace(/<b>/g, "");
-            // housesStarPops_Desc.push();
             housesStarPops_Desc[iPop] = `${LukTamnaiKasedInPopResults[0].KasedsInPops}  ${Description}`;
+            const Group = {
+                'index' : iPop,
+                'astrological_Houses' : astrological_Houses[iPop],
+                'housesStarPops_Sub' : housesStarPops_Sub[iPop],
+                'kasedsInPops' : LukTamnaiKasedInPopResults[0].KasedsInPops,
+                'payakron' : Description
+            }
+            housesStarGroup.push(Group);
         } else {
             housesStarPops_Desc[iPop] = "-";
+            const Group = {
+                'index' : iPop,
+                'astrological_Houses' : astrological_Houses[iPop],
+                'housesStarPops_Sub' : housesStarPops_Sub[iPop],
+                'kasedsInPops' : null,
+                'payakron' : null
+            }
+            housesStarGroup.push(Group);
         }
     }
 
     const housesStarPops = {
         "title": housesStarPops_Title,
-        "sub_title": housesStarPops_Sub,
-        "payakorn": housesStarPops_Desc,
+        "predictions" : housesStarGroup,
     }
 
     return {
