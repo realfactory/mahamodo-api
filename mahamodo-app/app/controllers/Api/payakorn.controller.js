@@ -371,28 +371,28 @@ const SompudLukMove = async (req, res) => {
   ];
   
   const lukNameMaster = [
-    { key: 10, value: "ลั. ลัคนา" },
-    { key: 1, value: "1. อาทิตย์" },
-    { key: 2, value: "2. จันทร์" },
-    { key: 3, value: "3. อังคาร" },
-    { key: 4, value: "4. พุธ" },
-    { key: 5, value: "5. พฤหัส" },
-    { key: 6, value: "6. ศุกร์" },
-    { key: 7, value: "7. เสาร์" },
-    { key: 8, value: "8. ราหู" },
-    { key: 9, value: "9. เกตุ" },
-    { key: 0, value: "0. มฤตยู" }
+    { key: 10, value: "ลัคนา" },
+    { key: 1, value: "อาทิตย์" },
+    { key: 2, value: "จันทร์" },
+    { key: 3, value: "อังคาร" },
+    { key: 4, value: "พุธ" },
+    { key: 5, value: "พฤหัส" },
+    { key: 6, value: "ศุกร์" },
+    { key: 7, value: "เสาร์" },
+    { key: 8, value: "ราหู" },
+    { key: 9, value: "เกตุ" },
+    { key: 0, value: "มฤตยู" }
   ];
   
 const finalCurrentDate = moment().format("YYYY-MM-DD");
 const finalCurrentHour = moment().format("HH");
 const finalCurrentMinute = moment().format("mm");
 
-// Time range for the day
 const startOfDay = moment("2025-01-01 00:00", "YYYY-MM-DD HH:mm");
-// const startOfDay = moment().startOf("day");
-// const endOfDay = moment().endOf("day");
 const endOfDay = startOfDay.clone().add(3650, "days"); // 30 วันจาก startOfDay
+
+// set Star Index
+let starIndex = 2;
 
 let currentTime = startOfDay.clone();
 let previousDate = startOfDay;
@@ -407,6 +407,7 @@ while (currentTime <= endOfDay) {
   const newTodayDate = await Support.fcDateGlobal(currentTime.format("YYYY-MM-DD"));
 
   try {
+
     todaySuriyatDate = await main.CastHoroscope_SumSuriyatMain_Today(
       newTodayDate,
       currentTime.format("HH"),
@@ -417,12 +418,11 @@ while (currentTime <= endOfDay) {
 
   } catch (error) {
     console.error(`Error occurred on ${currentTime.format("YYYY-MM-DD HH:mm")}:`, error);
-    break;
+    continue;
   }
 
-  if (sompodStarToday.lblStarStayRNo[1] !== lblStarStayRNo_Old && lblStarStayRNo_Old) {
-    console.log("Create new entry");
-    console.log(
+  if (sompodStarToday.lblStarStayRNo[starIndex] !== lblStarStayRNo_Old) {
+    console.log("Create new entry",
       previousDate.format("YYYY-MM-DD HH:mm"),
       lblStarStayRNo_Old,
       lblStarStayName_Old,
@@ -443,11 +443,11 @@ while (currentTime <= endOfDay) {
         const tableName = "star_move";
         const data = {
           move_date: formattedPreviousDate, // Formatted date
-          star_index: 1, // Star index
-          star_name: sompodStarToday.TitleTable[1], // Star name
-          zodiac_index: sompodStarToday.lblStarStayRNo[1], // Star index
+          star_index: starIndex, // Star index
+          star_name: sompodStarToday.TitleTable[starIndex], // Star name
+          zodiac_index: sompodStarToday.lblStarStayRNo[starIndex], // Star index
           zodiac_name: zodiacMaster.find(
-            (item) => item.key === sompodStarToday.lblStarStayRNo[1]
+            (item) => item.key === sompodStarToday.lblStarStayRNo[starIndex]
           )?.value || "Unknown", // Star name
         };
 
@@ -468,26 +468,20 @@ while (currentTime <= endOfDay) {
 
   // Update old values for the next loop iteration
   lblStarStayName_Old = zodiacMaster.find(
-    (item) => item.key === sompodStarToday.lblStarStayRNo[1]
-  )?.value || "Unknown";
+    (item) => item.key === sompodStarToday.lblStarStayRNo[starIndex]
+  )?.value || "";
 
-  lblStarStayRNo_Old = sompodStarToday.lblStarStayRNo[1];
+  lblStarStayRNo_Old = sompodStarToday.lblStarStayRNo[starIndex];
 
   lukIndex = lukNameMaster.find(
-    (item) => item.value === sompodStarToday.TitleTable[1]
-  )?.key || "Unknown";
+    (item) => item.value === sompodStarToday.TitleTable[starIndex]
+  )?.key || "";
 
-  lukIndexName = sompodStarToday.TitleTable[1];
-
-  // Delay before the next iteration
-  // await delay(100); // หน่วงเวลา 1 วินาที (1000 มิลลิวินาที)
+  lukIndexName = sompodStarToday.TitleTable[starIndex];
+ 
   console.log(`end.. ${currentTime.format("YYYY-MM-DD HH:mm")}:`);
 }
   
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
   // Helper function for getting star data
   async function getSompodStarToday(option, suriyatDate) {
     return await main.CastHoroscope_SompodStarOnLabel_Born_Today(option, suriyatDate);
@@ -532,24 +526,30 @@ const createSummaryPayakornBorn = (PayakornBorn) => {
   );
   const starKalakini = PayakornBorn.starKalakini?.payakorn || "";
 
-  const starSummaries = PayakornBorn.starBornTamPop.predictions.map(prediction => {
-    // const starBornIndex = prediction?.starBornIndex || "";
-    const starLiveinPops = prediction?.starLiveinPops || "";
-    const payakorn = prediction?.payakorn || "";
+  const starSummaries = PayakornBorn.starBornTamPop.starBornTamPopGroup
+  .map(item => {
+    if (!item.prediction) return null; // ข้ามรายการที่ prediction เป็น null
+    const starLiveinPops = item.prediction?.starLiveinPops || "";
+    const payakorn = item.prediction?.payakorn || "";
     return `${starLiveinPops} ${payakorn}`.trim();
-  });
+  })
+  .filter(Boolean); // ลบ null หรือ undefined ออกจากผลลัพธ์
 
-  const starBornTamPop = PayakornBorn.starBornTamPop.title + ':' + starSummaries || "";
+  const starBornTamPop = `${PayakornBorn.starBornTamPop.title || ""}: ${starSummaries.join(", ") || ""}`;
 
-  const starSummariesPops = PayakornBorn.housesStarPops.predictions.map(prediction => {
-    const astrological_Houses = prediction?.astrological_Houses || "";
-    const housesStarPops_Sub = prediction?.housesStarPops_Sub || "";
-    const kasedsInPops = prediction?.kasedsInPops || "";
-    const payakorn = prediction?.payakorn || "";
+  const starSummariesPops = PayakornBorn.housesStarPops.housesStarPopsGroup
+  .map(item => {
+    if (!item.prediction) return null; // ข้ามรายการที่ prediction เป็น null
+    const astrological_Houses = item?.astrological_Houses || "";
+    const housesStarPops_Sub = item?.housesStarPops_Sub || "";
+    const kasedsInPops = item.prediction?.kasedsInPops || "";
+    const payakorn = item.prediction?.payakorn || "";
     return `${astrological_Houses} ${housesStarPops_Sub} ${kasedsInPops} ${payakorn}`.trim();
-  });
+  })
+  .filter(Boolean); // ลบ null หรือ undefined ออกจากผลลัพธ์
 
-  const housesStarPops = PayakornBorn.housesStarPops.title + ':' + starSummariesPops;
+  const housesStarPops = `${PayakornBorn.housesStarPops.title || ""}: ${starSummariesPops.join(", ") || ""}`;
+
 
   return `${ascendantPrediction ?? ''} ${ascendantPredictionGem?? ''} ${starStayGumLuk?? ''} ${starStayPatani?? ''} ${starAsTanuSED ?? ''} ${starSame?? ''} ${standardStarsDuangRasee ?? ''} ${standardStarsDuangNavang ?? ''} ${starKalakini ?? ''} ${starBornTamPop ?? ''} ${housesStarPops ?? ''}`;
 };

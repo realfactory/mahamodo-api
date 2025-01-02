@@ -3668,8 +3668,6 @@ async function PakakornSompod(SuriyatDate, TodaySuriyatDate) {
             }
         }
     }
-
-
     // ' จบ
 
     // คำทำนายพื้นดวงกำเนิด ตามดาวเจ้าเรือนอยู่ในภพต่างๆ (ภพผสมภพ)
@@ -4503,21 +4501,22 @@ async function PayakornBorn(SuriyatDate) {
                 const Group = {
                     "starBornIndex" : j,
                     "starBorn" : await Support.fcStariToS(j),
-                    "rasees" : {
-                        "calendar": SuriyatDate.varBornPutdate_StarStayR[0][j],
-                        "title" : rLiveRasees
-                    },
-                    "starLiveinPops" : LukTamnaiPopResults[0].StarLiveinPops,
-                    "payakorn" : Description
+                    "prediction" : {
+                        "rasees" : {
+                            "calendar": SuriyatDate.varBornPutdate_StarStayR[0][j],
+                            "title" : rLiveRasees
+                        },
+                        "starLiveinPops" : LukTamnaiPopResults[0].StarLiveinPops,
+                        "payakorn" : Description
+                    }
+                    
                 }
                 starBornTamPopGroup.push(Group);
             }else{
                 const Group = {
                     "starBornIndex" : j,
                     "starBorn" : await Support.fcStariToS(j),
-                    "rasees" : null,
-                    "starLiveinPops" : null,
-                    "payakorn" : null
+                    "prediction" : null,
                 }
                 starBornTamPopGroup.push(Group);
 
@@ -4527,7 +4526,7 @@ async function PayakornBorn(SuriyatDate) {
 
     const starBornTamPop = {
         "title": starBornTamPop_Title,
-        "predictions" : starBornTamPopGroup,
+        "starBornTamPopGroup" : starBornTamPopGroup,
     }
     // ' จบ
 
@@ -4537,9 +4536,8 @@ async function PayakornBorn(SuriyatDate) {
     let housesStarPops_Sub = [];
     let housesStarPops_Desc = [];
     let astrological_Houses = [];
-    let housesStarGroup = [];
+    let housesStarPopsGroup = [];
     
-
     astrological_Houses[0] = "ตัวตน (ภพตนุ)";            // หมวดลักษณะส่วนตัว
     astrological_Houses[1] = "การเงิน (ภพกดุมภะ)";       // หมวดทรัพย์สิน/การเงิน
     astrological_Houses[2] = "สังคม (ภพสหัชชะ)";        // หมวดความสัมพันธ์และการสื่อสาร
@@ -4578,26 +4576,27 @@ async function PayakornBorn(SuriyatDate) {
                 'index' : iPop,
                 'astrological_Houses' : astrological_Houses[iPop],
                 'housesStarPops_Sub' : housesStarPops_Sub[iPop],
-                'kasedsInPops' : LukTamnaiKasedInPopResults[0].KasedsInPops,
-                'payakorn' : Description
+                'prediction' : {
+                    'kasedsInPops' : LukTamnaiKasedInPopResults[0].KasedsInPops,
+                    'payakorn' : Description
+                }
             }
-            housesStarGroup.push(Group);
+            housesStarPopsGroup.push(Group);
         } else {
             housesStarPops_Desc[iPop] = "-";
             const Group = {
                 'index' : iPop,
                 'astrological_Houses' : astrological_Houses[iPop],
                 'housesStarPops_Sub' : housesStarPops_Sub[iPop],
-                'kasedsInPops' : null,
-                'payakorn' : null
+                'prediction' : null
             }
-            housesStarGroup.push(Group);
+            housesStarPopsGroup.push(Group);
         }
     }
 
     const housesStarPops = {
         "title": housesStarPops_Title,
-        "predictions" : housesStarGroup,
+        "housesStarPopsGroup" : housesStarPopsGroup,
     }
 
     return {
@@ -4640,10 +4639,9 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
         []
     ];
 
-    const columnIindex = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+    const columnIindex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
     let dayNameLuk = {
-        10: "ลั. ลัคนา",
         1: "1. อาทิตย์",
         2: "2. จันทร์",
         3: "3. อังคาร",
@@ -4654,10 +4652,11 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
         8: "8. ราหู",
         9: "9. เกตุ",
         0: "0. มฤตยู",
+        10: "ลั. ลัคนา",
+
     };
 
     let dayNameLukText = {
-        10: "ลัคนา",
         1: "อาทิตย์",
         2: "จันทร์",
         3: "อังคาร",
@@ -4668,6 +4667,7 @@ async function PayakornToday(SuriyatDate, TodaySuriyatDate) {
         8: "ราหู",
         9: "เกตุ",
         0: "มฤตยู",
+        10: "ลัคนา",
     };
 
     // let matchingpredictionsGroup = Array(11).fill(null).map(() => []);
