@@ -79,7 +79,7 @@ const SompudLuk = async (req, res) => {
       province
     );
   } else {
-    province = "Not provided";
+    province = "กรุงเทพมหานคร";
   }
 
   const [finalHour, finalMinute] = time_of_birth.split(":");
@@ -392,7 +392,7 @@ const startOfDay = moment("2025-01-01 00:00", "YYYY-MM-DD HH:mm");
 const endOfDay = startOfDay.clone().add(3650, "days"); // 30 วันจาก startOfDay
 
 // set Star Index
-let starIndex = 2;
+let starIndex = 3;
 
 let currentTime = startOfDay.clone();
 let previousDate = startOfDay;
@@ -422,13 +422,6 @@ while (currentTime <= endOfDay) {
   }
 
   if (sompodStarToday.lblStarStayRNo[starIndex] !== lblStarStayRNo_Old) {
-    console.log("Create new entry",
-      previousDate.format("YYYY-MM-DD HH:mm"),
-      lblStarStayRNo_Old,
-      lblStarStayName_Old,
-      lukIndex,
-      lukIndexName
-    );
 
     // อัปเดต previousDate ก่อนดำเนินการต่อ
     previousDate = currentTime.clone();
@@ -436,10 +429,8 @@ while (currentTime <= endOfDay) {
     const formattedPreviousDate = previousDate.format("YYYY-MM-DD HH:mm:ss");
 
     try {
-
-      let queryResult = await db.dbQuery(`SELECT * FROM star_move WHERE move_date='${formattedPreviousDate}'`);
-
-      if (queryResult.length === 0) {
+      // let queryResult = await db.dbQuery(`SELECT * FROM star_move WHERE move_date='${formattedPreviousDate}'`);
+      // if (queryResult.length === 0) {
         const tableName = "star_move";
         const data = {
           move_date: formattedPreviousDate, // Formatted date
@@ -451,14 +442,16 @@ while (currentTime <= endOfDay) {
           )?.value || "Unknown", // Star name
         };
 
-        await db.db_Insert(tableName, data)
-          .then(result => {
-            console.log("Insert successful:", result);
-          })
-          .catch(error => {
-            console.error("Insert failed:", error.message);
-          });
-      }
+        console.log(data);
+
+        // await db.db_Insert(tableName, data)
+        //   .then(result => {
+        //     console.log("Insert successful:", result);
+        //   })
+        //   .catch(error => {
+        //     console.error("Insert failed:", error.message);
+        //   });
+      // }
     } catch (error) {
       console.error("Error occurred:", error.message);
       break;
