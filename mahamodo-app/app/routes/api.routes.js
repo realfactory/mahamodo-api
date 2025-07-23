@@ -3,6 +3,7 @@ const router = express.Router();
 const payakornController = require("../controllers/Api/payakorn.controller");
 const managementData = require("../controllers/Api/management.data.controller");
 const managementDataJson = require("../controllers/Api/management.data.json.controller");
+const generateImageWithQR = require("../controllers/Api/generate.image.with.qr.controller")
 
 // Import validations
 const ValidationDreamPredictApi = require("../controllers/Api/validations/dreamPredictValidation");
@@ -17,6 +18,7 @@ router.post(
   ValidationDreamPredictApi,
   payakornController.DreamPredict
 );
+
 router.post(
   "/payakorn/sompudluk",
   ValidationSomPutDateApi,
@@ -36,5 +38,7 @@ router.post(
 );
 
 router.post("/payakorn/sompudluk/move", payakornController.SompudLukMove);
+
+router.post('/generate-image-with-qr', generateImageWithQR.generateImageWithQR);
 
 module.exports = router;
